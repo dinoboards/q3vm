@@ -71,7 +71,6 @@
  * */
 #ifdef __GNUC__
 #ifndef DEBUG_VM           /* can't use computed gotos in debug mode */
-#define USE_COMPUTED_GOTOS /**< use computed gotos instead of a switch */
 #endif
 #endif
 
@@ -178,7 +177,6 @@ typedef enum
     OP_MAX /* Make this the last item */
 } opcode_t;
 
-#ifndef USE_COMPUTED_GOTOS
 /* for the the computed gotos we need labels,
  * but for the normal switch case we need the cases */
 #define goto_OP_UNDEF case OP_UNDEF
@@ -241,7 +239,6 @@ typedef enum
 #define goto_OP_MULF case OP_MULF
 #define goto_OP_CVIF case OP_CVIF
 #define goto_OP_CVFI case OP_CVFI
-#endif
 
 /******************************************************************************
  * LOCAL DATA DEFINITIONS
@@ -928,49 +925,11 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
     int opcode, r0, r1;
 #define r2 codeImage[programCounter]
 
-#ifdef USE_COMPUTED_GOTOS
-    static const void* dispatch_table[OPCODE_TABLE_SIZE] = {
-        &&goto_OP_UNDEF,  &&goto_OP_IGNORE,     &&goto_OP_BREAK,
-        &&goto_OP_ENTER,  &&goto_OP_LEAVE,      &&goto_OP_CALL,
-        &&goto_OP_PUSH,   &&goto_OP_POP,        &&goto_OP_CONST,
-        &&goto_OP_LOCAL,  &&goto_OP_JUMP,       &&goto_OP_EQ,
-        &&goto_OP_NE,     &&goto_OP_LTI,        &&goto_OP_LEI,
-        &&goto_OP_GTI,    &&goto_OP_GEI,        &&goto_OP_LTU,
-        &&goto_OP_LEU,    &&goto_OP_GTU,        &&goto_OP_GEU,
-        &&goto_OP_EQF,    &&goto_OP_NEF,        &&goto_OP_LTF,
-        &&goto_OP_LEF,    &&goto_OP_GTF,        &&goto_OP_GEF,
-        &&goto_OP_LOAD1,  &&goto_OP_LOAD2,      &&goto_OP_LOAD4,
-        &&goto_OP_STORE1, &&goto_OP_STORE2,     &&goto_OP_STORE4,
-        &&goto_OP_ARG,    &&goto_OP_BLOCK_COPY, &&goto_OP_SEX8,
-        &&goto_OP_SEX16,  &&goto_OP_NEGI,       &&goto_OP_ADD,
-        &&goto_OP_SUB,    &&goto_OP_DIVI,       &&goto_OP_DIVU,
-        &&goto_OP_MODI,   &&goto_OP_MODU,       &&goto_OP_MULI,
-        &&goto_OP_MULU,   &&goto_OP_BAND,       &&goto_OP_BOR,
-        &&goto_OP_BXOR,   &&goto_OP_BCOM,       &&goto_OP_LSH,
-        &&goto_OP_RSHI,   &&goto_OP_RSHU,       &&goto_OP_NEGF,
-        &&goto_OP_ADDF,   &&goto_OP_SUBF,       &&goto_OP_DIVF,
-        &&goto_OP_MULF,   &&goto_OP_CVIF,       &&goto_OP_CVFI,
-        &&goto_OP_UNDEF, /* Invalid OP CODE for opcode_table_mask */
-        &&goto_OP_UNDEF, /* Invalid OP CODE for opcode_table_mask */
-        &&goto_OP_UNDEF, /* Invalid OP CODE for opcode_table_mask */
-        &&goto_OP_UNDEF, /* Invalid OP CODE for opcode_table_mask */
-    };
-#define DISPATCH2()                                                            \
-    opcode = codeImage[programCounter++];                                      \
-    goto* dispatch_table[opcode & OPCODE_TABLE_MASK]
-#define DISPATCH()                                                             \
-    r0 = opStack[opStackOfs];                                                  \
-    r1 = opStack[(uint8_t)(opStackOfs - 1)];                                   \
-    DISPATCH2()
-    DISPATCH(); /* initial jump into the loop */
-#else
 #define DISPATCH2() goto nextInstruction2
 #define DISPATCH() goto nextInstruction
-#endif
 
     while (1)
     {
-#ifndef USE_COMPUTED_GOTOS
     nextInstruction:
         r0 = opStack[opStackOfs];
         r1 = opStack[(uint8_t)(opStackOfs - 1)];
@@ -1007,7 +966,6 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
         profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
         switch (opcode)
-#endif /* !USE_COMPUTED_GOTOS */
         {
 #ifdef DEBUG_VM
         default: /* fall through */
