@@ -29,24 +29,24 @@ typedef char* va_list;
 
 // Misc functions
 typedef int cmp_t(const void*, const void*);
-void qsort(void* a, size_t n, size_t es, cmp_t* cmp);
-void srand(unsigned seed);
-int rand(void);
+void        qsort(void* a, size_t n, size_t es, cmp_t* cmp);
+void        srand(unsigned seed);
+int         rand(void);
 
 // String functions
 size_t strlen(const char* string);
-char* strcat(char* strDestination, const char* strSource);
-char* strcpy(char* strDestination, const char* strSource);
-int strcmp(const char* string1, const char* string2);
-char* strchr(const char* string, int c);
-char* strstr(const char* string, const char* strCharSet);
-int tolower(int c);
-int toupper(int c);
+char*  strcat(char* strDestination, const char* strSource);
+char*  strcpy(char* strDestination, const char* strSource);
+int    strcmp(const char* string1, const char* string2);
+char*  strchr(const char* string, int c);
+char*  strstr(const char* string, const char* strCharSet);
+int    tolower(int c);
+int    toupper(int c);
 
 double atof(const char* string);
 double _atof(const char** stringPtr);
-int atoi(const char* string);
-int _atoi(const char** stringPtr);
+int    atoi(const char* string);
+int    _atoi(const char** stringPtr);
 
 int vsprintf(char* buffer, const char* fmt, va_list argptr);
 int sscanf(const char* buffer, const char* fmt, ...);
@@ -57,7 +57,7 @@ void* memset(void* dest, int c, size_t count);
 void* memcpy(void* dest, const void* src, size_t count);
 
 // Math functions
-int abs(int n);
+int    abs(int n);
 double fabs(double x);
 
 #endif

@@ -60,7 +60,8 @@
  ******************************************************************************/
 
 /** VM error codes */
-typedef enum {
+typedef enum
+{
     VM_NO_ERROR                    = 0,   /**< 0 = OK */
     VM_INVALID_POINTER             = -1,  /**< NULL pointer for vm_t */
     VM_FAILED_TO_LOAD_BYTECODE     = -2,  /**< Invalid byte code */
@@ -82,7 +83,8 @@ typedef enum {
 /** VM alloc type. This is just an information passed to the host malloc
  * callback function (via Com_malloc). You can safely ignore this if you see no
  * use for this information. */
-typedef enum {
+typedef enum
+{
     VM_ALLOC_CODE_SEC             = 0, /**< Bytecode code section */
     VM_ALLOC_DATA_SEC             = 1, /**< Bytecode data section */
     VM_ALLOC_INSTRUCTION_POINTERS = 2, /**< Bytecode instruction pointers */
@@ -110,7 +112,7 @@ typedef struct vmSymbol_s
     struct vmSymbol_s* next; /**< Linked list of symbols */
 
     int symValue; /**< Value of symbol that we want to have the ASCII name for
-                     */
+                   */
     int  profileCount; /**< For the runtime profiler. +1 for each call. */
     char symName[1];   /**< Variable sized symbol name. Space is reserved by
                           malloc at load time. */

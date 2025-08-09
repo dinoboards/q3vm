@@ -88,7 +88,8 @@
  ******************************************************************************/
 
 /** Enum for the virtual machine op codes */
-typedef enum {
+typedef enum
+{
     OP_UNDEF, /* Error: VM halt */
 
     OP_IGNORE, /* No operation */
@@ -326,12 +327,12 @@ static void Q_strncpyz(char* dest, const char* src, int destsize);
 #include <stdlib.h>          /* qsort */
 #define MAX_TOKEN_CHARS 1024 /**< max length of an individual token */
 /* WARNING: DEBUG_VM is not thread safe */
-static char com_token[MAX_TOKEN_CHARS]; /**< helper for COM_Parse */
-static int  com_lines;                  /**< helper for COM_Parse */
-static int  com_tokenline;              /**< helper for COM_Parse */
-static int ParseHex(const char* text);  /**< helper for VM_LoadSymbols */
-static void COM_StripExtension(const char* in,
-                               char* out); /**< helper for VM_LoadSymbols */
+static char  com_token[MAX_TOKEN_CHARS]; /**< helper for COM_Parse */
+static int   com_lines;                  /**< helper for COM_Parse */
+static int   com_tokenline;              /**< helper for COM_Parse */
+static int   ParseHex(const char* text); /**< helper for VM_LoadSymbols */
+static void  COM_StripExtension(const char* in,
+                                char* out); /**< helper for VM_LoadSymbols */
 static char* VM_Indent(vm_t* vm);
 /** For profiling, find the symbol behind this value */
 static vmSymbol_t* VM_ValueToFunctionSymbol(vm_t* vm, int value);
@@ -444,10 +445,11 @@ static const vmHeader_t* VM_LoadQVM(vm_t* vm, const uint8_t* bytecode,
 {
     int dataLength;
     int i;
-    const union {
+    const union
+    {
         const vmHeader_t* h;
         const uint8_t*    v;
-    } header = {.v = bytecode };
+    } header = { .v = bytecode };
 
     Com_Printf("Loading vm file %s...\n", vm->name);
 
@@ -620,7 +622,8 @@ void* VM_ArgPtr(intptr_t vmAddr, vm_t* vm)
 
 float VM_IntToFloat(int32_t x)
 {
-    union {
+    union
+    {
         float    f;  /**< float IEEE 754 32-bit single */
         int32_t  i;  /**< int32 part */
         uint32_t ui; /**< unsigned int32 part */
@@ -631,7 +634,8 @@ float VM_IntToFloat(int32_t x)
 
 int32_t VM_FloatToInt(float f)
 {
-    union {
+    union
+    {
         float    f;  /**< float IEEE 754 32-bit single */
         int32_t  i;  /**< int32 part */
         uint32_t ui; /**< unsigned int32 part */
@@ -1009,8 +1013,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
         default: /* fall through */
 #endif
         goto_OP_UNDEF:
-            Com_Error(vm->lastError = VM_BAD_INSTRUCTION,
-                      "Bad VM instruction");
+            Com_Error(vm->lastError = VM_BAD_INSTRUCTION, "Bad VM instruction");
             return -1;
         goto_OP_IGNORE:
             DISPATCH2();
@@ -1207,11 +1210,11 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             DISPATCH();
 
-        /*
-           ===================================================================
-           BRANCHES
-           ===================================================================
-           */
+            /*
+               ===================================================================
+               BRANCHES
+               ===================================================================
+               */
 
         goto_OP_JUMP:
             if ((unsigned)r0 >= (unsigned)vm->instructionCount)
@@ -1430,7 +1433,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
                 DISPATCH();
             }
 
-        /*===================================================================*/
+            /*===================================================================*/
 
         goto_OP_NEGI:
             opStack[opStackOfs] = -r0;
@@ -1541,8 +1544,7 @@ done:
 
     if (opStackOfs != 1 || *opStack != 0x0000BEEF)
     {
-        Com_Error(vm->lastError = VM_STACK_ERROR,
-                  "Interpreter stack error");
+        Com_Error(vm->lastError = VM_STACK_ERROR, "Interpreter stack error");
     }
 
     vm->programStack = stackOnEntry;
@@ -1832,7 +1834,8 @@ static char* COM_Parse(char** data_p)
 
 static void VM_LoadSymbols(vm_t* vm)
 {
-    union {
+    union
+    {
         char* c;
         void* v;
     } mapfile;

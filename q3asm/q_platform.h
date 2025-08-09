@@ -326,10 +326,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 // endianness
-void CopyShortSwap(void* dest, void* src);
-void CopyLongSwap(void* dest, void* src);
+void  CopyShortSwap(void* dest, void* src);
+void  CopyLongSwap(void* dest, void* src);
 short ShortSwap(short l);
-int LongSwap(int l);
+int   LongSwap(int l);
 float FloatSwap(const float* f);
 
 #if defined(Q3_BIG_ENDIAN) && defined(Q3_LITTLE_ENDIAN)

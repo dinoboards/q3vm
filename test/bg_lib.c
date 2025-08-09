@@ -68,9 +68,9 @@ static void  swapfunc(char*, char*, int, int);
     }
 
 #define SWAPINIT(a, es)                                                        \
-    swaptype = ((char*)a - (char*)0) % sizeof(long) || es % sizeof(long)       \
-                   ? 2                                                         \
-                   : es == sizeof(long) ? 0 : 1;
+    swaptype = ((char*)a - (char*)0) % sizeof(long) || es % sizeof(long) ? 2   \
+               : es == sizeof(long)                                      ? 0   \
+                                                                         : 1;
 
 static void swapfunc(a, b, n, swaptype) char *a, *b;
 int         n, swaptype;
@@ -93,7 +93,8 @@ int         n, swaptype;
     if ((n) > 0)                                                               \
     swapfunc(a, b, n, swaptype)
 
-static char *med3(a, b, c, cmp) char *a, *b, *c;
+static char* med3(a, b, c, cmp)
+char *       a, *b, *c;
 cmp_t*       cmp;
 {
     return cmp(a, b) < 0 ? (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a))
@@ -286,7 +287,7 @@ char* strstr(const char* string, const char* strCharSet)
 #endif // bk001211
 
 // bk001120 - presumably needed for Mac
-//#if !defined(_MSC_VER) && !defined(__linux__)
+// #if !defined(_MSC_VER) && !defined(__linux__)
 // bk001127 - undid undo
 #if defined(Q3_VM)
 int tolower(int c)
@@ -308,7 +309,7 @@ int toupper(int c)
 }
 
 #endif
-//#ifndef _MSC_VER
+// #ifndef _MSC_VER
 
 void* memmove(void* dest, const void* src, size_t count)
 {
@@ -499,7 +500,7 @@ double _atof(const char** stringPtr)
 }
 
 // bk001120 - presumably needed for Mac
-//#if !defined ( _MSC_VER ) && ! defined ( __linux__ )
+// #if !defined ( _MSC_VER ) && ! defined ( __linux__ )
 
 // bk001127 - undid undo
 #if defined(Q3_VM)

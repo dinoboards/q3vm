@@ -157,7 +157,7 @@ void Error(const char* error, ...)
 
 // only printf if in verbose mode
 qboolean verbose = qfalse;
-void qprintf(const char* format, ...)
+void     qprintf(const char* format, ...)
 {
     va_list argptr;
 
@@ -980,7 +980,8 @@ int LongSwap(int l)
     return ((int)b1 << 24) + ((int)b2 << 16) + ((int)b3 << 8) + b4;
 }
 
-typedef union {
+typedef union
+{
     float        f;
     unsigned int i;
 } _FloatByteUnion;

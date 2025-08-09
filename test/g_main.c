@@ -52,7 +52,8 @@ int vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4,
     volatile int            j;
     static unsigned char    mem1[8];
     static unsigned char    mem2[8] = "Hello"; /* don't change this string */
-    int                     doStupidStuff = 0; /* misbehave and see if the interpreter deals correctly with that */
+    int                     doStupidStuff =
+        0; /* misbehave and see if the interpreter deals correctly with that */
 
     void (*fun_ptr)(int) = (void*)0xffffff;
 
@@ -96,7 +97,8 @@ int vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 
     if (doStupidStuff)
     {
-        /* call a native function that will call us back here with command == 1 */
+        /* call a native function that will call us back here with command == 1
+         */
         printf("Test recursive VM call... ");
         if (recursive(666) != 666) /* we expect our input back */
         {
@@ -122,8 +124,8 @@ int vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4,
     {
         memset(mem1, 0, sizeof(mem1));
         memcpy(mem1, mem2, sizeof(mem2));
-        if (mem1[0] != 'H' || mem1[1] != 'e' || mem1[2] != 'l' || mem1[3] != 'l' ||
-            mem1[4] != 'o' || mem1[5] != '\0' || mem1[6] != 0)
+        if (mem1[0] != 'H' || mem1[1] != 'e' || mem1[2] != 'l' ||
+            mem1[3] != 'l' || mem1[4] != 'o' || mem1[5] != '\0' || mem1[6] != 0)
         {
             printf("memcpy / memset error\n");
             return -1;
@@ -279,17 +281,17 @@ int vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4,
         {
             f = 0.0f;
         }
-        df = f+0.1f;
+        df = f + 0.1f;
         if (df == f)
         {
-            df = 1.2f*df;
+            df = 1.2f * df;
         }
         df = f;
         if (df == f)
         {
-            df = 1.2f*df;
+            df = 1.2f * df;
         }
-        df = 0.95f*df;
+        df = 0.95f * df;
         if (f == df)
         {
             f = -f;
@@ -358,9 +360,8 @@ int fib(int n)
     if (n <= 2)
         return 1;
     else
-        return fib(n-1) + fib(n-2);
+        return fib(n - 1) + fib(n - 2);
 }
-
 
 #ifndef Q3_VM
 int main(int argc, char** argv)
