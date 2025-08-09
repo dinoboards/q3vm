@@ -1,6 +1,37 @@
 Q3VM Readme
 ===========
 
+Fork Objective: Explore possibility to convert to run on ez80 cpu
+
+## Identified Issues:
+
+1. Converting vm.c to run on ZDS/ez80-clang requires adjusting all assumption that int is a 32 bit number
+2. Avoid need to 'translate' CODE binary image into large RAM int arrays - run direct from ROM
+3. Have the CODE and DATA sections stored in RAM - DATA and BSS copied to on-chip RAM
+4. also support running as application under OS
+5. All bytecode operands are 32 bits (for ints/bytes and floats) - be nice to convert this to 24 bits for int/bytes
+6. Maybe drop support for floats?
+7. Change operand for CALL to just 16bit (no need to support large bytecode images)
+8. Probably want to support the ZDS compiler (not ez80-clang) to enable it to be embedded in ROM
+9.  computed gotos not supported in ZDS - and in ez80-clang produces poorer code than a switch statement
+
+
+## Code Section translation
+
+Inside `VM_PrepareInterpreter` the bytecode image is extracted and loaded into separate int arrays
+
+Opcodes are converted from bytes to expanded int array, with the operands copied.
+Instruction jumps are then translated to the correct index
+
+data moves from `(uint8_t*)header + header->codeOffset` to `(int*)vm->codeBase`
+
+Need update this process, to remove the need to pre-translate the image.
+
+`VM_CallInterpreted` will need to be updated to read and translate from the original bytecode image
+
+----
+
+
 A lightweight (single file: `vm.c`) embeddable interpreter/Virtual Machine (VM) for compiled bytecode files (`.qvm`) based on good old C-language input (`.c`). A complete C compiler to generate `.qvm` files is included (LCC). The interpreter is based on the Quake III Arena virtual machine (hence the name q3vm) but the interpreter is not tied to Quake III Arena and can be used for any kind of project. For example code that needs to run in a sandbox.
 
 <!-- [![Build Status](https://travis-ci.org/jnz/q3vm.svg?branch=master)](https://travis-ci.org/jnz/q3vm) -->
@@ -12,7 +43,7 @@ A lightweight (single file: `vm.c`) embeddable interpreter/Virtual Machine (VM) 
     | | | |  |_ \ \ \ / /| |\/| |
     | |_| |____) | \ V / | |  | |
      \__\_______/   \_/  |_|  |_|
-     
+
      vm.c / vm.h
 
 Jan Zwiener, 2018-2024. Mail: jan@zwiener.org
@@ -45,7 +76,7 @@ Features
  * Static memory allocation in C, no unpredictable garbage collector
  * Plan B: you can always go back to native code, as .c files are the input
  * Great tool landscape for C. Use the tools that are available for C
- * Computed gotos are used to speed up the interpreter if you compile with GCC (see benchmark section) 
+ * Computed gotos are used to speed up the interpreter if you compile with GCC (see benchmark section)
  * Much faster than the Triseism Q3VM interpreter (see benchmark section)
 
 Use Cases
@@ -81,7 +112,7 @@ the bytecode in your application:
 
     vm_t vm;
     int result;
-    
+
     VM_Create(&vm, "my test", pointerToByteCodeBuffer, sysCall);
     result = VM_Call(&vm, 12345);
     VM_Free(&vm);
@@ -211,7 +242,7 @@ memory allocation:
         (void)type;
         return malloc(size);
     }
-    
+
     void Com_free(void* p, vm_t* vm, vmMallocType_t type)
     {
         (void)vm;
@@ -272,7 +303,7 @@ It is also possible to call the VM recursively again with `VM_Call`.
     int systemCalls(vm_t* vm, int* args)
     {
         const int id = -1 - args[0];
-    
+
         switch (id)
         {
         case -1: /* PRINTF */
@@ -280,14 +311,14 @@ It is also possible to call the VM recursively again with `VM_Call`.
 
         case -2: /* ERROR */
             return fprintf(stderr, "%s", (const char*)VMA(1, vm));
-    
+
         case -3: /* MEMSET */
             if (VM_MemoryRangeValid(args[1]/*addr*/, args[3]/*len*/, vm) == 0)
             {
                 memset(VMA(1, vm), args[2], args[3]);
             }
             return args[1];
-    
+
         case -4: /* MEMCPY */
             if (VM_MemoryRangeValid(args[1]/*addr*/, args[3]/*len*/, vm) == 0 &&
                 VM_MemoryRangeValid(args[2]/*addr*/, args[3]/*len*/, vm) == 0)
@@ -295,10 +326,10 @@ It is also possible to call the VM recursively again with `VM_Call`.
                 memcpy(VMA(1, vm), VMA(2, vm), args[3]);
             }
             return args[1];
-    
+
         case -5: /* stringToInt */                             // < NEW !!!
             return atoi(VMA(1, vm));                           // < NEW !!!
-    
+
         default:
             fprintf(stderr, "Bad system call: %i\n", id);
         }
@@ -313,7 +344,7 @@ Open `example/g_syscalls.asm` and add the last line. The identifier -5 is
 important for the mapping.
 
     code
-    
+
     equ trap_Printf             -1
     equ trap_Error              -2
     equ memset                  -3
@@ -473,4 +504,4 @@ This project is based on the Quake 3 and ioquake3 source:
 Computed gotos are used:
 
  * https://eli.thegreenplace.net/2012/07/12/computed-goto-for-efficient-dispatch-tables
- 
+
