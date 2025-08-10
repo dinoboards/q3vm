@@ -60,6 +60,8 @@ extern size_t strlcpy(char *dst, const char *src, size_t size);
 /** Get argument in syscall and interpret it bit by bit as IEEE 754 float */
 #define VMF(x) VM_IntToFloat(args[x])
 
+typedef int std_int; /* can be a 32 or 24 bit number - depending on target CPU */
+
 /******************************************************************************
  * TYPEDEFS
  ******************************************************************************/

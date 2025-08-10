@@ -279,7 +279,7 @@ static bool VM_PrepareInterpreter(vm_t *vm, const vmHeader_t *header);
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] args Arguments for function call.
  * @return Return value of the function call. */
-static int VM_CallInterpreted(vm_t *vm, int *args);
+static std_int VM_CallInterpreted(vm_t *vm, std_int *args);
 
 /** Executes a block copy operation (memcpy) within currentVM data space.
  * @param[out] dest Pointer (in VM space).
@@ -609,7 +609,7 @@ locals from sp
 ==============
 */
 
-static int VM_CallInterpreted(vm_t *vm, int *args) {
+static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
   uint8_t  stack[OPSTACK_SIZE + 15];
   int     *opStack;
   uint8_t  opStackOfs;
