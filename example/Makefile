@@ -1,5 +1,5 @@
 # Makefile to build the .qvm bytecode output file
-# 
+#
 # Run 'make'
 #
 # Jan Zwiener 2018-2022
@@ -45,7 +45,7 @@ $(OBJDIR)/%.asm: %.c
 all: $(TARGET)
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	$(LINK) -f bytecode
+	$(LINK) -m -v -f bytecode
 	@echo 'Bytecode created: '$@
 
 clean:

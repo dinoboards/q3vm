@@ -25,6 +25,14 @@
  ******************************************************************************/
 
 #if 0
+/* original loading/translating of instruction address from instructionCounts */
+#define PRE_PROCESS_BYTECODE
+
+/* assume VM generate code is still using instruction Count for jumps */
+#define INSTRUCTION_COUNT_REFERENCING
+#endif
+
+#if 0
 #define DEBUG_VM /**< ifdef: enable debug functions and additional checks */
 #endif
 
@@ -157,8 +165,10 @@ typedef struct vm_s
     int      entryOfs;   /**< unused */
     int      codeLength; /**< Number of bytes in code segment */
 
+#ifdef INSTRUCTION_COUNT_REFERENCING
     intptr_t* instructionPointers;
-    int       instructionCount; /**< Number of instructions for VM */
+#endif
+    int instructionCount; /**< Number of instructions for VM */
 
     uint8_t* dataBase;  /**< Start of .data memory segment */
     int      dataMask;  /**< VM mask to protect access to dataBase */

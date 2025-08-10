@@ -52,6 +52,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    VM_Debug(3);
+
     /* set-up virtual machine */
     if (VM_Create(&vm, filepath, image, imageSize, systemCalls) == 0)
     {

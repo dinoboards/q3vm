@@ -70,7 +70,7 @@
  *   predicted branch, however, is nearly free.
  * */
 #ifdef __GNUC__
-#ifndef DEBUG_VM           /* can't use computed gotos in debug mode */
+#ifndef DEBUG_VM /* can't use computed gotos in debug mode */
 #endif
 #endif
 
@@ -389,7 +389,9 @@ int VM_Create(vm_t* vm, const char* name, const uint8_t* bytecode, int length,
 
     /* allocate space for the jump targets, which will be filled in by the
        compile/prep functions */
-    vm->instructionCount    = header->instructionCount;
+    vm->instructionCount = header->instructionCount;
+
+#ifdef INSTRUCTION_COUNT_REFERENCING
     vm->instructionPointers = (intptr_t*)Com_malloc(
         vm->instructionCount * sizeof(*vm->instructionPointers), vm,
         VM_ALLOC_INSTRUCTION_POINTERS);
@@ -401,6 +403,7 @@ int VM_Create(vm_t* vm, const char* name, const uint8_t* bytecode, int length,
         VM_Free(vm);
         return -1;
     }
+#endif
 
     vm->codeLength = header->codeLength;
 
@@ -571,23 +574,26 @@ void VM_Free(vm_t* vm)
         return;
     }
 
+#ifdef PRE_PROCESS_BYTECODE
     if (vm->codeBase)
     {
         Com_free(vm->codeBase, vm, VM_ALLOC_CODE_SEC);
         vm->codeBase = NULL;
     }
+#endif
 
     if (vm->dataBase)
     {
         Com_free(vm->dataBase, vm, VM_ALLOC_DATA_SEC);
         vm->dataBase = NULL;
     }
-
+#ifdef INSTRUCTION_COUNT_REFERENCING
     if (vm->instructionPointers)
     {
         Com_free(vm->instructionPointers, vm, VM_ALLOC_INSTRUCTION_POINTERS);
         vm->instructionPointers = NULL;
     }
+#endif
 
 #ifdef DEBUG_VM
     vmSymbol_t* sym = vm->symbols;
@@ -694,6 +700,105 @@ static int LittleEndianToHost(const uint8_t b[4])
 
 static int VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header)
 {
+#ifndef PRE_PROCESS_BYTECODE
+
+#ifdef INSTRUCTION_COUNT_REFERENCING
+    int byte_pc;
+    int int_pc;
+    int instruction;
+    int op;
+#endif
+
+    vm->codeBase = (uint8_t*)header + header->codeOffset;
+#ifdef INSTRUCTION_COUNT_REFERENCING
+    int_pc      = 0;
+    instruction = 0;
+#define codeBase(pc) (*((int*)&vm->codeBase[pc]))
+
+    /* Now that the code has been expanded to int-sized opcodes, we'll translate
+       instruction index
+       into an index into codeBase[], which contains opcodes and operands. */
+    while (instruction < header->instructionCount)
+    {
+        op = vm->codeBase[int_pc];
+
+        vm->instructionPointers[instruction] = int_pc;
+
+        instruction++;
+        int_pc++;
+
+        switch (op)
+        {
+        /* Validate that all jumps are to valid instructions */
+        case OP_EQ:
+        case OP_NE:
+        case OP_LTI:
+        case OP_LEI:
+        case OP_GTI:
+        case OP_GEI:
+        case OP_LTU:
+        case OP_LEU:
+        case OP_GTU:
+        case OP_GEU:
+        case OP_EQF:
+        case OP_NEF:
+        case OP_LTF:
+        case OP_LEF:
+        case OP_GTF:
+        case OP_GEF:
+            if (codeBase(int_pc) < 0 || codeBase(int_pc) > vm->instructionCount)
+            {
+                Com_Error(vm->lastError = VM_JUMP_TO_INVALID_INSTRUCTION,
+                          "VM_PrepareInterpreter: Jump to invalid "
+                          "instruction number");
+                return -1;
+            }
+        }
+
+        /* track the instruction indexing */
+        switch (op)
+        {
+        case OP_ENTER:
+        case OP_CONST:
+        case OP_LOCAL:
+        case OP_LEAVE:
+        case OP_EQ:
+        case OP_NE:
+        case OP_LTI:
+        case OP_LEI:
+        case OP_GTI:
+        case OP_GEI:
+        case OP_LTU:
+        case OP_LEU:
+        case OP_GTU:
+        case OP_GEU:
+        case OP_EQF:
+        case OP_NEF:
+        case OP_LTF:
+        case OP_LEF:
+        case OP_GTF:
+        case OP_GEF:
+        case OP_BLOCK_COPY:
+            int_pc += 4;
+            break;
+
+        case OP_ARG:
+            int_pc++;
+            break;
+
+        default:
+            if (op < 0 || op >= OP_MAX)
+            {
+                vm->lastError = VM_BAD_INSTRUCTION;
+                Com_Error(vm->lastError, "Bad VM instruction");
+                return -1;
+            }
+            break;
+        }
+    }
+#endif
+    return 0;
+#else
     int      op;
     int      byte_pc;
     int      int_pc;
@@ -844,6 +949,7 @@ static int VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header)
         }
     }
     return 0;
+#endif
 }
 
 /*
@@ -878,11 +984,16 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
     int      programStack;
     int      stackOnEntry;
     uint8_t* image;
-    int*     codeImage;
-    int      v1;
-    int      dataMask;
-    int      arg;
+#ifdef PRE_PROCESS_BYTECODE
+    int* codeImage;
+#else
+    uint8_t* codeImage;
+#endif
+    int v1;
+    int dataMask;
+    int arg;
 #ifdef DEBUG_VM
+    int         prevProgramCounter;
     vmSymbol_t* profileSymbol;
 #endif
 
@@ -902,6 +1013,9 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
     codeImage      = (int*)vm->codeBase;
     dataMask       = vm->dataMask;
     programCounter = 0;
+#ifdef DEBUG_VM
+    prevProgramCounter = 0;
+#endif
     programStack -= (8 + 4 * MAX_VMMAIN_ARGS);
 
     for (arg = 0; arg < MAX_VMMAIN_ARGS; arg++)
@@ -923,7 +1037,19 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
        grabs the -1 program counter */
 
     int opcode, r0, r1;
+#ifdef PRE_PROCESS_BYTECODE
 #define r2 codeImage[programCounter]
+#define INT_INCREMENT 1
+#else
+#define r2 (*((int*)&codeImage[programCounter]))
+#define INT_INCREMENT 4
+#endif
+
+#ifdef INSTRUCTION_COUNT_REFERENCING
+#define MAX_PROGRAM_COUNTER ((unsigned)vm->instructionCount)
+#else
+#define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
+#endif
 
 #define DISPATCH2() goto nextInstruction2
 #define DISPATCH() goto nextInstruction
@@ -934,6 +1060,16 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
         r0 = opStack[opStackOfs];
         r1 = opStack[(uint8_t)(opStackOfs - 1)];
     nextInstruction2:
+
+#ifdef DEBUG_VM
+        if (vm_debugLevel > 1)
+        {
+            int diff           = programCounter - prevProgramCounter;
+            prevProgramCounter = programCounter;
+            Com_Printf("%08X[%d]:\t", programCounter, diff);
+        }
+#endif
+
         opcode = codeImage[programCounter++];
 
 #ifdef DEBUG_VM
@@ -960,8 +1096,10 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
 
         if (vm_debugLevel > 1)
         {
-            Com_Printf("%s%i %s\n", VM_Indent(vm), opStackOfs,
-                       opnames[opcode & OPCODE_TABLE_MASK]);
+            Com_Printf("%s%i %s\t(%02X %08X);\tSP=%d, R0=%08X, R1=%08X \n",
+                       VM_Indent(vm), opStackOfs,
+                       opnames[opcode & OPCODE_TABLE_MASK], opcode, r2,
+                       programStack, r0, r1);
         }
         profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
@@ -983,14 +1121,14 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             r1 = r0;
             r0 = opStack[opStackOfs] = r2;
 
-            programCounter += 1;
+            programCounter += INT_INCREMENT;
             DISPATCH2();
         goto_OP_LOCAL:
             opStackOfs++;
             r1 = r0;
             r0 = opStack[opStackOfs] = r2 + programStack;
 
-            programCounter += 1;
+            programCounter += INT_INCREMENT;
             DISPATCH2();
         goto_OP_LOAD4:
 #ifdef DEBUG_VM
@@ -1031,7 +1169,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             DISPATCH();
         goto_OP_BLOCK_COPY:
             VM_BlockCopy(r1, r0, r2, vm);
-            programCounter += 1;
+            programCounter += INT_INCREMENT;
             opStackOfs -= 2;
             DISPATCH();
         goto_OP_CALL:
@@ -1094,7 +1232,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
                 }
 #endif
             }
-            else if ((unsigned)programCounter >= (unsigned)vm->instructionCount)
+            else if ((unsigned)programCounter >= MAX_PROGRAM_COUNTER)
             {
                 vm->lastError = VM_PC_OUT_OF_RANGE;
                 Com_Error(vm->lastError,
@@ -1103,7 +1241,9 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
+#ifdef INSTRUCTION_COUNT_REFERENCING
                 programCounter = vm->instructionPointers[programCounter];
+#endif
             }
             DISPATCH();
         /* push and pop are only needed for discarded or bad function return
@@ -1117,24 +1257,23 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
         goto_OP_ENTER:
             /* get size of stack frame */
             v1 = r2;
-
-            programCounter += 1;
+            programCounter += INT_INCREMENT;
             programStack -= v1;
 #ifdef DEBUG_VM
-            profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter);
+            profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter - 3);
             /* save old stack frame for debugging traces */
             *(int*)&image[programStack + 4] = programStack + v1;
             if (vm_debugLevel)
             {
                 Com_Printf("%s%i---> %s\n", VM_Indent(vm), opStackOfs,
-                           VM_ValueToSymbol(vm, programCounter - 5));
+                           VM_ValueToSymbol(vm, programCounter - 5 - 3));
                 if (vm->breakFunction &&
-                    programCounter - 5 == vm->breakFunction)
+                    programCounter - 5 - 3 == vm->breakFunction)
                 {
                     /* this is to allow setting breakpoints here in the
                      * debugger */
                     vm->breakCount++;
-                    VM_StackTrace(vm, programCounter, programStack);
+                    VM_StackTrace(vm, programCounter - 3, programStack);
                 }
             }
 #endif
@@ -1175,14 +1314,18 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
                */
 
         goto_OP_JUMP:
-            if ((unsigned)r0 >= (unsigned)vm->instructionCount)
+            if ((unsigned)r0 >= MAX_PROGRAM_COUNTER)
             {
                 Com_Error(vm->lastError = VM_PC_OUT_OF_RANGE,
                           "VM program counter out of range in OP_JUMP");
                 return -1;
             }
 
+#ifdef INSTRUCTION_COUNT_REFERENCING
             programCounter = vm->instructionPointers[r0];
+#else
+            programCounter = r0;
+#endif
 
             opStackOfs--;
             DISPATCH();
@@ -1195,7 +1338,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_NE:
@@ -1207,7 +1350,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_LTI:
@@ -1219,7 +1362,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_LEI:
@@ -1231,7 +1374,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_GTI:
@@ -1243,7 +1386,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_GEI:
@@ -1255,7 +1398,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_LTU:
@@ -1267,7 +1410,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_LEU:
@@ -1279,7 +1422,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_GTU:
@@ -1291,7 +1434,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_GEU:
@@ -1303,7 +1446,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_EQF:
@@ -1317,7 +1460,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_NEF:
@@ -1331,7 +1474,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_LTF:
@@ -1345,7 +1488,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_LEF:
@@ -1359,7 +1502,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_GTF:
@@ -1373,7 +1516,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
         goto_OP_GEF:
@@ -1387,7 +1530,7 @@ static int VM_CallInterpreted(vm_t* vm, int* args)
             }
             else
             {
-                programCounter += 1;
+                programCounter += INT_INCREMENT;
                 DISPATCH();
             }
 
@@ -1868,11 +2011,13 @@ static void VM_LoadSymbols(vm_t* vm)
         prev      = &sym->next;
         sym->next = NULL;
 
+#ifdef INSTRUCTION_COUNT_REFERENCING
         /* convert value from an instruction number to a code offset */
         if (value >= 0 && value < numInstructions)
         {
             value = vm->instructionPointers[value];
         }
+#endif
 
         sym->symValue = value;
         Q_strncpyz(sym->symName, token, chars + 1);
