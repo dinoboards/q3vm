@@ -371,12 +371,9 @@ bool VM_Create(vm_t                *vm,
 
     vm->codeLength = header->codeLength;
 
-    vm->compiled = 0; /* no JIT */
-    if (!vm->compiled) {
-      if (VM_PrepareInterpreter(vm, header) != 0) {
-        VM_Free(vm);
-        return -1;
-      }
+    if (VM_PrepareInterpreter(vm, header) != 0) {
+      VM_Free(vm);
+      return -1;
     }
   }
 
@@ -636,9 +633,6 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
   std_int     prevProgramCounter;
   vmSymbol_t *profileSymbol;
 #endif
-
-  /* interpret the code */
-  vm->currentlyInterpreting = 1;
 
   /* we might be called recursively, so this might not be the very top */
   programStack = stackOnEntry = vm->programStack;
@@ -1152,8 +1146,6 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
   }
 
 done:
-  vm->currentlyInterpreting = 0;
-
   if (opStackOfs != 1 || *opStack != 0x0000BEEF) {
     Com_Error(vm->lastError = VM_STACK_ERROR, "Interpreter stack error");
   }

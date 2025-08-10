@@ -140,18 +140,7 @@ typedef struct vm_s {
 
   /*------------------------------------*/
 
-  void *searchPath; /**< unused */
-
-  /* for dynamic libs (unused in Q3VM) */
-  void *unused_dllHandle;                          /**< unused */
-  intptr_t (*unused_entryPoint)(int callNum, ...); /**< unused */
-  void (*unused_destroy)(struct vm_s *self);       /**< unused */
-
-  int currentlyInterpreting; /**< Is the vm currently running? */
-
-  int       compiled;   /**< Is a JIT active? Otherwise interpreted */
   uint8_t  *codeBase;   /**< Bytecode code segment */
-  int       entryOfs;   /**< unused */
   vm_size_t codeLength; /**< Number of bytes in code segment */
 
   int instructionCount; /**< Number of instructions for VM */
