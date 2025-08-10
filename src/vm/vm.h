@@ -252,6 +252,7 @@ int32_t VM_FloatToInt(float f);
  * @return 0 if valid (!), -1 if invalid. */
 bool VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *const vm);
 
+#if VM_DEBUG
 /** Print call statistics for every function. Only works with DEBUG_VM.
  * Does nothing if DEBUG_VM is not defined.
  * @param[in] vm VM to profile */
@@ -261,6 +262,10 @@ void VM_VmProfile_f(vm_t *vm);
  * Set to 1 for general informations and 2 to output every opcode name.
  * @param[in] level If level is 0: be quiet (default). */
 void VM_Debug(int level);
+#else
+#define VM_VmProfile_f(a)
+#define VM_Debug(a)
+#endif
 
 /******************************************************************************
  * CALLBACK FUNCTIONS (USER DEFINED IN HOST APPLICATION)

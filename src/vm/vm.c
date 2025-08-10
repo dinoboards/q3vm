@@ -240,9 +240,9 @@ typedef enum {
  * LOCAL DATA DEFINITIONS
  ******************************************************************************/
 
+#ifdef DEBUG_VM
 static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes */
 
-#ifdef DEBUG_VM
 /** Table to convert op codes to readable names */
 static const char *opnames[OPCODE_TABLE_SIZE] = {
     "OP_UNDEF",  "OP_IGNORE", "OP_BREAK",  "OP_ENTER", "OP_LEAVE",      "OP_CALL", "OP_PUSH",  "OP_POP",   "OP_CONST", "OP_LOCAL",
@@ -785,7 +785,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
       opStackOfs--;
       if (programCounter < 0) /* system call */
       {
-        int r;
+        vm_operand_t r;
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
           Com_Printf("%s%i---> systemcall(%i)\n", VM_Indent(vm), opStackOfs, -1 - programCounter);
@@ -818,7 +818,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
         /* save return value */
         opStackOfs++;
         opStack[opStackOfs] = r;
-        programCounter      = *(int *)&image[programStack];
+        programCounter      = *(vm_operand_t *)&image[programStack];
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
           Com_Printf("%s%i<--- %s\n", VM_Indent(vm), opStackOfs, VM_ValueToSymbol(vm, programCounter));
@@ -865,7 +865,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
       programStack += v1;
 
       /* grab the saved program counter */
-      programCounter = *(int *)&image[programStack];
+      programCounter = *(vm_operand_t *)&image[programStack];
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter);
       if (vm_debugLevel) {
@@ -1162,9 +1162,9 @@ done:
 /* DEBUG FUNCTIONS */
 /* --------------- */
 
-void VM_Debug(int level) { vm_debugLevel = level; }
-
 #ifdef DEBUG_VM
+void VM_Debug(uint8_t level) { vm_debugLevel = level; }
+
 static char *VM_Indent(vm_t *vm) {
   static char *string = "                                        ";
   if (vm->callLevel > 20) {
@@ -1482,6 +1482,4 @@ void VM_VmProfile_f(vm_t *vm) {
 
   Com_Printf("    %9.0f total\n", total);
 }
-#else
-void VM_VmProfile_f(vm_t *vm) { (void)vm; }
 #endif
