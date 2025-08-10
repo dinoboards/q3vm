@@ -244,7 +244,7 @@ static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes
 
 #ifdef DEBUG_VM
 /** Table to convert op codes to readable names */
-const static char *opnames[OPCODE_TABLE_SIZE] = {
+static const char *opnames[OPCODE_TABLE_SIZE] = {
     "OP_UNDEF",  "OP_IGNORE", "OP_BREAK",  "OP_ENTER", "OP_LEAVE",      "OP_CALL", "OP_PUSH",  "OP_POP",   "OP_CONST", "OP_LOCAL",
     "OP_JUMP",   "OP_EQ",     "OP_NE",     "OP_LTI",   "OP_LEI",        "OP_GTI",  "OP_GEI",   "OP_LTU",   "OP_LEU",   "OP_GTU",
     "OP_GEU",    "OP_EQF",    "OP_NEF",    "OP_LTF",   "OP_LEF",        "OP_GTF",  "OP_GEF",   "OP_LOAD1", "OP_LOAD2", "OP_LOAD4",
@@ -307,22 +307,17 @@ static void Q_strncpyz(char *dest, const char *src, int destsize);
 #include <stdlib.h>          /* qsort */
 #define MAX_TOKEN_CHARS 1024 /**< max length of an individual token */
 /* WARNING: DEBUG_VM is not thread safe */
-static char  com_token[MAX_TOKEN_CHARS];                    /**< helper for COM_Parse */
-static int   com_lines;                                     /**< helper for COM_Parse */
-static int   com_tokenline;                                 /**< helper for COM_Parse */
-static int   ParseHex(const char *text);                    /**< helper for VM_LoadSymbols */
-static void  COM_StripExtension(const char *in, char *out); /**< helper for VM_LoadSymbols */
+static char  com_token[MAX_TOKEN_CHARS]; /**< helper for COM_Parse */
+static int   com_lines;                  /**< helper for COM_Parse */
+static int   com_tokenline;              /**< helper for COM_Parse */
+static int   ParseHex(const char *text); /**< helper for VM_LoadSymbols */
 static char *VM_Indent(vm_t *vm);
 /** For profiling, find the symbol behind this value */
 static vmSymbol_t *VM_ValueToFunctionSymbol(vm_t *vm, int value);
 static const char *VM_ValueToSymbol(vm_t *vm, int value);
 /** Load a .map file for the virtual machine. The .map file
  * should have the same path as the .qvm file. */
-static void VM_LoadSymbols(vm_t *vm);
-/** Load the file into a malloc'd buffer.
- * @param[in] filepath File to load.
- * @return file content in buffer. Call Com_free() to cleanup. */
-static uint8_t *loadImage(const char *filepath, int *imageSize);
+static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int debugStorageLength);
 /** Print a stack trace on OP_ENTER if vm_debugLevel is > 0 */
 static void VM_StackTrace(vm_t *vm, int programCounter, int programStack);
 #endif
@@ -383,28 +378,34 @@ int VM_Create(vm_t          *vm,
     }
   }
 
-#ifdef DEBUG_VM
-  /* load the map file */
-  VM_LoadSymbols(vm);
-#endif
-
   /* the stack is implicitly at the end of the image */
   vm->programStack = vm->dataAlloc - 4;
   vm->stackBottom  = vm->programStack - VM_PROGRAM_STACK_SIZE;
 
+  return 0;
+}
+
 #ifdef DEBUG_VM
+int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int debugStorageLength) {
+  if (vm == NULL) {
+    Com_Error(VM_INVALID_POINTER, "Invalid vm pointer");
+    return -1;
+  }
+  /* load the map file */
+  VM_LoadSymbols(vm, mapfileImage, debugStorage, debugStorageLength);
+
   Com_Printf("VM:\n");
-  Com_Printf(".code length: %6i bytes\n", header->codeLength);
-  Com_Printf(".data length: %6i bytes\n", header->dataLength);
-  Com_Printf(".lit  length: %6i bytes\n", header->litLength);
-  Com_Printf(".bss  length: %6i bytes\n", header->bssLength);
+  Com_Printf(".code length: %6i bytes\n", vm->codeLength);
+  /*Com_Printf(".data length: %6i bytes\n", vm->dataAlloc);
+  Com_Printf(".lit  length: %6i bytes\n", vm->litLength);
+  Com_Printf(".bss  length: %6i bytes\n", vm->bssLength);*/
   Com_Printf("Stack size:   %6i bytes\n", VM_PROGRAM_STACK_SIZE);
   Com_Printf("Allocated memory: %6i bytes\n", vm->dataAlloc);
-  Com_Printf("Instruction count: %i\n", header->instructionCount);
-#endif
+  Com_Printf("Instruction count: %i\n", vm->instructionCount);
 
   return 0;
 }
+#endif
 
 static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int length, uint8_t *dataSegment, int dataSegmentLength) {
   int dataLength;
@@ -505,15 +506,6 @@ void VM_Free(vm_t *vm) {
     return;
   }
 
-#ifdef DEBUG_VM
-  vmSymbol_t *sym = vm->symbols;
-  while (sym) {
-    vmSymbol_t *next = sym->next;
-    Com_free(sym, NULL, VM_ALLOC_DEBUG);
-    sym = next;
-  }
-#endif
-
   Com_Memset(vm, 0, sizeof(*vm));
 }
 
@@ -554,7 +546,7 @@ int VM_MemoryRangeValid(intptr_t vmAddr, size_t len, const vm_t *vm) {
     return -1;
   }
 
-  if (vmAddr < 0 || len < 0 || vmAddr + len > vm->dataAlloc) {
+  if (vmAddr < 0 || vmAddr + len > (size_t)vm->dataAlloc) {
     Com_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
     return -1;
   }
@@ -573,10 +565,10 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
 static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm) {
 
   if (VM_MemoryRangeValid(src, n, vm))
-    return -1;
+    return;
 
   if (VM_MemoryRangeValid(src, n, vm))
-    return -1;
+    return;
 
   Com_Memcpy(vm->dataBase + dest, vm->dataBase + src, n);
 }
@@ -640,7 +632,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
 #endif
 
   image          = vm->dataBase;
-  codeImage      = (int *)vm->codeBase;
+  codeImage      = vm->codeBase;
   programCounter = 0;
 #ifdef DEBUG_VM
   prevProgramCounter = 0;
@@ -690,7 +682,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     opcode = codeImage[programCounter++];
 
 #ifdef DEBUG_VM
-    if ((unsigned)programCounter >= vm->codeLength) {
+    if (programCounter >= vm->codeLength) {
       vm->lastError = VM_PC_OUT_OF_RANGE;
       Com_Error(vm->lastError, "VM pc out of range");
       return -1;
@@ -1242,50 +1234,6 @@ static int ParseHex(const char *text) {
   return value;
 }
 
-static void COM_StripExtension(const char *in, char *out) {
-  while (*in && *in != '.') {
-    *out++ = *in++;
-  }
-  *out = 0;
-}
-
-uint8_t *loadImage(const char *filepath, int *size) {
-  FILE    *f;            /* bytecode input file */
-  uint8_t *image = NULL; /* bytecode buffer */
-  int      sz;           /* bytecode file size */
-
-  *size = 0;
-  f     = fopen(filepath, "rb");
-  if (!f) {
-    fprintf(stderr, "Failed to open file %s.\n", filepath);
-    return NULL;
-  }
-  /* calculate file size */
-  fseek(f, 0L, SEEK_END);
-  sz = ftell(f);
-  if (sz < 1) {
-    fclose(f);
-    return NULL;
-  }
-  rewind(f);
-
-  image = (uint8_t *)malloc(sz);
-  if (!image) {
-    fclose(f);
-    return NULL;
-  }
-
-  if (fread(image, 1, sz, f) != (size_t)sz) {
-    free(image);
-    fclose(f);
-    return NULL;
-  }
-
-  fclose(f);
-  *size = sz;
-  return image;
-}
-
 static char *SkipWhitespace(char *data, int *hasNewLines) {
   int c;
 
@@ -1397,36 +1345,18 @@ static char *COM_Parse(char **data_p) {
   return com_token;
 }
 
-static void VM_LoadSymbols(vm_t *vm) {
-  union {
-    char *c;
-    void *v;
-  } mapfile;
-  char        *text_p, *token;
-  char         name[VM_MAX_QPATH];
+static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int debugStorageLength) {
+  char        *text_p;
+  char        *token;
   char         symbols[VM_MAX_QPATH];
   vmSymbol_t **prev, *sym;
   int          count;
   int          value;
   int          chars;
   int          segment;
-  int          numInstructions;
-  int          imageSize;
-
-  COM_StripExtension(vm->name, name);
-  snprintf(symbols, sizeof(symbols), "%s.map", name);
-  Com_Printf("Loading symbol file: %s...\n", symbols);
-  mapfile.v = loadImage(symbols, &imageSize);
-
-  if (!mapfile.c) {
-    Com_Printf("Couldn't load symbol file: %s\n", symbols);
-    return;
-  }
-
-  numInstructions = vm->instructionCount;
 
   /* parse the symbols */
-  text_p = mapfile.c;
+  text_p = mapfile;
   prev   = &vm->symbols;
   count  = 0;
 
@@ -1455,12 +1385,16 @@ static void VM_LoadSymbols(vm_t *vm) {
       break;
     }
     chars = strlen(token);
-    sym   = Com_malloc(sizeof(*sym) + chars, NULL, VM_ALLOC_DEBUG);
-    *prev = sym;
-    if (!sym) {
+    debugStorageLength -= sizeof(vmSymbol_t) + chars;
+    if (debugStorageLength < 0) {
       Com_Error(VM_MALLOC_FAILED, "Sym. pointer malloc failed: out of memory?");
       break;
     }
+    sym = (vmSymbol_t *)debugStorage;
+    debugStorage += sizeof(vmSymbol_t) + chars;
+
+    *prev = sym;
+
     Com_Memset(sym, 0, sizeof(*sym) + chars);
     prev      = &sym->next;
     sym->next = NULL;
@@ -1473,7 +1407,6 @@ static void VM_LoadSymbols(vm_t *vm) {
 
   vm->numSymbols = count;
   Com_Printf("%i symbols parsed from %s\n", count, symbols);
-  Com_free(mapfile.v, NULL, VM_ALLOC_DEBUG);
 }
 
 static void VM_StackTrace(vm_t *vm, int programCounter, int programStack) {

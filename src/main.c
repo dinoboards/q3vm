@@ -32,6 +32,12 @@ intptr_t systemCalls(vm_t *vm, intptr_t *args);
    @return Pointer to virtual machine image file (raw bytes). */
 uint8_t *loadImage(const char *filepath, int *size);
 
+static void COM_StripExtension(const char *in, char *out) {
+  while (*in && *in != '.') {
+    *out++ = *in++;
+  }
+  *out = 0;
+}
 int main(int argc, char **argv) {
   vm_t  vm;
   int   retVal = -1;
@@ -56,6 +62,18 @@ int main(int argc, char **argv) {
 
   /* set-up virtual machine */
   if (VM_Create(&vm, image, imageSize, pData, 0x10000, systemCalls) == 0) {
+#ifdef DEBUG_VM
+    void *pDebugInfo = malloc(0x10000);
+    int   mapFileImageSize;
+    char  symbols[VM_MAX_QPATH];
+
+    COM_StripExtension(filepath, filepath);
+    snprintf(symbols, sizeof(symbols), "%s.map", filepath);
+    Com_Printf("Loading symbol file: %s...\n", symbols);
+
+    char *mapFileImage = (char *)loadImage(symbols, &mapFileImageSize);
+    VM_LoadDebugInfo(&vm, mapFileImage, pDebugInfo, 0x10000);
+#endif
     /* call virtual machine vmMain() with integer argument (here 0) */
     retVal = VM_Call(&vm, 0);
   }
@@ -81,7 +99,7 @@ void Com_Error(vmErrorCode_t level, const char *error) {
  * @param[in] type What purpose has the requested memory, see vmMallocType_t.
  * @return pointer to allocated memory. */
 void *Com_malloc(size_t size, vm_t *vm, vmMallocType_t type) {
-  printf("Com_malloc: %d, %d\n", size, type);
+  printf("Com_malloc: %d, %d\n", (int)size, type);
 
   (void)vm;            /* simple malloc, we don't care about the vm */
   (void)type;          /* we don't care what the VM wants to do with the memory */

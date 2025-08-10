@@ -25,10 +25,6 @@
  ******************************************************************************/
 
 #if 1
-/* Turn off protection for data read/write outside of data/bss segments */
-#endif
-
-#if 0
 #define DEBUG_VM /**< ifdef: enable debug functions and additional checks */
 #endif
 
@@ -88,11 +84,8 @@ typedef enum {
  * callback function (via Com_malloc). You can safely ignore this if you see no
  * use for this information. */
 typedef enum {
-  VM_ALLOC_CODE_SEC             = 0, /**< Bytecode code section */
-  VM_ALLOC_DATA_SEC             = 1, /**< Bytecode data section */
-  VM_ALLOC_INSTRUCTION_POINTERS = 2, /**< Bytecode instruction pointers */
-  VM_ALLOC_DEBUG                = 3, /**< DEBUG_VM functions */
-  VM_ALLOC_TYPE_MAX                  /**< Last item in vmMallocType_t */
+  VM_ALLOC_DEBUG = 3, /**< DEBUG_VM functions */
+  VM_ALLOC_TYPE_MAX   /**< Last item in vmMallocType_t */
 } vmMallocType_t;
 
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of
@@ -201,6 +194,10 @@ int VM_Create(vm_t          *vm,
               uint8_t       *dataSegment,
               int            dataSegmentLength,
               intptr_t (*systemCalls)(vm_t *, intptr_t *));
+
+#ifdef DEBUG_VM
+int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int debugStorageLength);
+#endif
 
 /** Free the memory of the virtual machine.
  * @param[in] vm Pointer to initialized virtual machine. */
