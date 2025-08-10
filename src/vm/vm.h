@@ -88,14 +88,14 @@ typedef enum {
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of
  *  the file. This is always little endian encoded in the file. */
 typedef struct {
-  int32_t vmMagic;          /**< Bytecode image shall start with VM_MAGIC */
-  int32_t instructionCount; /**< Number of instructions in .qvm */
-  int32_t codeOffset;       /**< Byte offset in .qvm file of .code segment */
-  int32_t codeLength;       /**< Bytes in code segment */
-  int32_t dataOffset;       /**< Byte offset in .qvm file of .data segment */
-  int32_t dataLength;       /**< Bytes in .data segment */
-  int32_t litLength;        /**< Bytes in strings segment (after .data segment) */
-  int32_t bssLength;        /**< How many bytes should be used for .bss segment */
+  uint32_t vmMagic;          /**< Bytecode image shall start with VM_MAGIC */
+  uint32_t instructionCount; /**< Number of instructions in .qvm */
+  uint32_t codeOffset;       /**< Byte offset in .qvm file of .code segment */
+  uint32_t codeLength;       /**< Bytes in code segment */
+  uint32_t dataOffset;       /**< Byte offset in .qvm file of .data segment */
+  uint32_t dataLength;       /**< Bytes in .data segment */
+  uint32_t litLength;        /**< Bytes in strings segment (after .data segment) */
+  uint32_t bssLength;        /**< How many bytes should be used for .bss segment */
 } vmHeader_t;
 
 /** For debugging (DEBUG_VM): symbol list */
