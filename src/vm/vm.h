@@ -214,7 +214,7 @@ void VM_Free(vm_t *vm);
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] command Basic parameter passed to the bytecode.
  * @return Return value of the function call by the VM. */
-intptr_t VM_Call(vm_t *vm, int command, ...);
+intptr_t VM_Call(vm_t *vm, std_int command, ...);
 
 /** Helper function for syscalls VMA(x) macro:
  * Translate from virtual machine memory to real machine memory.

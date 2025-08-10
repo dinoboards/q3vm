@@ -421,7 +421,7 @@ VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *cons
 
   Com_Printf("Loading vm\n");
 
-  if (!header.h || !bytecode || length <= (int)sizeof(vmHeader_t) || length > VM_MAX_IMAGE_SIZE) {
+  if (!header.h || !bytecode || length <= sizeof(vmHeader_t) || length > VM_MAX_IMAGE_SIZE) {
     Com_Printf("Failed.\n");
     return NULL;
   }
@@ -463,16 +463,14 @@ VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *cons
   return header.h;
 }
 
-intptr_t VM_Call(vm_t *vm, int command, ...) {
+intptr_t VM_Call(vm_t *vm, std_int command, ...) {
   intptr_t r;
-  int      args[MAX_VMMAIN_ARGS];
-  va_list  ap;
-  int      i;
 
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "VM_Call with NULL vm");
     return -1;
   }
+
   if (vm->codeLength < 1) {
     vm->lastError = VM_NOT_LOADED;
     Com_Error(vm->lastError, "VM not loaded");
@@ -480,16 +478,22 @@ intptr_t VM_Call(vm_t *vm, int command, ...) {
   }
 
   /* FIXME this is not nice. we should check the actual number of arguments */
-  args[0] = command;
-  va_start(ap, command);
-  for (i = 1; i < (int)ARRAY_LEN(args); i++) {
-    args[i] = va_arg(ap, int);
-  }
-  va_end(ap);
+  {
+    std_int args[MAX_VMMAIN_ARGS];
+    va_list ap;
+    size_t  i;
 
-  ++vm->callLevel;
-  r = VM_CallInterpreted(vm, args);
-  --vm->callLevel;
+    args[0] = command;
+    va_start(ap, command);
+    for (i = 1; i < ARRAY_LEN(args); i++) {
+      args[i] = va_arg(ap, std_int);
+    }
+    va_end(ap);
+
+    ++vm->callLevel;
+    r = VM_CallInterpreted(vm, args);
+    --vm->callLevel;
+  }
 
   return r;
 }
