@@ -554,8 +554,11 @@ int VM_MemoryRangeValid(intptr_t vmAddr, size_t len, const vm_t *vm) {
     return -1;
   }
 
-  /* TODO: implement detection on range >= && <= */
-  /* and do: Com_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range"); */
+  if (vmAddr < 0 || len < 0 || vmAddr + len > vm->dataAlloc) {
+    Com_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
+    return -1;
+  }
+
   return 0;
 }
 
@@ -568,6 +571,13 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
 }
 
 static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm) {
+
+  if (VM_MemoryRangeValid(src, n, vm))
+    return -1;
+
+  if (VM_MemoryRangeValid(src, n, vm))
+    return -1;
+
   Com_Memcpy(vm->dataBase + dest, vm->dataBase + src, n);
 }
 
