@@ -362,7 +362,7 @@ int VM_Create(vm_t *vm, const char *name, const uint8_t *bytecode, int length, i
   }
 
   Com_Memset(vm, 0, sizeof(vm_t));
-  Q_strncpyz(vm->name, name, sizeof(vm->name));
+
   const vmHeader_t *header = VM_LoadQVM(vm, bytecode, length);
   if (!header) {
     vm->lastError = VM_FAILED_TO_LOAD_BYTECODE;
@@ -418,7 +418,7 @@ static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int lengt
     const uint8_t    *v;
   } header = {.v = bytecode};
 
-  Com_Printf("Loading vm file %s...\n", vm->name);
+  Com_Printf("Loading vm\n");
 
   if (!header.h || !bytecode || length <= (int)sizeof(vmHeader_t) || length > VM_MAX_IMAGE_SIZE) {
     Com_Printf("Failed.\n");
@@ -436,13 +436,13 @@ static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int lengt
         header.h->codeOffset < 0 || header.h->dataOffset < 0 || header.h->instructionCount <= 0 ||
         header.h->bssLength > VM_MAX_BSS_LENGTH || header.h->codeOffset + header.h->codeLength > length ||
         header.h->dataOffset + header.h->dataLength + header.h->litLength > length) {
-      Com_Printf("Warning: %s has bad header\n", vm->name);
+      Com_Printf("Warning: bad header\n");
       return NULL;
     }
   } else {
-    Com_Printf("Warning: Invalid magic number in header of \"%s\". "
+    Com_Printf("Warning: Invalid magic number in header "
                "Read: 0x%x, expected: 0x%x\n",
-               vm->name, LittleLong(header.h->vmMagic), VM_MAGIC);
+               LittleLong(header.h->vmMagic), VM_MAGIC);
     return NULL;
   }
 

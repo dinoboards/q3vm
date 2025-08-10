@@ -141,8 +141,7 @@ typedef struct vm_s {
 
   /*------------------------------------*/
 
-  char  name[VM_MAX_QPATH]; /** File name of the bytecode */
-  void *searchPath;         /**< unused */
+  void *searchPath; /**< unused */
 
   /* for dynamic libs (unused in Q3VM) */
   void *unused_dllHandle;                          /**< unused */
