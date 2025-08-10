@@ -26,7 +26,6 @@
 
 #if 1
 /* Turn off protection for data read/write outside of data/bss segments */
-#define DISABLE_DATA_MASK_PROTECTION
 #endif
 
 #if 0
@@ -159,11 +158,8 @@ typedef struct vm_s {
 
   int instructionCount; /**< Number of instructions for VM */
 
-  uint8_t *dataBase; /**< Start of .data memory segment */
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  int dataMask; /**< VM mask to protect access to dataBase */
-#endif
-  int dataAlloc; /**< Number of bytes allocated for dataBase */
+  uint8_t *dataBase;  /**< Start of .data memory segment */
+  int      dataAlloc; /**< Number of bytes allocated for dataBase */
 
   int stackBottom; /**< If programStack < stackBottom, error */
 

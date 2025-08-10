@@ -393,12 +393,8 @@ int VM_Create(vm_t *vm, const char *name, const uint8_t *bytecode, int length, i
 #endif
 
   /* the stack is implicitly at the end of the image */
-#ifdef DISABLE_DATA_MASK_PROTECTION
   vm->programStack = vm->dataAlloc - 4;
-#else
-  vm->programStack = vm->dataMask + 1;
-#endif
-  vm->stackBottom = vm->programStack - VM_PROGRAM_STACK_SIZE;
+  vm->stackBottom  = vm->programStack - VM_PROGRAM_STACK_SIZE;
 
 #ifdef DEBUG_VM
   Com_Printf("VM:\n");
@@ -453,19 +449,11 @@ static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int lengt
   /* round up to next power of 2 so all data operations can
      be mask protected */
   dataLength = header.h->dataLength + header.h->litLength + header.h->bssLength;
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  for (i = 0; dataLength > (1 << i); i++) {
-  }
-  dataLength = 1 << i;
-#endif
 
   /* allocate zero filled space for initialized and uninitialized data
    leave some space beyond data mask so we can secure all mask operations */
   vm->dataAlloc = dataLength + 4;
   vm->dataBase  = (uint8_t *)Com_malloc(vm->dataAlloc, vm, VM_ALLOC_DATA_SEC);
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  vm->dataMask = dataLength - 1;
-#endif
   if (vm->dataBase == NULL) {
     Com_Error(VM_MALLOC_FAILED, "Data malloc failed: out of memory?\n");
     return NULL;
@@ -552,11 +540,7 @@ void *VM_ArgPtr(intptr_t vmAddr, vm_t *vm) {
     return NULL;
   }
 
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  return (void *)(vm->dataBase + (vmAddr & vm->dataMask));
-#else
   return (void *)(vm->dataBase + (vmAddr));
-#endif
 }
 
 float VM_IntToFloat(int32_t x) {
@@ -583,19 +567,10 @@ int VM_MemoryRangeValid(intptr_t vmAddr, size_t len, const vm_t *vm) {
   if (!vmAddr || !vm) {
     return -1;
   }
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  const unsigned dest     = vmAddr;
-  const unsigned dataMask = vm->dataMask;
-  if ((dest & dataMask) != dest || ((dest + len) & dataMask) != dest + len) {
-    Com_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
-    return -1;
-  } else {
-    return 0;
-  }
-#else
+
   /* TODO: implement detection on range >= && <= */
+  /* and do: Com_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range"); */
   return 0;
-#endif
 }
 
 static void Q_strncpyz(char *dest, const char *src, int destsize) {
@@ -607,16 +582,6 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
 }
 
 static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm) {
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  unsigned int dataMask = vm->dataMask;
-
-  if ((dest & dataMask) != dest || (src & dataMask) != src || ((dest + n) & dataMask) != dest + n ||
-      ((src + n) & dataMask) != src + n) {
-    Com_Error(vm->lastError = VM_BLOCKCOPY_OUT_OF_RANGE, "OP_BLOCK_COPY out of range");
-    return;
-  }
-#endif
-
   Com_Memcpy(vm->dataBase + dest, vm->dataBase + src, n);
 }
 
@@ -662,10 +627,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
   uint8_t *image;
   uint8_t *codeImage;
   int      v1;
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  int dataMask;
-#endif
-  int arg;
+  int      arg;
 #ifdef DEBUG_VM
   int         prevProgramCounter;
   vmSymbol_t *profileSymbol;
@@ -683,14 +645,8 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
   vm->breakFunction = 0;
 #endif
 
-  image     = vm->dataBase;
-  codeImage = (int *)vm->codeBase;
-#ifndef DISABLE_DATA_MASK_PROTECTION
-  dataMask = vm->dataMask;
-#define MASK_DATA &vm->dataMask
-#else
-#define MASK_DATA
-#endif
+  image          = vm->dataBase;
+  codeImage      = (int *)vm->codeBase;
   programCounter = 0;
 #ifdef DEBUG_VM
   prevProgramCounter = 0;
@@ -798,30 +754,30 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
         return -1;
       }
 #endif
-      r0 = opStack[opStackOfs] = *(int *)&image[r0 MASK_DATA];
+      r0 = opStack[opStackOfs] = *(int *)&image[r0];
       DISPATCH2();
     goto_OP_LOAD2:
-      r0 = opStack[opStackOfs] = *(unsigned short *)&image[r0 MASK_DATA];
+      r0 = opStack[opStackOfs] = *(unsigned short *)&image[r0];
       DISPATCH2();
     goto_OP_LOAD1:
-      r0 = opStack[opStackOfs] = image[r0 MASK_DATA];
+      r0 = opStack[opStackOfs] = image[r0];
       DISPATCH2();
 
     goto_OP_STORE4:
-      *(int *)&image[r1 MASK_DATA] = r0;
+      *(int *)&image[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_STORE2:
-      *(short *)&image[r1 MASK_DATA] = r0;
+      *(short *)&image[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_STORE1:
-      image[r1 MASK_DATA] = r0;
+      image[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_ARG:
       /* single byte offset from programStack */
-      *(int *)&image[(codeImage[programCounter] + programStack) MASK_DATA] = r0;
+      *(int *)&image[(codeImage[programCounter] + programStack)] = r0;
       opStackOfs--;
       programCounter += 1;
       DISPATCH();
