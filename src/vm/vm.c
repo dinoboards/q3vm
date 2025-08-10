@@ -265,7 +265,8 @@ static const char *opnames[OPCODE_TABLE_SIZE] = {
  * @param[in] bytecode Pointer to bytecode.
  * @param[in] length Number of bytes in bytecode array.
  * @return Pointer to start/header of vm bytecode. */
-static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, size_t length, uint8_t *dataSegment, int dataSegmentLength);
+static const vmHeader_t *
+VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, size_t length, uint8_t *dataSegment, size_t dataSegmentLength);
 
 /** Helper function for VM_Create: Set up the virtual machine during loading.
  * Ensure consistency and prepare the jumps.
@@ -408,9 +409,10 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 }
 #endif
 
-static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, size_t length, uint8_t *dataSegment, int dataSegmentLength) {
-  int dataLength;
-  int i;
+static const vmHeader_t *
+VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, size_t length, uint8_t *dataSegment, size_t dataSegmentLength) {
+  size_t dataLength;
+  int    i;
   union {
     vmHeader_t    *h;
     const uint8_t *v;

@@ -1,5 +1,5 @@
 # Makefile to build the Q3VM interpreter
-# 
+#
 # Run 'make'
 #
 # Jan Zwiener 2018-2022
@@ -44,7 +44,7 @@ CFLAGS += -fdata-sections -ffunction-sections -fno-strict-aliasing
 # -fno-common: This has the effect that if the same variable is declared (without extern) in two different compilations, you get a multiple-definition error when you link them
 # -fmessage-length=n: If n is zero, then no line-wrapping is done; each error message appears on a single line.
 CFLAGS += -fmessage-length=0 -MMD -fno-common -MP -MF"$(@:%.o=%.d)"
-CFLAGS += -Wall -Wextra
+CFLAGS += -Wall -Wextra -Werror
 # For optimized gotos this speeds things up:
 # care must be taken that the compiler doesn't try to "optimize" the indirect
 # jumps by sharing them between all opcodes. Such optimizations can be disabled
