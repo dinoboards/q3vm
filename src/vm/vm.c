@@ -353,28 +353,29 @@ int VM_Create(vm_t          *vm,
   }
 
   Com_Memset(vm, 0, sizeof(vm_t));
-
-  const vmHeader_t *header = VM_LoadQVM(vm, bytecode, length, dataSegment, dataSegmentLength);
-  if (!header) {
-    vm->lastError = VM_FAILED_TO_LOAD_BYTECODE;
-    Com_Error(vm->lastError, "Failed to load bytecode");
-    VM_Free(vm);
-    return -1;
-  }
-
-  vm->systemCall = systemCalls;
-
-  /* allocate space for the jump targets, which will be filled in by the
-     compile/prep functions */
-  vm->instructionCount = header->instructionCount;
-
-  vm->codeLength = header->codeLength;
-
-  vm->compiled = 0; /* no JIT */
-  if (!vm->compiled) {
-    if (VM_PrepareInterpreter(vm, header) != 0) {
+  {
+    const vmHeader_t *header = VM_LoadQVM(vm, bytecode, length, dataSegment, dataSegmentLength);
+    if (!header) {
+      vm->lastError = VM_FAILED_TO_LOAD_BYTECODE;
+      Com_Error(vm->lastError, "Failed to load bytecode");
       VM_Free(vm);
       return -1;
+    }
+
+    vm->systemCall = systemCalls;
+
+    /* allocate space for the jump targets, which will be filled in by the
+       compile/prep functions */
+    vm->instructionCount = header->instructionCount;
+
+    vm->codeLength = header->codeLength;
+
+    vm->compiled = 0; /* no JIT */
+    if (!vm->compiled) {
+      if (VM_PrepareInterpreter(vm, header) != 0) {
+        VM_Free(vm);
+        return -1;
+      }
     }
   }
 
@@ -410,10 +411,12 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int length, uint8_t *dataSegment, int dataSegmentLength) {
   int dataLength;
   int i;
-  const union {
-    const vmHeader_t *h;
-    const uint8_t    *v;
-  } header = {.v = bytecode};
+  union {
+    vmHeader_t    *h;
+    const uint8_t *v;
+  } header;
+
+  header.v = bytecode;
 
   Com_Printf("Loading vm\n");
 
@@ -559,7 +562,7 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
   if (!dest || !src || destsize < 1) {
     return;
   }
-  strncpy(dest, src, destsize - 1);
+  strlcpy(dest, src, destsize - 1);
   dest[destsize - 1] = 0;
 }
 #endif
@@ -616,6 +619,8 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
   uint8_t *codeImage;
   int      v1;
   int      arg;
+  int      opcode, r0, r1;
+
 #ifdef DEBUG_VM
   int         prevProgramCounter;
   vmSymbol_t *profileSymbol;
@@ -658,7 +663,6 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
   /* main interpreter loop, will exit when a LEAVE instruction
      grabs the -1 program counter */
 
-  int opcode, r0, r1;
 #define r2            (*((int *)&codeImage[programCounter]))
 #define INT_INCREMENT 4
 
