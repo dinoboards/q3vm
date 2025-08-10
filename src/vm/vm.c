@@ -38,10 +38,6 @@
  * command number + 12 arguments */
 #define MAX_VMMAIN_ARGS 13
 
-/** Macro to read 32-bit little endian value (from the .qvm file) and convert it
- * to the host byte order */
-#define LittleLong(x) LittleEndianToHost((const uint8_t *)&(x))
-
 /* GCC can do "computed gotos" instead of a traditional switch/case
  * interpreter, this speeds up the execution.
  *
@@ -291,11 +287,6 @@ static int VM_CallInterpreted(vm_t *vm, int *args);
  * @param[in,out] vm Current VM */
 static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm);
 
-/** Read a 32bit little endian value and convert it to host representation.
- * @param[in] b Four bytes in little endian (32bit value)
- * @return (swapped) output value in host machine order. */
-static int LittleEndianToHost(const uint8_t b[4]);
-
 /** Helper function for the _vmf inline function _vmf in vm.h.
  * @param[in] x Number that is actually a IEEE 754 float.
  * @return float number */
@@ -425,10 +416,10 @@ static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int lengt
     return NULL;
   }
 
-  if (LittleLong(header.h->vmMagic) == VM_MAGIC) {
+  if (header.h->vmMagic == VM_MAGIC) {
     /* byte swap the header */
     for (i = 0; i < (int)(sizeof(vmHeader_t)) / 4; i++) {
-      ((int *)header.h)[i] = LittleLong(((int *)header.h)[i]);
+      ((int *)header.h)[i] = ((int *)header.h)[i];
     }
 
     /* validate */
@@ -442,7 +433,7 @@ static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int lengt
   } else {
     Com_Printf("Warning: Invalid magic number in header "
                "Read: 0x%x, expected: 0x%x\n",
-               LittleLong(header.h->vmMagic), VM_MAGIC);
+               header.h->vmMagic, VM_MAGIC);
     return NULL;
   }
 
@@ -464,11 +455,6 @@ static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int lengt
 
   /* copy the intialized data */
   Com_Memcpy(vm->dataBase, header.v + header.h->dataOffset, header.h->dataLength + header.h->litLength);
-
-  /* byte swap the longs */
-  for (i = 0; i < header.h->dataLength; i += sizeof(int)) {
-    *(int *)(vm->dataBase + i) = LittleLong(*(int *)(vm->dataBase + i));
-  }
 
   return header.h;
 }
@@ -584,8 +570,6 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
 static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm) {
   Com_Memcpy(vm->dataBase + dest, vm->dataBase + src, n);
 }
-
-static int LittleEndianToHost(const uint8_t b[4]) { return (b[0] << 0) | (b[1] << 8) | (b[2] << 16) | (b[3] << 24); }
 
 static bool VM_PrepareInterpreter(vm_t *vm, const vmHeader_t *header) {
 
