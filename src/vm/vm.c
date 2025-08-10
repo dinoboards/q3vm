@@ -266,7 +266,7 @@ static const char *opnames[OPCODE_TABLE_SIZE] = {
  * @param[in] length Number of bytes in bytecode array.
  * @return Pointer to start/header of vm bytecode. */
 static const vmHeader_t *
-VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, size_t length, uint8_t *dataSegment, size_t dataSegmentLength);
+VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *const dataSegment, const size_t dataSegmentLength);
 
 /** Helper function for VM_Create: Set up the virtual machine during loading.
  * Ensure consistency and prepare the jumps.
@@ -337,12 +337,12 @@ static void Q_strncpyz(char *dest, const char *src, int destsize);
  * FUNCTION BODIES
  ******************************************************************************/
 
-int VM_Create(vm_t          *vm,
-              const uint8_t *bytecode,
-              int            length,
-              uint8_t       *dataSegment,
-              int            dataSegmentLength,
-              intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
+bool VM_Create(vm_t                *vm,
+               const uint8_t *const bytecode,
+               const size_t         length,
+               uint8_t *const       dataSegment,
+               const size_t         dataSegmentLength,
+               intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Invalid vm pointer");
     return -1;
@@ -410,7 +410,7 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 #endif
 
 static const vmHeader_t *
-VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, size_t length, uint8_t *dataSegment, size_t dataSegmentLength) {
+VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *const dataSegment, const size_t dataSegmentLength) {
   size_t dataLength;
   int    i;
   union {

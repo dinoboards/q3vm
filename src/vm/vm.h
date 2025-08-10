@@ -16,6 +16,7 @@
  * SYSTEM INCLUDE FILES
  ******************************************************************************/
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>  /* remove this if Com_Printf does not point to printf */
 #include <string.h> /* remove this if Com_Mem*** does not point to memcpy */
@@ -192,12 +193,12 @@ typedef struct vm_s {
  *   g_syscalls.asm equals to 0 in the systemCall parms argument, -2 in
  *   g_syscalls.asm is 1 in parms, -3 is 2 and so on.
  * @return 0 if everything is OK. -1 if something went wrong. */
-int VM_Create(vm_t          *vm,
-              const uint8_t *bytecode,
-              int            length,
-              uint8_t       *dataSegment,
-              int            dataSegmentLength,
-              intptr_t (*systemCalls)(vm_t *, intptr_t *));
+bool VM_Create(vm_t                *vm,
+               const uint8_t *const bytecode,
+               const size_t         length,
+               uint8_t *const       dataSegment,
+               const size_t         dataSegmentLength,
+               intptr_t (*systemCalls)(vm_t *, intptr_t *));
 
 #ifdef DEBUG_VM
 int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int debugStorageLength);
