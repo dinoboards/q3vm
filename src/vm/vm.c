@@ -35,8 +35,8 @@
 #define MAX_VMSYSCALL_ARGS 16
 
 /** Max number of arguments to pass from engine to vm's vmMain function.
- * command number + 12 arguments */
-#define MAX_VMMAIN_ARGS 13
+ * command number + 3 arguments */
+#define MAX_VMMAIN_ARGS 4
 
 /* GCC can do "computed gotos" instead of a traditional switch/case
  * interpreter, this speeds up the execution.

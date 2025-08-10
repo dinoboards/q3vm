@@ -203,7 +203,7 @@ void VM_Free(vm_t *vm);
 
 /** Run a function from the virtual machine.
  * Use the command argument to tell the VM what to do.
- * You can supply additional (up to 12) parameters to pass to the bytecode.
+ * You can supply additional (up to (`MAX_VMMAIN_ARGS`-1)) parameters to pass to the bytecode.
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] command Basic parameter passed to the bytecode.
  * @return Return value of the function call by the VM. */

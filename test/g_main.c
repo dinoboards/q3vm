@@ -35,19 +35,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
-int vmMain(int command,
-           int arg0,
-           int arg1,
-           int arg2,
-           int arg3,
-           int arg4,
-           int arg5,
-           int arg6,
-           int arg7,
-           int arg8,
-           int arg9,
-           int arg10,
-           int arg11) {
+int vmMain(int command, int arg0, int arg1, int arg2) {
   volatile int            i;
   volatile int            iloop = 20000000;
   char                    str[] = "Hello %s\n";
@@ -70,15 +58,6 @@ int vmMain(int command,
   printf("arg0:  %i\n", arg0);
   printf("arg1:  %i\n", arg1);
   printf("arg2:  %i\n", arg2);
-  printf("arg3:  %i\n", arg3);
-  printf("arg4:  %i\n", arg4);
-  printf("arg5:  %i\n", arg5);
-  printf("arg6:  %i\n", arg6);
-  printf("arg7:  %i\n", arg7);
-  printf("arg8:  %i\n", arg8);
-  printf("arg9:  %i\n", arg9);
-  printf("arg10: %i\n", arg10);
-  printf("arg11: %i\n", arg11);
   */
 
   if (command == 1) {
@@ -290,8 +269,7 @@ int vmMain(int command,
     memcpy(mem1, mem2, 1000000); /* try to escape the sandbox */
   }
 #endif
-  if (arg0 != 0 || arg1 != 1 || arg2 != 2 || arg3 != 3 || arg4 != 4 || arg5 != 5 || arg6 != 6 || arg7 != 7 || arg8 != 8 ||
-      arg9 != 9 || arg10 != 10 || arg11 != 11) {
+  if (arg0 != 0 || arg1 != 1 || arg2 != 2) {
     return 0;
   } else {
     return 333; /* test case expects 333 in this case */
@@ -306,13 +284,13 @@ int fib(int n) {
 }
 
 #ifndef Q3_VM
-int main(int argc, char **argv) { return vmMain(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0); }
+int main(int argc, char **argv) { return vmMain(0, 0, 0, 0); }
 
 int badcall(int i) { return 0; }
 
 float floatff(float f) { return 2.0f * f; }
 
-int recursive(int i) { return vmMain(1, i, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0); }
+int recursive(int i) { return vmMain(1, i, 0, 0); }
 #else
 void printf(const char *fmt, ...) {
   va_list argptr;
