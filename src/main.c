@@ -84,6 +84,8 @@ void Com_Error(vmErrorCode_t level, const char* error)
  * @return pointer to allocated memory. */
 void* Com_malloc(size_t size, vm_t* vm, vmMallocType_t type)
 {
+    printf("Com_malloc: %d, %d\n", size, type);
+
     (void)vm;   /* simple malloc, we don't care about the vm */
     (void)type; /* we don't care what the VM wants to do with the memory */
     return malloc(size); /* just allocate the memory and return it */

@@ -30,6 +30,10 @@
 
 /* assume VM generate code is still using instruction Count for jumps */
 #define INSTRUCTION_COUNT_REFERENCING
+#else
+
+/* Turn off protection for data read/write outside of data/bss segments */
+#define DISABLE_DATA_MASK_PROTECTION
 #endif
 
 #if 0
@@ -40,7 +44,7 @@
 #define VM_MAGIC 0x12721444
 
 /** Don't change stack size: Hardcoded in q3asm and reserved at end of BSS */
-#define VM_PROGRAM_STACK_SIZE 0x10000
+#define VM_PROGRAM_STACK_SIZE 0x1000
 
 /** Max. number of bytes in .qvm */
 #define VM_MAX_IMAGE_SIZE 0x400000
@@ -170,9 +174,11 @@ typedef struct vm_s
 #endif
     int instructionCount; /**< Number of instructions for VM */
 
-    uint8_t* dataBase;  /**< Start of .data memory segment */
-    int      dataMask;  /**< VM mask to protect access to dataBase */
-    int      dataAlloc; /**< Number of bytes allocated for dataBase */
+    uint8_t* dataBase; /**< Start of .data memory segment */
+#ifndef DISABLE_DATA_MASK_PROTECTION
+    int dataMask; /**< VM mask to protect access to dataBase */
+#endif
+    int dataAlloc; /**< Number of bytes allocated for dataBase */
 
     int stackBottom; /**< If programStack < stackBottom, error */
 
