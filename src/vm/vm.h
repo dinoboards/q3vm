@@ -24,11 +24,7 @@
  * DEFINES
  ******************************************************************************/
 
-#if 0
-/* assume VM generate code is still using instruction Count for jumps */
-#define INSTRUCTION_COUNT_REFERENCING
-#else
-
+#if 1
 /* Turn off protection for data read/write outside of data/bss segments */
 #define DISABLE_DATA_MASK_PROTECTION
 #endif
@@ -161,9 +157,6 @@ typedef struct vm_s {
   int      entryOfs;   /**< unused */
   int      codeLength; /**< Number of bytes in code segment */
 
-#ifdef INSTRUCTION_COUNT_REFERENCING
-  intptr_t *instructionPointers;
-#endif
   int instructionCount; /**< Number of instructions for VM */
 
   uint8_t *dataBase; /**< Start of .data memory segment */

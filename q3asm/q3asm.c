@@ -978,12 +978,8 @@ ASM(PROC)
         Parse(); // function name
         strcpy(name, token);
 
-#ifdef INSTRUCTION_COUNT_REFERENCING
-
-        DefineSymbol(token, instructionCount);
-#else
         DefineSymbol(token, segment[CODESEG].imageUsed );
-#endif
+
         currentLocals = ParseValue(); // locals
         currentLocals = (currentLocals + 3) & ~3;
         currentArgs   = ParseValue(); // arg marshalling
@@ -1216,12 +1212,7 @@ ASM(LABEL)
         STAT("LABEL");
         Parse();
 
-#ifdef INSTRUCTION_COUNT_REFERENCING
-        if (currentSegment == &segment[CODESEG])
-            DefineSymbol(token, instructionCount);
-        else
-#endif
-            DefineSymbol(token, currentSegment->imageUsed);
+        DefineSymbol(token, currentSegment->imageUsed);
 
         return 1;
     }

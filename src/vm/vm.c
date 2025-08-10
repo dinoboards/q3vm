@@ -377,17 +377,6 @@ int VM_Create(vm_t *vm, const char *name, const uint8_t *bytecode, int length, i
      compile/prep functions */
   vm->instructionCount = header->instructionCount;
 
-#ifdef INSTRUCTION_COUNT_REFERENCING
-  vm->instructionPointers =
-      (intptr_t *)Com_malloc(vm->instructionCount * sizeof(*vm->instructionPointers), vm, VM_ALLOC_INSTRUCTION_POINTERS);
-  if (!vm->instructionPointers) {
-    vm->lastError = VM_MALLOC_FAILED;
-    Com_Error(vm->lastError, "Instr. pointer malloc failed: out of memory?");
-    VM_Free(vm);
-    return -1;
-  }
-#endif
-
   vm->codeLength = header->codeLength;
 
   vm->compiled = 0; /* no JIT */
@@ -541,12 +530,6 @@ void VM_Free(vm_t *vm) {
     Com_free(vm->dataBase, vm, VM_ALLOC_DATA_SEC);
     vm->dataBase = NULL;
   }
-#ifdef INSTRUCTION_COUNT_REFERENCING
-  if (vm->instructionPointers) {
-    Com_free(vm->instructionPointers, vm, VM_ALLOC_INSTRUCTION_POINTERS);
-    vm->instructionPointers = NULL;
-  }
-#endif
 
 #ifdef DEBUG_VM
   vmSymbol_t *sym = vm->symbols;
@@ -641,95 +624,8 @@ static int LittleEndianToHost(const uint8_t b[4]) { return (b[0] << 0) | (b[1] <
 
 static bool VM_PrepareInterpreter(vm_t *vm, const vmHeader_t *header) {
 
-#ifdef INSTRUCTION_COUNT_REFERENCING
-  int byte_pc;
-  int int_pc;
-  int instruction;
-  int op;
-#endif
-
   vm->codeBase = (uint8_t *)header + header->codeOffset;
-#ifdef INSTRUCTION_COUNT_REFERENCING
-  int_pc      = 0;
-  instruction = 0;
-#define codeBase(pc) (*((int *)&vm->codeBase[pc]))
 
-  /* Now that the code has been expanded to int-sized opcodes, we'll translate
-     instruction index
-     into an index into codeBase[], which contains opcodes and operands. */
-  while (instruction < header->instructionCount) {
-    op = vm->codeBase[int_pc];
-
-    vm->instructionPointers[instruction] = int_pc;
-
-    instruction++;
-    int_pc++;
-
-    switch (op) {
-    /* Validate that all jumps are to valid instructions */
-    case OP_EQ:
-    case OP_NE:
-    case OP_LTI:
-    case OP_LEI:
-    case OP_GTI:
-    case OP_GEI:
-    case OP_LTU:
-    case OP_LEU:
-    case OP_GTU:
-    case OP_GEU:
-    case OP_EQF:
-    case OP_NEF:
-    case OP_LTF:
-    case OP_LEF:
-    case OP_GTF:
-    case OP_GEF:
-      if (codeBase(int_pc) < 0 || codeBase(int_pc) > vm->instructionCount) {
-        Com_Error(vm->lastError = VM_JUMP_TO_INVALID_INSTRUCTION, "VM_PrepareInterpreter: Jump to invalid "
-                                                                  "instruction number");
-        return -1;
-      }
-    }
-
-    /* track the instruction indexing */
-    switch (op) {
-    case OP_ENTER:
-    case OP_CONST:
-    case OP_LOCAL:
-    case OP_LEAVE:
-    case OP_EQ:
-    case OP_NE:
-    case OP_LTI:
-    case OP_LEI:
-    case OP_GTI:
-    case OP_GEI:
-    case OP_LTU:
-    case OP_LEU:
-    case OP_GTU:
-    case OP_GEU:
-    case OP_EQF:
-    case OP_NEF:
-    case OP_LTF:
-    case OP_LEF:
-    case OP_GTF:
-    case OP_GEF:
-    case OP_BLOCK_COPY:
-      int_pc += 4;
-      break;
-
-    case OP_ARG:
-      int_pc++;
-      break;
-
-    default:
-      if (op < 0 || op >= OP_MAX) {
-        vm->lastError = VM_BAD_INSTRUCTION;
-        Com_Error(vm->lastError, "Bad VM instruction");
-        return -1;
-      }
-      break;
-    }
-  }
-#endif
   return false;
 }
 
@@ -822,11 +718,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
 #define r2            (*((int *)&codeImage[programCounter]))
 #define INT_INCREMENT 4
 
-#ifdef INSTRUCTION_COUNT_REFERENCING
-#define MAX_PROGRAM_COUNTER ((unsigned)vm->instructionCount)
-#else
 #define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
-#endif
 
 #define DISPATCH2() goto nextInstruction2
 #define DISPATCH()  goto nextInstruction
@@ -993,10 +885,6 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
         vm->lastError = VM_PC_OUT_OF_RANGE;
         Com_Error(vm->lastError, "VM program counter out of range in OP_CALL");
         return -1;
-      } else {
-#ifdef INSTRUCTION_COUNT_REFERENCING
-        programCounter = vm->instructionPointers[programCounter];
-#endif
       }
       DISPATCH();
     /* push and pop are only needed for discarded or bad function return
@@ -1062,18 +950,14 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
         return -1;
       }
 
-#ifdef INSTRUCTION_COUNT_REFERENCING
-      programCounter = vm->instructionPointers[r0];
-#else
       programCounter = r0;
-#endif
 
       opStackOfs--;
       DISPATCH();
     goto_OP_EQ:
       opStackOfs -= 2;
       if (r1 == r0) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1082,7 +966,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_NE:
       opStackOfs -= 2;
       if (r1 != r0) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1091,7 +975,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_LTI:
       opStackOfs -= 2;
       if (r1 < r0) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1100,7 +984,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_LEI:
       opStackOfs -= 2;
       if (r1 <= r0) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1109,7 +993,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_GTI:
       opStackOfs -= 2;
       if (r1 > r0) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1118,7 +1002,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_GEI:
       opStackOfs -= 2;
       if (r1 >= r0) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1127,7 +1011,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_LTU:
       opStackOfs -= 2;
       if (((unsigned)r1) < ((unsigned)r0)) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1136,7 +1020,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_LEU:
       opStackOfs -= 2;
       if (((unsigned)r1) <= ((unsigned)r0)) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1145,7 +1029,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_GTU:
       opStackOfs -= 2;
       if (((unsigned)r1) > ((unsigned)r0)) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1154,7 +1038,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
     goto_OP_GEU:
       opStackOfs -= 2;
       if (((unsigned)r1) >= ((unsigned)r0)) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1164,7 +1048,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
       opStackOfs -= 2;
 
       if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] == ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1174,7 +1058,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
       opStackOfs -= 2;
 
       if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] != ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1184,7 +1068,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
       opStackOfs -= 2;
 
       if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] < ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1194,7 +1078,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
       opStackOfs -= 2;
 
       if (((float *)opStack)[(uint8_t)((uint8_t)(opStackOfs + 1))] <= ((float *)opStack)[(uint8_t)((uint8_t)(opStackOfs + 2))]) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1204,7 +1088,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
       opStackOfs -= 2;
 
       if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] > ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1214,7 +1098,7 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
       opStackOfs -= 2;
 
       if (((float *)opStack)[(uint8_t)(opStackOfs + 1)] >= ((float *)opStack)[(uint8_t)(opStackOfs + 2)]) {
-        programCounter = r2; /* vm->instructionPointers[r2]; */
+        programCounter = r2;
         DISPATCH();
       } else {
         programCounter += INT_INCREMENT;
@@ -1630,13 +1514,6 @@ static void VM_LoadSymbols(vm_t *vm) {
     Com_Memset(sym, 0, sizeof(*sym) + chars);
     prev      = &sym->next;
     sym->next = NULL;
-
-#ifdef INSTRUCTION_COUNT_REFERENCING
-    /* convert value from an instruction number to a code offset */
-    if (value >= 0 && value < numInstructions) {
-      value = vm->instructionPointers[value];
-    }
-#endif
 
     sym->symValue = value;
     Q_strncpyz(sym->symName, token, chars + 1);
