@@ -61,7 +61,7 @@ Installation
 
 The [vm.c](src/vm/vm.c?raw=1) and [vm.h](src/vm/vm.h?raw=1) files can be
 dropped into an existing C project and compiled along with it. Implement
-the 4 callback functions in your project: `Com_malloc`,  `Com_free`, `Com_Error`
+the 2 callback functions in your project: `Com_Error`
 and `systemCalls`.
 
 Features
@@ -229,32 +229,6 @@ Build the example bytecode:
 
 Callback functions required in host application
 -----------------------------------------------
-
-**malloc and free**:
-
-The following functions are required in the host application for
-memory allocation:
-
-```c
-    void* Com_malloc(size_t size, vm_t* vm, vmMallocType_t type);
-    {
-        (void)vm;
-        (void)type;
-        return malloc(size);
-    }
-
-    void Com_free(void* p, vm_t* vm, vmMallocType_t type)
-    {
-        (void)vm;
-        (void)type;
-        free(p);
-    }
-```
-
-The host can simply call `malloc` and `free` or use a custom memory allocation
-function or use static memory (e.g. in an embedded application). Each VM only
-calls `Com_malloc` once per malloc type. This can be used as a help for the static memory
-allocation in an embedded environment without `malloc()` and `free()`.
 
 **Error handling**:
 

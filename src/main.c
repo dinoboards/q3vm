@@ -96,29 +96,6 @@ void Com_Error(vmErrorCode_t level, const char *error) {
   exit(level);
 }
 
-/** Memory allocation for the virtual machine.
- * @param[in] size Number of bytes to allocate.
- * @param[in] vm Pointer to vm requesting the memory.
- * @param[in] type What purpose has the requested memory, see vmMallocType_t.
- * @return pointer to allocated memory. */
-void *Com_malloc(size_t size, vm_t *vm, vmMallocType_t type) {
-  printf("Com_malloc: %d, %d\n", (int)size, type);
-
-  (void)vm;            /* simple malloc, we don't care about the vm */
-  (void)type;          /* we don't care what the VM wants to do with the memory */
-  return malloc(size); /* just allocate the memory and return it */
-}
-
-/** Free memory for the virtual machine.
- * @param[in,out] p Pointer of memory allocated by Com_malloc to be released.
- * @param[in] vm Pointer to vm releasing the memory.
- * @param[in] type What purpose has the memory, see vmMallocType_t. */
-void Com_free(void *p, vm_t *vm, vmMallocType_t type) {
-  (void)vm;
-  (void)type;
-  free(p);
-}
-
 uint8_t *loadImage(const char *filepath, int *size) {
   FILE    *f;            /* bytecode input file */
   uint8_t *image = NULL; /* bytecode buffer */

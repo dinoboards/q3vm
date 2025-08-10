@@ -80,14 +80,6 @@ typedef enum {
   VM_NOT_ENOUGH_RAM              = -16  /**< insufficient ram allocated for VM */
 } vmErrorCode_t;
 
-/** VM alloc type. This is just an information passed to the host malloc
- * callback function (via Com_malloc). You can safely ignore this if you see no
- * use for this information. */
-typedef enum {
-  VM_ALLOC_DEBUG = 3, /**< DEBUG_VM functions */
-  VM_ALLOC_TYPE_MAX   /**< Last item in vmMallocType_t */
-} vmMallocType_t;
-
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of
  *  the file. This is always little endian encoded in the file. */
 typedef struct {
@@ -269,24 +261,5 @@ void VM_Debug(int level);
  * @param[in] level Error identifier, see vmErrorCode_t.
  * @param[in] error Human readable error text. */
 void Com_Error(vmErrorCode_t level, const char *error);
-
-/** Implement this memory allocation function in the host application.
- * A simple implementation in the host app can just call malloc() or new[]
- * and ignore the vm and type parameters.
- * The type information can be used as a hint for static memory allocation
- * if needed.
- * @param[in] size Number of bytes to allocate.
- * @param[in] vm Pointer to vm requesting the memory.
- * @param[in] type What purpose has the requested memory, see vmMallocType_t.
- * @return pointer to allocated memory. */
-void *Com_malloc(size_t size, vm_t *vm, vmMallocType_t type);
-
-/** Implement this memory free function in the host application.
- * A simple implementation in the host app can just call free() or delete[]
- * and ignore the vm and type parameters.
- * @param[in,out] p Pointer of memory allocated by Com_malloc to be released.
- * @param[in] vm Pointer to vm releasing the memory.
- * @param[in] type What purpose has the memory, see vmMallocType_t. */
-void Com_free(void *p, vm_t *vm, vmMallocType_t type);
 
 #endif /* __Q3VM_H */
