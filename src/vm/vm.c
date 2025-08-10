@@ -14,6 +14,7 @@
  ******************************************************************************/
 
 #include <stdarg.h>
+#include <stdbool.h>
 
 /******************************************************************************
  * PROJECT INCLUDE FILES
@@ -244,7 +245,7 @@ typedef enum
  * LOCAL DATA DEFINITIONS
  ******************************************************************************/
 
-static int vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes */
+static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes */
 
 #ifdef DEBUG_VM
 /** Table to convert op codes to readable names */
@@ -283,7 +284,7 @@ static const vmHeader_t* VM_LoadQVM(vm_t* vm, const uint8_t* bytecode,
  * @param[in,out] vm Pointer to virtual machine, prepared by VM_Create.
  * @param[in] header Header of .qvm bytecode.
  * @return 0 if everything is OK. -1 otherwise. */
-static int VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header);
+static bool VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header);
 
 /** Run a function from the virtual machine with the interpreter (i.e. no JIT).
  * @param[in] vm Pointer to initialized virtual machine.
@@ -698,7 +699,7 @@ static int LittleEndianToHost(const uint8_t b[4])
     return (b[0] << 0) | (b[1] << 8) | (b[2] << 16) | (b[3] << 24);
 }
 
-static int VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header)
+static bool VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header)
 {
 #ifndef PRE_PROCESS_BYTECODE
 
@@ -797,7 +798,7 @@ static int VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header)
         }
     }
 #endif
-    return 0;
+    return false;
 #else
     int      op;
     int      byte_pc;
@@ -924,7 +925,7 @@ static int VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header)
                 Com_Error(vm->lastError = VM_JUMP_TO_INVALID_INSTRUCTION,
                           "VM_PrepareInterpreter: Jump to invalid "
                           "instruction number");
-                return -1;
+                return true;
             }
 
             /* codeBase[pc] is the instruction index. Convert that into a
@@ -948,7 +949,7 @@ static int VM_PrepareInterpreter(vm_t* vm, const vmHeader_t* header)
             break;
         }
     }
-    return 0;
+    return false;
 #endif
 }
 
