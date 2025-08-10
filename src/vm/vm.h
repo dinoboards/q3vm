@@ -143,7 +143,7 @@ typedef struct vm_s {
   uint8_t  *codeBase;   /**< Bytecode code segment */
   vm_size_t codeLength; /**< Number of bytes in code segment */
 
-  int instructionCount; /**< Number of instructions for VM */
+  std_int instructionCount; /**< Number of instructions for VM */
 
   uint8_t  *dataBase;  /**< Start of .data memory segment */
   vm_size_t dataAlloc; /**< Number of bytes allocated for dataBase */
@@ -157,15 +157,14 @@ typedef struct vm_s {
   /*------------------------------------*/
 
 #ifdef DEBUG_VM
-  int         numSymbols; /**< Number of symbols from VM_LoadSymbols */
-  vmSymbol_t *symbols;    /**< By VM_LoadSymbols: names for debugging */
+  std_int     numSymbols;    /**< Number of symbols from VM_LoadSymbols */
+  vmSymbol_t *symbols;       /**< By VM_LoadSymbols: names for debugging */
+  std_int     breakFunction; /**< For debugging: break at this function */
+  std_int     breakCount;    /**< Used for breakpoints, triggered by OP_BREAK */
 #endif
 
-  int callLevel;     /**< Counts recursive VM_Call */
-  int breakFunction; /**< For debugging: break at this function */
-  int breakCount;    /**< Used for breakpoints, triggered by OP_BREAK */
+  std_int callLevel; /**< Counts recursive VM_Call */
 
-  /* non vanilla q3 area: */
   vmErrorCode_t lastError; /**< Last known error */
 } vm_t;
 
@@ -221,16 +220,16 @@ void *VM_ArgPtr(intptr_t vmAddr, vm_t *vm);
 
 /** Helper function for syscalls VMF(x) macro:
  * Get argument in syscall and interpret it bit by bit as IEEE 754 float.
- * That is: just put the int in a float/int union and return the float.
+ * That is: just put the int32_t in a float/int32_t union and return the float.
  * If the VM calls a native function with a float argument: don't
- * cast the int argument to a float, but rather interpret it directly
+ * cast the in32_t argument to a float, but rather interpret it directly
  * as a floating point variable.
  * @param[in] x Argument on call stack.
  * @return Value as float. */
 float VM_IntToFloat(int32_t x);
 
 /** Helper function for syscalls:
- * Just put the float in a float/int union and return the int.
+ * Just put the float in a float/int32_t union and return the int32_t.
  * @param[in] f Floating point number.
  * @return Floating point number as integer */
 int32_t VM_FloatToInt(float f);

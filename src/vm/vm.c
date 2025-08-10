@@ -719,7 +719,9 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
     goto_OP_IGNORE:
       DISPATCH2();
     goto_OP_BREAK:
+#ifdef DEBUG_VM
       vm->breakCount++;
+#endif
       DISPATCH2();
     goto_OP_CONST:
       opStackOfs++;
