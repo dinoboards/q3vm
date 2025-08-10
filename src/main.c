@@ -33,9 +33,10 @@ intptr_t systemCalls(vm_t *vm, intptr_t *args);
 uint8_t *loadImage(const char *filepath, int *size);
 
 int main(int argc, char **argv) {
-  vm_t vm;
-  int  retVal = -1;
-  int  imageSize;
+  vm_t  vm;
+  int   retVal = -1;
+  int   imageSize;
+  void *pData;
 
   if (argc < 2) {
     printf("No virtual machine supplied. Example: q3vm bytecode.qvm\n");
@@ -51,8 +52,10 @@ int main(int argc, char **argv) {
 
   VM_Debug(3);
 
+  pData = malloc(0x10000); /* allocate 64k ram for data, bss and stack*/
+
   /* set-up virtual machine */
-  if (VM_Create(&vm, image, imageSize, systemCalls) == 0) {
+  if (VM_Create(&vm, image, imageSize, pData, 0x10000, systemCalls) == 0) {
     /* call virtual machine vmMain() with integer argument (here 0) */
     retVal = VM_Call(&vm, 0);
   }

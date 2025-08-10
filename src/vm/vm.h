@@ -81,6 +81,7 @@ typedef enum {
   VM_MALLOC_FAILED               = -13, /**< Not enough memory */
   VM_BAD_INSTRUCTION             = -14, /**< Unknown OP code in bytecode */
   VM_NOT_LOADED                  = -15, /**< VM not loaded */
+  VM_NOT_ENOUGH_RAM              = -16  /**< insufficient ram allocated for VM */
 } vmErrorCode_t;
 
 /** VM alloc type. This is just an information passed to the host malloc
@@ -194,7 +195,12 @@ typedef struct vm_s {
  *   g_syscalls.asm equals to 0 in the systemCall parms argument, -2 in
  *   g_syscalls.asm is 1 in parms, -3 is 2 and so on.
  * @return 0 if everything is OK. -1 if something went wrong. */
-int VM_Create(vm_t *vm, const uint8_t *bytecode, int length, intptr_t (*systemCalls)(vm_t *, intptr_t *));
+int VM_Create(vm_t          *vm,
+              const uint8_t *bytecode,
+              int            length,
+              uint8_t       *dataSegment,
+              int            dataSegmentLength,
+              intptr_t (*systemCalls)(vm_t *, intptr_t *));
 
 /** Free the memory of the virtual machine.
  * @param[in] vm Pointer to initialized virtual machine. */

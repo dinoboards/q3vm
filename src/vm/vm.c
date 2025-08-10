@@ -265,7 +265,7 @@ const static char *opnames[OPCODE_TABLE_SIZE] = {
  * @param[in] bytecode Pointer to bytecode.
  * @param[in] length Number of bytes in bytecode array.
  * @return Pointer to start/header of vm bytecode. */
-static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int length);
+static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int length, uint8_t *dataSegment, int dataSegmentLength);
 
 /** Helper function for VM_Create: Set up the virtual machine during loading.
  * Ensure consistency and prepare the jumps.
@@ -341,7 +341,12 @@ static void VM_StackTrace(vm_t *vm, int programCounter, int programStack);
  * FUNCTION BODIES
  ******************************************************************************/
 
-int VM_Create(vm_t *vm, const uint8_t *bytecode, int length, intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
+int VM_Create(vm_t          *vm,
+              const uint8_t *bytecode,
+              int            length,
+              uint8_t       *dataSegment,
+              int            dataSegmentLength,
+              intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Invalid vm pointer");
     return -1;
@@ -354,7 +359,7 @@ int VM_Create(vm_t *vm, const uint8_t *bytecode, int length, intptr_t (*systemCa
 
   Com_Memset(vm, 0, sizeof(vm_t));
 
-  const vmHeader_t *header = VM_LoadQVM(vm, bytecode, length);
+  const vmHeader_t *header = VM_LoadQVM(vm, bytecode, length, dataSegment, dataSegmentLength);
   if (!header) {
     vm->lastError = VM_FAILED_TO_LOAD_BYTECODE;
     Com_Error(vm->lastError, "Failed to load bytecode");
@@ -401,7 +406,7 @@ int VM_Create(vm_t *vm, const uint8_t *bytecode, int length, intptr_t (*systemCa
   return 0;
 }
 
-static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int length) {
+static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int length, uint8_t *dataSegment, int dataSegmentLength) {
   int dataLength;
   int i;
   const union {
@@ -441,14 +446,14 @@ static const vmHeader_t *VM_LoadQVM(vm_t *vm, const uint8_t *bytecode, int lengt
      be mask protected */
   dataLength = header.h->dataLength + header.h->litLength + header.h->bssLength;
 
-  /* allocate zero filled space for initialized and uninitialized data
-   leave some space beyond data mask so we can secure all mask operations */
-  vm->dataAlloc = dataLength + 4;
-  vm->dataBase  = (uint8_t *)Com_malloc(vm->dataAlloc, vm, VM_ALLOC_DATA_SEC);
-  if (vm->dataBase == NULL) {
-    Com_Error(VM_MALLOC_FAILED, "Data malloc failed: out of memory?\n");
+  if (dataLength > dataSegmentLength) {
+    Com_Error(VM_NOT_ENOUGH_RAM, "Insufficient ram allocated for VM\n");
     return NULL;
   }
+
+  vm->dataBase  = dataSegment;
+  vm->dataAlloc = dataSegmentLength;
+
   /* make sure data section is always initialized with 0
    * (bss would be enough) */
   Com_Memset(vm->dataBase, 0, vm->dataAlloc);
@@ -498,11 +503,6 @@ void VM_Free(vm_t *vm) {
     vm->lastError = VM_FREE_ON_RUNNING_VM;
     Com_Error(vm->lastError, "VM_Free on running vm");
     return;
-  }
-
-  if (vm->dataBase) {
-    Com_free(vm->dataBase, vm, VM_ALLOC_DATA_SEC);
-    vm->dataBase = NULL;
   }
 
 #ifdef DEBUG_VM

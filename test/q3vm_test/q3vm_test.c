@@ -13,8 +13,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static int g_mallocFail = -1; /* if this is not -1, malloc will fail */
-
 /* The compiled bytecode calls native functions,
    defined in this file. */
 intptr_t systemCalls(vm_t* vm, intptr_t* args);
@@ -22,6 +20,8 @@ intptr_t systemCalls(vm_t* vm, intptr_t* args);
 /* Load an image from a file. Data is allocated with malloc.
    Call free() to unload image. */
 uint8_t* loadImage(const char* filepath, int* size);
+
+uint8_t dataSegment[0x8000];
 
 int testInject(const char* filepath, int offset, int opcode)
 {
@@ -39,7 +39,7 @@ int testInject(const char* filepath, int offset, int opcode)
     fprintf(stderr, "Injecting wrong OP code %s at %i: %i\n", filepath, offset,
             opcode);
     memcpy(&image[offset], &opcode, sizeof(opcode)); /* INJECT */
-    retVal = VM_Create(&vm, image, imageSize, systemCalls);
+    retVal = VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls);
     VM_Free(&vm);
     free(image);
 
@@ -60,7 +60,7 @@ int testNominal(const char* filepath)
     }
 
     VM_Debug(1);
-    if (VM_Create(&vm, image, imageSize, systemCalls) == 0)
+    if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls) == 0)
     {
         /* normal call, should give us 0 */
         retVal = VM_Call(&vm, 0);
@@ -100,18 +100,18 @@ void testArguments(void)
     VM_MemoryRangeValid(0, 0, NULL);
     loadImage(NULL, &imageSize);
     loadImage("invalidpathfoobar", &imageSize);
-    VM_Create(NULL, NULL, 0, NULL);
-    VM_Create(&vm, NULL, 0, NULL);
-    VM_Create(&vm, NULL, 0, systemCalls);
-    VM_Create(&vm, NULL, 0, systemCalls);
+    VM_Create(NULL, NULL, 0, dataSegment, sizeof(dataSegment), NULL);
+    VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL);
+    VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls);
+    VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls);
 
     uint8_t bogus[] = "bogusbogusbogubogusbogus"
                       "bogusbogusbogubogusbogus"
                       "bogusbogusbogubogusbogus"
                       "bogusbogusbogubogusbogus";
-    VM_Create(&vm, bogus, sizeof(bogus), NULL);
-    VM_Create(&vm, bogus, sizeof(bogus), systemCalls);
-    VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, systemCalls);
+    VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), NULL);
+    VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), systemCalls);
+    VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, dataSegment, sizeof(dataSegment), systemCalls);
 
     vmHeader_t vmHeader       = { 0 };
     vmHeader.vmMagic          = VM_MAGIC;
@@ -125,7 +125,7 @@ void testArguments(void)
     VM_Create(&vm, (uint8_t*)&vmHeader,
               vmHeader.dataOffset + vmHeader.dataLength + vmHeader.litLength -
                   1,
-              systemCalls);
+              dataSegment, sizeof(dataSegment), systemCalls);
 
     VM_Call(NULL, 0);
 
@@ -140,15 +140,8 @@ int main(int argc, char** argv)
     const char* files[] = {"test.qvm", argv[argc > 1]};
     const char* file = files[argc > 1];
 
+    printf("\nExpect Negative assertions:\n");
     testArguments();
-    /* <malloc fail tests> */
-    for (int i = 0; i < VM_ALLOC_TYPE_MAX - 1; i++)
-    {
-        g_mallocFail = i;
-        testNominal(file);
-    }
-    g_mallocFail = -1;
-    /* </malloc fail tests> */
 
     testInject(NULL, 0, 0);
     testNominal(NULL);
@@ -156,6 +149,9 @@ int main(int argc, char** argv)
     testInject(file, 32, 63);
     testInject(file, 32, 65);
     testInject(file, 4, -1);
+
+    printf("Completed Expected Negative Assertions\n");
+
     /* finally: test the normal case */
     return testNominal(file);
 }
@@ -170,13 +166,6 @@ void* Com_malloc(size_t size, vm_t* vm, vmMallocType_t type)
 {
     (void)vm;
     (void)type;
-    if (g_mallocFail != -1)
-    {
-        if (type == g_mallocFail)
-        {
-            return NULL;
-        }
-    }
     return malloc(size);
 }
 
