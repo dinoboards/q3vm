@@ -113,7 +113,7 @@ the bytecode in your application:
     vm_t vm;
     int result;
 
-    VM_Create(&vm, "my test", pointerToByteCodeBuffer, sysCall);
+    VM_Create(&vm, pointerToByteCodeBuffer, sysCall);
     result = VM_Call(&vm, 12345);
     VM_Free(&vm);
 ```

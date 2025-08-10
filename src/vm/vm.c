@@ -341,7 +341,7 @@ static void VM_StackTrace(vm_t *vm, int programCounter, int programStack);
  * FUNCTION BODIES
  ******************************************************************************/
 
-int VM_Create(vm_t *vm, const char *name, const uint8_t *bytecode, int length, intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
+int VM_Create(vm_t *vm, const uint8_t *bytecode, int length, intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Invalid vm pointer");
     return -1;

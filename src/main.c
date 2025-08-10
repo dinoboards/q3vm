@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
   VM_Debug(3);
 
   /* set-up virtual machine */
-  if (VM_Create(&vm, filepath, image, imageSize, systemCalls) == 0) {
+  if (VM_Create(&vm, image, imageSize, systemCalls) == 0) {
     /* call virtual machine vmMain() with integer argument (here 0) */
     retVal = VM_Call(&vm, 0);
   }

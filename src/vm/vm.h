@@ -194,7 +194,7 @@ typedef struct vm_s {
  *   g_syscalls.asm equals to 0 in the systemCall parms argument, -2 in
  *   g_syscalls.asm is 1 in parms, -3 is 2 and so on.
  * @return 0 if everything is OK. -1 if something went wrong. */
-int VM_Create(vm_t *vm, const char *module, const uint8_t *bytecode, int length, intptr_t (*systemCalls)(vm_t *, intptr_t *));
+int VM_Create(vm_t *vm, const uint8_t *bytecode, int length, intptr_t (*systemCalls)(vm_t *, intptr_t *));
 
 /** Free the memory of the virtual machine.
  * @param[in] vm Pointer to initialized virtual machine. */

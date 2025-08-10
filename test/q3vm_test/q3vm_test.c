@@ -39,7 +39,7 @@ int testInject(const char* filepath, int offset, int opcode)
     fprintf(stderr, "Injecting wrong OP code %s at %i: %i\n", filepath, offset,
             opcode);
     memcpy(&image[offset], &opcode, sizeof(opcode)); /* INJECT */
-    retVal = VM_Create(&vm, filepath, image, imageSize, systemCalls);
+    retVal = VM_Create(&vm, image, imageSize, systemCalls);
     VM_Free(&vm);
     free(image);
 
@@ -60,7 +60,7 @@ int testNominal(const char* filepath)
     }
 
     VM_Debug(1);
-    if (VM_Create(&vm, filepath, image, imageSize, systemCalls) == 0)
+    if (VM_Create(&vm, image, imageSize, systemCalls) == 0)
     {
         /* normal call, should give us 0 */
         retVal = VM_Call(&vm, 0);
@@ -100,18 +100,18 @@ void testArguments(void)
     VM_MemoryRangeValid(0, 0, NULL);
     loadImage(NULL, &imageSize);
     loadImage("invalidpathfoobar", &imageSize);
-    VM_Create(NULL, NULL, NULL, 0, NULL);
-    VM_Create(&vm, NULL, NULL, 0, NULL);
-    VM_Create(&vm, NULL, NULL, 0, systemCalls);
-    VM_Create(&vm, "test", NULL, 0, systemCalls);
+    VM_Create(NULL, NULL, 0, NULL);
+    VM_Create(&vm, NULL, 0, NULL);
+    VM_Create(&vm, NULL, 0, systemCalls);
+    VM_Create(&vm, NULL, 0, systemCalls);
 
     uint8_t bogus[] = "bogusbogusbogubogusbogus"
                       "bogusbogusbogubogusbogus"
                       "bogusbogusbogubogusbogus"
                       "bogusbogusbogubogusbogus";
-    VM_Create(&vm, "test", bogus, sizeof(bogus), NULL);
-    VM_Create(&vm, "test", bogus, sizeof(bogus), systemCalls);
-    VM_Create(&vm, "test", bogus, sizeof(vmHeader_t) - 4, systemCalls);
+    VM_Create(&vm, bogus, sizeof(bogus), NULL);
+    VM_Create(&vm, bogus, sizeof(bogus), systemCalls);
+    VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, systemCalls);
 
     vmHeader_t vmHeader       = { 0 };
     vmHeader.vmMagic          = VM_MAGIC;
@@ -122,7 +122,7 @@ void testArguments(void)
     vmHeader.dataLength       = 2048;
     vmHeader.litLength        = 0;
     vmHeader.bssLength        = 256;
-    VM_Create(&vm, "test", (uint8_t*)&vmHeader,
+    VM_Create(&vm, (uint8_t*)&vmHeader,
               vmHeader.dataOffset + vmHeader.dataLength + vmHeader.litLength -
                   1,
               systemCalls);
