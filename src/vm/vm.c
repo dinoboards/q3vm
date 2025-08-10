@@ -265,8 +265,8 @@ static const char *opnames[OPCODE_TABLE_SIZE] = {
  * @param[in] bytecode Pointer to bytecode.
  * @param[in] length Number of bytes in bytecode array.
  * @return Pointer to start/header of vm bytecode. */
-static const vmHeader_t *
-VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *const dataSegment, const size_t dataSegmentLength);
+static const vmHeader_t *VM_LoadQVM(
+    vm_t *const vm, const uint8_t *bytecode, vm_size_t length, uint8_t *const dataSegment, const vm_size_t dataSegmentLength);
 
 /** Helper function for VM_Create: Set up the virtual machine during loading.
  * Ensure consistency and prepare the jumps.
@@ -286,7 +286,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args);
  * @param[in] src Pointer (in VM space).
  * @param[in] n Number of bytes.
  * @param[in,out] vm Current VM */
-static void VM_BlockCopy(size_t __dest, const size_t src, const size_t n, const vm_t *vm);
+static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, const vm_t *vm);
 
 /** Helper function for the _vmf inline function _vmf in vm.h.
  * @param[in] x Number that is actually a IEEE 754 float.
@@ -339,9 +339,9 @@ static void Q_strncpyz(char *dest, const char *src, int destsize);
 
 bool VM_Create(vm_t                *vm,
                const uint8_t *const bytecode,
-               const size_t         length,
+               const vm_size_t      length,
                uint8_t *const       dataSegment,
-               const size_t         dataSegmentLength,
+               const vm_size_t      dataSegmentLength,
                intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Invalid vm pointer");
@@ -409,9 +409,8 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 }
 #endif
 
-static const vmHeader_t *
-VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *const dataSegment, const size_t dataSegmentLength) {
-  size_t dataLength;
+static const vmHeader_t *VM_LoadQVM(
+    vm_t *const vm, const uint8_t *bytecode, vm_size_t length, uint8_t *const dataSegment, const vm_size_t dataSegmentLength) {
   union {
     vmHeader_t    *h;
     const uint8_t *v;
@@ -421,7 +420,7 @@ VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *cons
 
   Com_Printf("Loading vm\n");
 
-  if (!header.h || !bytecode || length <= sizeof(vmHeader_t) || length > VM_MAX_IMAGE_SIZE) {
+  if (!header.h || !bytecode || length <= vm_sizeof(vmHeader_t) || length > VM_MAX_IMAGE_SIZE) {
     Com_Printf("Failed.\n");
     return NULL;
   }
@@ -429,8 +428,8 @@ VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *cons
   if (header.h->vmMagic == VM_MAGIC) {
     /* validate */
     if (header.h->codeLength == 0 || header.h->instructionCount == 0 || header.h->bssLength > VM_MAX_BSS_LENGTH ||
-        header.h->codeOffset + header.h->codeLength > length ||
-        header.h->dataOffset + header.h->dataLength + header.h->litLength > length) {
+        header.h->codeOffset + header.h->codeLength > (uint32_t)length ||
+        header.h->dataOffset + header.h->dataLength + header.h->litLength > (uint32_t)length) {
       Com_Printf("Warning: bad header\n");
       return NULL;
     }
@@ -441,13 +440,17 @@ VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *cons
     return NULL;
   }
 
-  /* round up to next power of 2 so all data operations can
-     be mask protected */
-  dataLength = header.h->dataLength + header.h->litLength + header.h->bssLength;
+  {
+    vm_size_t dataLength;
 
-  if (dataLength > dataSegmentLength) {
-    Com_Error(VM_NOT_ENOUGH_RAM, "Insufficient ram allocated for VM\n");
-    return NULL;
+    /* round up to next power of 2 so all data operations can
+       be mask protected */
+    dataLength = header.h->dataLength + header.h->litLength + header.h->bssLength;
+
+    if (dataLength > dataSegmentLength) {
+      Com_Error(VM_NOT_ENOUGH_RAM, "Insufficient ram allocated for VM\n");
+      return NULL;
+    }
   }
 
   vm->dataBase  = dataSegment;
@@ -481,11 +484,11 @@ intptr_t VM_Call(vm_t *vm, std_int command, ...) {
   {
     std_int args[MAX_VMMAIN_ARGS];
     va_list ap;
-    size_t  i;
+    uint8_t i;
 
     args[0] = command;
     va_start(ap, command);
-    for (i = 1; i < ARRAY_LEN(args); i++) {
+    for (i = 1; i < (uint8_t)ARRAY_LEN(args); i++) {
       args[i] = va_arg(ap, std_int);
     }
     va_end(ap);
@@ -543,7 +546,7 @@ int32_t VM_FloatToInt(float f) {
   return fi.i;
 }
 
-bool VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *const vm) {
+bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, const vm_t *const vm) {
   if (!vmAddr || !vm) {
     return -1;
   }
@@ -566,7 +569,7 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
 }
 #endif
 
-static void VM_BlockCopy(size_t dest, const size_t src, const size_t n, const vm_t *vm) {
+static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, const vm_t *vm) {
 
   if (VM_MemoryRangeValid(src, n, vm))
     return;
@@ -1163,7 +1166,8 @@ done:
 /* --------------- */
 
 #ifdef DEBUG_VM
-void VM_Debug(uint8_t level) { vm_debugLevel = level; }
+
+void VM_Debug(const uint8_t level) { vm_debugLevel = level; }
 
 static char *VM_Indent(vm_t *vm) {
   static char *string = "                                        ";

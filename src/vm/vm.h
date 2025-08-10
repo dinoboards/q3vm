@@ -65,6 +65,10 @@ typedef int std_int; /* can be a 32 or 24 bit number - depending on target CPU *
 
 typedef int32_t vm_operand_t; /* int to store registers and instruction operand values */
 
+typedef int vm_size_t; /* type to represent size of a vm image (32bits or 24 bits) */
+
+#define vm_sizeof(x) ((vm_size_t)(sizeof(x)))
+
 /******************************************************************************
  * TYPEDEFS
  ******************************************************************************/
@@ -103,6 +107,7 @@ typedef struct {
   uint32_t bssLength;        /**< How many bytes should be used for .bss segment */
 } vmHeader_t;
 
+#ifdef DEBUG_VM
 /** For debugging (DEBUG_VM): symbol list */
 typedef struct vmSymbol_s {
   struct vmSymbol_s *next; /**< Linked list of symbols */
@@ -113,6 +118,7 @@ typedef struct vmSymbol_s {
   char symName[1];   /**< Variable sized symbol name. Space is reserved by
                         malloc at load time. */
 } vmSymbol_t;
+#endif
 
 /** Main struct (think of a kind of a main class) to keep all information of
  * the virtual machine together. Has pointer to the bytecode, the stack and
@@ -146,28 +152,29 @@ typedef struct vm_s {
 
   int currentlyInterpreting; /**< Is the vm currently running? */
 
-  int      compiled;   /**< Is a JIT active? Otherwise interpreted */
-  uint8_t *codeBase;   /**< Bytecode code segment */
-  int      entryOfs;   /**< unused */
-  size_t   codeLength; /**< Number of bytes in code segment */
+  int       compiled;   /**< Is a JIT active? Otherwise interpreted */
+  uint8_t  *codeBase;   /**< Bytecode code segment */
+  int       entryOfs;   /**< unused */
+  vm_size_t codeLength; /**< Number of bytes in code segment */
 
   int instructionCount; /**< Number of instructions for VM */
 
-  uint8_t *dataBase;  /**< Start of .data memory segment */
-  size_t   dataAlloc; /**< Number of bytes allocated for dataBase */
+  uint8_t  *dataBase;  /**< Start of .data memory segment */
+  vm_size_t dataAlloc; /**< Number of bytes allocated for dataBase */
 
 #ifdef DEBUG_VM
-  uint8_t *debugStorage;
-  int      debugStorageLength;
+  uint8_t  *debugStorage;
+  vm_size_t debugStorageLength;
 #endif
 
   int stackBottom; /**< If programStack < stackBottom, error */
 
   /*------------------------------------*/
 
-  /* DEBUG_VM */
+#ifdef DEBUG_VM
   int         numSymbols; /**< Number of symbols from VM_LoadSymbols */
   vmSymbol_t *symbols;    /**< By VM_LoadSymbols: names for debugging */
+#endif
 
   int callLevel;     /**< Counts recursive VM_Call */
   int breakFunction; /**< For debugging: break at this function */
@@ -197,9 +204,9 @@ typedef struct vm_s {
  * @return 0 if everything is OK. -1 if something went wrong. */
 bool VM_Create(vm_t                *vm,
                const uint8_t *const bytecode,
-               const size_t         length,
+               const vm_size_t      length,
                uint8_t *const       dataSegment,
-               const size_t         dataSegmentLength,
+               const vm_size_t      dataSegmentLength,
                intptr_t (*systemCalls)(vm_t *, intptr_t *));
 
 #ifdef DEBUG_VM
@@ -250,9 +257,9 @@ int32_t VM_FloatToInt(float f);
  * @param[in] len Length in bytes
  * @param[in] vm Current VM
  * @return 0 if valid (!), -1 if invalid. */
-bool VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *const vm);
+bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, const vm_t *const vm);
 
-#if VM_DEBUG
+#ifdef DEBUG_VM
 /** Print call statistics for every function. Only works with DEBUG_VM.
  * Does nothing if DEBUG_VM is not defined.
  * @param[in] vm VM to profile */
@@ -261,7 +268,7 @@ void VM_VmProfile_f(vm_t *vm);
 /** Set the printf debug level. Only useful with DEBUG_VM.
  * Set to 1 for general informations and 2 to output every opcode name.
  * @param[in] level If level is 0: be quiet (default). */
-void VM_Debug(int level);
+void VM_Debug(uint8_t level);
 #else
 #define VM_VmProfile_f(a)
 #define VM_Debug(a)
