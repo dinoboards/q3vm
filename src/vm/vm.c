@@ -382,7 +382,9 @@ bool VM_Create(vm_t                *vm,
 
   /* the stack is implicitly at the end of the image */
   vm->programStack = vm->dataAlloc - 4;
-  vm->stackBottom  = vm->programStack - VM_PROGRAM_STACK_SIZE;
+#ifdef DEBUG_VM
+  vm->stackBottom = vm->programStack - VM_PROGRAM_STACK_SIZE;
+#endif
 
   return 0;
 }

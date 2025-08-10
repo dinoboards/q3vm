@@ -125,10 +125,7 @@ typedef struct vmSymbol_s {
  * everything. Call VM_Create(...) to initialize this struct. Call VM_Free(...)
  * to cleanup this struct and free the memory. */
 typedef struct vm_s {
-  /* DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
-     USED BY THE ASM CODE (IF WE ADD THE Q3 JIT COMPILER IN THE FUTURE) */
-
-  int programStack; /**< Stack pointer into .data segment. */
+  vm_size_t programStack; /**< Stack pointer into .data segment. */
 
   /** Function pointer to callback function for native functions called by
    * the bytecode. The function is identified by an integer id that
@@ -165,9 +162,8 @@ typedef struct vm_s {
 #ifdef DEBUG_VM
   uint8_t  *debugStorage;
   vm_size_t debugStorageLength;
+  vm_size_t stackBottom; /**< If programStack < stackBottom, error */
 #endif
-
-  int stackBottom; /**< If programStack < stackBottom, error */
 
   /*------------------------------------*/
 
