@@ -292,12 +292,6 @@ static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm
  * @return float number */
 extern float _vmf(intptr_t x);
 
-/** @brief Safe strncpy that ensures a trailing zero.
- * @param[out] dest Output string.
- * @param[in] src Input string.
- * @param[in] destsize Number of free bytes in dest. */
-static void Q_strncpyz(char *dest, const char *src, int destsize);
-
 /******************************************************************************
  * DEBUG FUNCTIONS (only used if DEBUG_VM is defined)
  ******************************************************************************/
@@ -320,6 +314,12 @@ static const char *VM_ValueToSymbol(vm_t *vm, int value);
 static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int debugStorageLength);
 /** Print a stack trace on OP_ENTER if vm_debugLevel is > 0 */
 static void VM_StackTrace(vm_t *vm, int programCounter, int programStack);
+
+/** @brief Safe strncpy that ensures a trailing zero.
+ * @param[out] dest Output string.
+ * @param[in] src Input string.
+ * @param[in] destsize Number of free bytes in dest. */
+static void Q_strncpyz(char *dest, const char *src, int destsize);
 #endif
 
 /******************************************************************************
@@ -554,6 +554,7 @@ int VM_MemoryRangeValid(intptr_t vmAddr, size_t len, const vm_t *vm) {
   return 0;
 }
 
+#ifdef DEBUG_VM
 static void Q_strncpyz(char *dest, const char *src, int destsize) {
   if (!dest || !src || destsize < 1) {
     return;
@@ -561,6 +562,7 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
   strncpy(dest, src, destsize - 1);
   dest[destsize - 1] = 0;
 }
+#endif
 
 static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm) {
 
@@ -1355,6 +1357,9 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
   int          chars;
   int          segment;
 
+  vm->debugStorage       = debugStorage;
+  vm->debugStorageLength = debugStorageLength;
+
   /* parse the symbols */
   text_p = mapfile;
   prev   = &vm->symbols;
@@ -1385,13 +1390,13 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
       break;
     }
     chars = strlen(token);
-    debugStorageLength -= sizeof(vmSymbol_t) + chars;
-    if (debugStorageLength < 0) {
+    vm->debugStorageLength -= sizeof(vmSymbol_t) + chars;
+    if (vm->debugStorageLength < 0) {
       Com_Error(VM_MALLOC_FAILED, "Sym. pointer malloc failed: out of memory?");
       break;
     }
-    sym = (vmSymbol_t *)debugStorage;
-    debugStorage += sizeof(vmSymbol_t) + chars;
+    sym = (vmSymbol_t *)vm->debugStorage;
+    vm->debugStorage += sizeof(vmSymbol_t) + chars;
 
     *prev = sym;
 
@@ -1435,7 +1440,7 @@ static int VM_ProfileSort(const void *a, const void *b) {
   return 0;
 }
 
-void VM_VmProfile_f(const vm_t *vm) {
+void VM_VmProfile_f(vm_t *vm) {
   vmSymbol_t **sorted, *sym;
   int          i;
   float        total;
@@ -1448,11 +1453,15 @@ void VM_VmProfile_f(const vm_t *vm) {
     return;
   }
 
-  sorted = Com_malloc(vm->numSymbols * sizeof(*sorted), NULL, VM_ALLOC_DEBUG);
-  if (!sorted) {
+  vm->debugStorageLength -= (vm->numSymbols * sizeof(*sorted));
+  if (vm->debugStorageLength < 0) {
     Com_Error(VM_MALLOC_FAILED, "Symbol pointer malloc failed: out of memory?");
     return;
   }
+
+  sorted = (vmSymbol_t **)vm->debugStorage;
+
+  vm->debugStorage += (vm->numSymbols * sizeof(*sorted));
   sorted[0] = vm->symbols;
   total     = (float)sorted[0]->profileCount;
   for (i = 1; i < vm->numSymbols; i++) {
@@ -1473,9 +1482,7 @@ void VM_VmProfile_f(const vm_t *vm) {
   }
 
   Com_Printf("    %9.0f total\n", total);
-
-  Com_free(sorted, NULL, VM_ALLOC_DEBUG);
 }
 #else
-void VM_VmProfile_f(const vm_t *vm) { (void)vm; }
+void VM_VmProfile_f(vm_t *vm) { (void)vm; }
 #endif

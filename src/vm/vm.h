@@ -24,7 +24,7 @@
  * DEFINES
  ******************************************************************************/
 
-#if 1
+#if 0
 #define DEBUG_VM /**< ifdef: enable debug functions and additional checks */
 #endif
 
@@ -154,6 +154,11 @@ typedef struct vm_s {
   uint8_t *dataBase;  /**< Start of .data memory segment */
   int      dataAlloc; /**< Number of bytes allocated for dataBase */
 
+#ifdef DEBUG_VM
+  uint8_t *debugStorage;
+  int      debugStorageLength;
+#endif
+
   int stackBottom; /**< If programStack < stackBottom, error */
 
   /*------------------------------------*/
@@ -248,7 +253,7 @@ int VM_MemoryRangeValid(intptr_t vmAddr, size_t len, const vm_t *vm);
 /** Print call statistics for every function. Only works with DEBUG_VM.
  * Does nothing if DEBUG_VM is not defined.
  * @param[in] vm VM to profile */
-void VM_VmProfile_f(const vm_t *vm);
+void VM_VmProfile_f(vm_t *vm);
 
 /** Set the printf debug level. Only useful with DEBUG_VM.
  * Set to 1 for general informations and 2 to output every opcode name.

@@ -32,12 +32,15 @@ intptr_t systemCalls(vm_t *vm, intptr_t *args);
    @return Pointer to virtual machine image file (raw bytes). */
 uint8_t *loadImage(const char *filepath, int *size);
 
+#ifdef DEBUG_VM
 static void COM_StripExtension(const char *in, char *out) {
   while (*in && *in != '.') {
     *out++ = *in++;
   }
   *out = 0;
 }
+#endif
+
 int main(int argc, char **argv) {
   vm_t  vm;
   int   retVal = -1;
@@ -78,7 +81,7 @@ int main(int argc, char **argv) {
     retVal = VM_Call(&vm, 0);
   }
   /* output profile information in DEBUG_VM build: */
-  /* VM_VmProfile_f(&vm); */
+  VM_VmProfile_f(&vm);
   VM_Free(&vm);
   free(image); /* we can release the memory now */
 
