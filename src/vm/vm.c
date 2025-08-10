@@ -607,18 +607,25 @@ locals from sp
 ==============
 */
 
+#define r2                  (*((int *)&codeImage[programCounter]))
+#define INT_INCREMENT       4
+#define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
+#define DISPATCH2()         goto nextInstruction2
+#define DISPATCH()          goto nextInstruction
+
 static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
-  uint8_t  stack[OPSTACK_SIZE + 15];
-  int     *opStack;
-  uint8_t  opStackOfs;
-  int      programCounter;
-  int      programStack;
-  int      stackOnEntry;
-  uint8_t *image;
-  uint8_t *codeImage;
-  int      v1;
-  int      arg;
-  int      opcode, r0, r1;
+  uint8_t       stack[OPSTACK_SIZE + 15];
+  vm_operand_t *opStack;
+  uint8_t       opStackOfs;
+  std_int       programCounter;
+  std_int       programStack;
+  std_int       stackOnEntry;
+  uint8_t      *image;
+  uint8_t      *codeImage;
+  vm_operand_t  v1;
+  std_int       arg;
+  uint8_t       opcode;
+  vm_operand_t  r0, r1;
 
 #ifdef DEBUG_VM
   int         prevProgramCounter;
@@ -661,14 +668,6 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
 
   /* main interpreter loop, will exit when a LEAVE instruction
      grabs the -1 program counter */
-
-#define r2            (*((int *)&codeImage[programCounter]))
-#define INT_INCREMENT 4
-
-#define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
-
-#define DISPATCH2() goto nextInstruction2
-#define DISPATCH()  goto nextInstruction
 
   while (1) {
   nextInstruction:
