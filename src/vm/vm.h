@@ -146,12 +146,12 @@ typedef struct vm_s {
   int      compiled;   /**< Is a JIT active? Otherwise interpreted */
   uint8_t *codeBase;   /**< Bytecode code segment */
   int      entryOfs;   /**< unused */
-  int      codeLength; /**< Number of bytes in code segment */
+  size_t   codeLength; /**< Number of bytes in code segment */
 
   int instructionCount; /**< Number of instructions for VM */
 
   uint8_t *dataBase;  /**< Start of .data memory segment */
-  int      dataAlloc; /**< Number of bytes allocated for dataBase */
+  size_t   dataAlloc; /**< Number of bytes allocated for dataBase */
 
 #ifdef DEBUG_VM
   uint8_t *debugStorage;
@@ -247,7 +247,7 @@ int32_t VM_FloatToInt(float f);
  * @param[in] len Length in bytes
  * @param[in] vm Current VM
  * @return 0 if valid (!), -1 if invalid. */
-int VM_MemoryRangeValid(intptr_t vmAddr, size_t len, const vm_t *vm);
+int VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *vm);
 
 /** Print call statistics for every function. Only works with DEBUG_VM.
  * Does nothing if DEBUG_VM is not defined.

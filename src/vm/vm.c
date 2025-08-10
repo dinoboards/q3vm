@@ -286,7 +286,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args);
  * @param[in] src Pointer (in VM space).
  * @param[in] n Number of bytes.
  * @param[in,out] vm Current VM */
-static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm);
+static void VM_BlockCopy(size_t __dest, const size_t src, const size_t n, const vm_t *vm);
 
 /** Helper function for the _vmf inline function _vmf in vm.h.
  * @param[in] x Number that is actually a IEEE 754 float.
@@ -545,12 +545,12 @@ int32_t VM_FloatToInt(float f) {
   return fi.i;
 }
 
-int VM_MemoryRangeValid(intptr_t vmAddr, size_t len, const vm_t *vm) {
+int VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *vm) {
   if (!vmAddr || !vm) {
     return -1;
   }
 
-  if (vmAddr < 0 || vmAddr + len > (size_t)vm->dataAlloc) {
+  if (vmAddr > vm->dataAlloc || vmAddr + len > vm->dataAlloc) {
     Com_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
     return -1;
   }
@@ -568,7 +568,7 @@ static void Q_strncpyz(char *dest, const char *src, int destsize) {
 }
 #endif
 
-static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm) {
+static void VM_BlockCopy(size_t dest, const size_t src, const size_t n, const vm_t *vm) {
 
   if (VM_MemoryRangeValid(src, n, vm))
     return;
