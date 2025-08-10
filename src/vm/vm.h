@@ -25,9 +25,6 @@
  ******************************************************************************/
 
 #if 0
-/* original loading/translating of instruction address from instructionCounts */
-#define PRE_PROCESS_BYTECODE
-
 /* assume VM generate code is still using instruction Count for jumps */
 #define INSTRUCTION_COUNT_REFERENCING
 #else

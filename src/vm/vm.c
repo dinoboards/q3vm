@@ -537,13 +537,6 @@ void VM_Free(vm_t *vm) {
     return;
   }
 
-#ifdef PRE_PROCESS_BYTECODE
-  if (vm->codeBase) {
-    Com_free(vm->codeBase, vm, VM_ALLOC_CODE_SEC);
-    vm->codeBase = NULL;
-  }
-#endif
-
   if (vm->dataBase) {
     Com_free(vm->dataBase, vm, VM_ALLOC_DATA_SEC);
     vm->dataBase = NULL;
@@ -647,7 +640,6 @@ static void VM_BlockCopy(unsigned int dest, unsigned int src, size_t n, vm_t *vm
 static int LittleEndianToHost(const uint8_t b[4]) { return (b[0] << 0) | (b[1] << 8) | (b[2] << 16) | (b[3] << 24); }
 
 static bool VM_PrepareInterpreter(vm_t *vm, const vmHeader_t *header) {
-#ifndef PRE_PROCESS_BYTECODE
 
 #ifdef INSTRUCTION_COUNT_REFERENCING
   int byte_pc;
@@ -739,145 +731,6 @@ static bool VM_PrepareInterpreter(vm_t *vm, const vmHeader_t *header) {
   }
 #endif
   return false;
-#else
-  int      op;
-  int      byte_pc;
-  int      int_pc;
-  uint8_t *code;
-  int      instruction;
-  int     *codeBase;
-
-  vm->codeBase = (uint8_t *)Com_malloc(vm->codeLength * 4, vm, VM_ALLOC_CODE_SEC); /* we're now int aligned */
-  if (!vm->codeBase) {
-    Com_Error(VM_MALLOC_FAILED, "Data pointer malloc failed: out of memory?");
-    return -1;
-  }
-
-  Com_Memcpy(vm->codeBase, (uint8_t *)header + header->codeOffset, vm->codeLength);
-
-  /* we don't need to translate the instructions, but we still need
-     to find each instructions starting point for jumps */
-  int_pc = byte_pc = 0;
-  instruction      = 0;
-  code             = (uint8_t *)header + header->codeOffset;
-  codeBase         = (int *)vm->codeBase;
-
-  /* Copy and expand instructions to words while
-   * building instruction table */
-  while (instruction < header->instructionCount) {
-    vm->instructionPointers[instruction] = int_pc;
-    instruction++;
-
-    op               = (int)code[byte_pc];
-    codeBase[int_pc] = op;
-    if (byte_pc > header->codeLength) {
-      Com_Error(vm->lastError = VM_PC_OUT_OF_RANGE, "VM_PrepareInterpreter: pc > header->codeLength");
-      return -1;
-    }
-
-    byte_pc++;
-    int_pc++;
-
-    /* these are the only opcodes that aren't a single byte */
-    switch (op) {
-    case OP_ENTER:
-    case OP_CONST:
-    case OP_LOCAL:
-    case OP_LEAVE:
-    case OP_EQ:
-    case OP_NE:
-    case OP_LTI:
-    case OP_LEI:
-    case OP_GTI:
-    case OP_GEI:
-    case OP_LTU:
-    case OP_LEU:
-    case OP_GTU:
-    case OP_GEU:
-    case OP_EQF:
-    case OP_NEF:
-    case OP_LTF:
-    case OP_LEF:
-    case OP_GTF:
-    case OP_GEF:
-    case OP_BLOCK_COPY:
-      codeBase[int_pc] = LittleEndianToHost(&code[byte_pc]);
-      byte_pc += 4;
-      int_pc++;
-      break;
-    case OP_ARG:
-      codeBase[int_pc] = (int)code[byte_pc];
-      byte_pc++;
-      int_pc++;
-      break;
-    default:
-      if (op < 0 || op >= OP_MAX) {
-        vm->lastError = VM_BAD_INSTRUCTION;
-        Com_Error(vm->lastError, "Bad VM instruction");
-        return -1;
-      }
-      break;
-    }
-  }
-  int_pc      = 0;
-  instruction = 0;
-
-  /* Now that the code has been expanded to int-sized opcodes, we'll translate
-     instruction index
-     into an index into codeBase[], which contains opcodes and operands. */
-  while (instruction < header->instructionCount) {
-    op = codeBase[int_pc];
-    instruction++;
-    int_pc++;
-
-    switch (op) {
-    /* These ops need to translate addresses in jumps from instruction index
-       to int index */
-    case OP_EQ:
-    case OP_NE:
-    case OP_LTI:
-    case OP_LEI:
-    case OP_GTI:
-    case OP_GEI:
-    case OP_LTU:
-    case OP_LEU:
-    case OP_GTU:
-    case OP_GEU:
-    case OP_EQF:
-    case OP_NEF:
-    case OP_LTF:
-    case OP_LEF:
-    case OP_GTF:
-    case OP_GEF:
-      if (codeBase[int_pc] < 0 || codeBase[int_pc] > vm->instructionCount) {
-        Com_Error(vm->lastError = VM_JUMP_TO_INVALID_INSTRUCTION, "VM_PrepareInterpreter: Jump to invalid "
-                                                                  "instruction number");
-        return true;
-      }
-
-      /* codeBase[pc] is the instruction index. Convert that into a
-         offset into
-         the int-aligned codeBase[] by the lookup table. */
-      codeBase[int_pc] = vm->instructionPointers[codeBase[int_pc]];
-      int_pc++;
-      break;
-
-    /* These opcodes have an operand that isn't an instruction index */
-    case OP_ENTER:
-    case OP_CONST:
-    case OP_LOCAL:
-    case OP_LEAVE:
-    case OP_BLOCK_COPY:
-    case OP_ARG:
-      int_pc++;
-      break;
-
-    default:
-      break;
-    }
-  }
-  return false;
-#endif
 }
 
 /*
@@ -911,12 +764,8 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
   int      programStack;
   int      stackOnEntry;
   uint8_t *image;
-#ifdef PRE_PROCESS_BYTECODE
-  int *codeImage;
-#else
   uint8_t *codeImage;
-#endif
-  int v1;
+  int      v1;
 #ifndef DISABLE_DATA_MASK_PROTECTION
   int dataMask;
 #endif
@@ -970,13 +819,8 @@ static int VM_CallInterpreted(vm_t *vm, int *args) {
      grabs the -1 program counter */
 
   int opcode, r0, r1;
-#ifdef PRE_PROCESS_BYTECODE
-#define r2            codeImage[programCounter]
-#define INT_INCREMENT 1
-#else
 #define r2            (*((int *)&codeImage[programCounter]))
 #define INT_INCREMENT 4
-#endif
 
 #ifdef INSTRUCTION_COUNT_REFERENCING
 #define MAX_PROGRAM_COUNTER ((unsigned)vm->instructionCount)
