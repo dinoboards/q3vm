@@ -543,7 +543,7 @@ int32_t VM_FloatToInt(float f) {
   return fi.i;
 }
 
-int VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *vm) {
+bool VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *const vm) {
   if (!vmAddr || !vm) {
     return -1;
   }
@@ -607,8 +607,8 @@ locals from sp
 ==============
 */
 
-#define r2                  (*((int *)&codeImage[programCounter]))
-#define INT_INCREMENT       4
+#define r2                  (*((vm_operand_t *)&codeImage[programCounter]))
+#define INT_INCREMENT       sizeof(uint32_t)
 #define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
 #define DISPATCH2()         goto nextInstruction2
 #define DISPATCH()          goto nextInstruction
@@ -628,7 +628,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
   vm_operand_t  r0, r1;
 
 #ifdef DEBUG_VM
-  int         prevProgramCounter;
+  std_int     prevProgramCounter;
   vmSymbol_t *profileSymbol;
 #endif
 
@@ -653,11 +653,11 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
   programStack -= (8 + 4 * MAX_VMMAIN_ARGS);
 
   for (arg = 0; arg < MAX_VMMAIN_ARGS; arg++) {
-    *(int *)&image[programStack + 8 + arg * 4] = args[arg];
+    *(vm_operand_t *)&image[programStack + 8 + arg * 4] = args[arg];
   }
 
-  *(int *)&image[programStack + 4] = 0;  /* return stack */
-  *(int *)&image[programStack]     = -1; /* will terminate the loop on return */
+  *(vm_operand_t *)&image[programStack + 4] = 0;  /* return stack */
+  *(vm_operand_t *)&image[programStack]     = -1; /* will terminate the loop on return */
 
   /* leave a free spot at start of stack so
      that as long as opStack is valid, opStack-1 will
@@ -677,7 +677,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
 
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
-      int diff           = programCounter - prevProgramCounter;
+      std_int diff       = programCounter - prevProgramCounter;
       prevProgramCounter = programCounter;
       Com_Printf("%08X[%d]:\t", programCounter, diff);
     }
@@ -744,7 +744,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
         return -1;
       }
 #endif
-      r0 = opStack[opStackOfs] = *(int *)&image[r0];
+      r0 = opStack[opStackOfs] = *(vm_operand_t *)&image[r0];
       DISPATCH2();
     goto_OP_LOAD2:
       r0 = opStack[opStackOfs] = *(unsigned short *)&image[r0];
@@ -754,7 +754,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
       DISPATCH2();
 
     goto_OP_STORE4:
-      *(int *)&image[r1] = r0;
+      *(vm_operand_t *)&image[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_STORE2:
@@ -767,7 +767,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
       DISPATCH();
     goto_OP_ARG:
       /* single byte offset from programStack */
-      *(int *)&image[(codeImage[programCounter] + programStack)] = r0;
+      *(vm_operand_t *)&image[(codeImage[programCounter] + programStack)] = r0;
       opStackOfs--;
       programCounter += 1;
       DISPATCH();
@@ -778,7 +778,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
       DISPATCH();
     goto_OP_CALL:
       /* save current program counter */
-      *(int *)&image[programStack] = programCounter;
+      *(vm_operand_t *)&image[programStack] = (vm_operand_t)programCounter;
 
       /* jump to the location on the stack */
       programCounter = r0;
@@ -796,20 +796,17 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
 #ifdef DEBUG_VM
         int stomped = *(int *)&image[programStack + 4];
 #endif
-        *(int *)&image[programStack + 4] = -1 - programCounter;
+        *(vm_operand_t *)&image[programStack + 4] = -1 - programCounter;
 
-        /* the vm has ints on the stack, we expect
-           pointers so we might have to convert it */
-        if (sizeof(intptr_t) != sizeof(int)) {
-          intptr_t argarr[MAX_VMSYSCALL_ARGS];
-          int     *imagePtr = (int *)&image[programStack];
-          int      i;
-          for (i = 0; i < (int)ARRAY_LEN(argarr); ++i) {
+        {
+          intptr_t      argarr[MAX_VMSYSCALL_ARGS];
+          vm_operand_t *imagePtr = (vm_operand_t *)&image[programStack];
+          std_int       i;
+
+          for (i = 0; i < (std_int)ARRAY_LEN(argarr); ++i)
             argarr[i] = *(++imagePtr);
-          }
+
           r = vm->systemCall(vm, argarr);
-        } else {
-          r = vm->systemCall(vm, (intptr_t *)&image[programStack + 4]);
         }
 
 #ifdef DEBUG_VM

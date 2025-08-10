@@ -250,7 +250,7 @@ int32_t VM_FloatToInt(float f);
  * @param[in] len Length in bytes
  * @param[in] vm Current VM
  * @return 0 if valid (!), -1 if invalid. */
-int VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *vm);
+bool VM_MemoryRangeValid(const size_t vmAddr, const size_t len, const vm_t *const vm);
 
 /** Print call statistics for every function. Only works with DEBUG_VM.
  * Does nothing if DEBUG_VM is not defined.
