@@ -412,7 +412,6 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 static const vmHeader_t *
 VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *const dataSegment, const size_t dataSegmentLength) {
   size_t dataLength;
-  int    i;
   union {
     vmHeader_t    *h;
     const uint8_t *v;
@@ -428,11 +427,6 @@ VM_LoadQVM(vm_t *const vm, const uint8_t *bytecode, size_t length, uint8_t *cons
   }
 
   if (header.h->vmMagic == VM_MAGIC) {
-    /* byte swap the header */
-    for (i = 0; i < (int)(sizeof(vmHeader_t)) / 4; i++) {
-      ((int *)header.h)[i] = ((int *)header.h)[i];
-    }
-
     /* validate */
     if (header.h->codeLength == 0 || header.h->instructionCount == 0 || header.h->bssLength > VM_MAX_BSS_LENGTH ||
         header.h->codeOffset + header.h->codeLength > length ||
