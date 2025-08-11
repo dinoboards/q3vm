@@ -1295,13 +1295,11 @@ static void WriteVmFile(void) {
   // vmHeader_t changes, this needs to be adjusted too.
   headerSize = sizeof(header);
 
-  header.instructionCount = instructionCount;
-  header.codeOffset       = headerSize;
-  header.codeLength       = segment[CODESEG].imageUsed;
-  header.dataOffset       = header.codeOffset + segment[CODESEG].imageUsed;
-  header.dataLength       = segment[DATASEG].imageUsed;
-  header.litLength        = segment[LITSEG].imageUsed;
-  header.bssLength        = segment[BSSSEG].imageUsed;
+  header.instructionCount = to_uint24(instructionCount);
+  header.codeLength       = to_uint24(segment[CODESEG].imageUsed);
+  header.litLength        = to_uint24(segment[LITSEG].imageUsed);
+  header.dataLength       = to_uint24(segment[DATASEG].imageUsed);
+  header.bssLength        = to_uint24(segment[BSSSEG].imageUsed);
 
   report("Writing to %s\n", imageName);
 

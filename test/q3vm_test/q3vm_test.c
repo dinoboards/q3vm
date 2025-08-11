@@ -105,15 +105,15 @@ void testArguments(void) {
 
   vmHeader_t vmHeader       = {0};
   vmHeader.vmMagic          = VM_MAGIC;
-  vmHeader.instructionCount = 1000;
-  vmHeader.codeOffset       = sizeof(vmHeader_t);
-  vmHeader.codeLength       = 1024;
-  vmHeader.dataOffset       = vmHeader.codeOffset + vmHeader.codeLength;
-  vmHeader.dataLength       = 2048;
-  vmHeader.litLength        = 0;
-  vmHeader.bssLength        = 256;
-  VM_Create(&vm, (uint8_t *)&vmHeader, vmHeader.dataOffset + vmHeader.dataLength + vmHeader.litLength - 1, dataSegment,
-            sizeof(dataSegment), systemCalls);
+  vmHeader.instructionCount = to_uint24(1000);
+  vmHeader.codeLength       = to_uint24(1024);
+  vmHeader.dataLength       = to_uint24(2048);
+  vmHeader.litLength        = to_uint24(0);
+  vmHeader.bssLength        = to_uint24(256);
+  VM_Create(&vm, (uint8_t *)&vmHeader,
+            sizeof(vmHeader_t) + to_ustdint(vmHeader.codeLength) + to_ustdint(vmHeader.dataLength) +
+                to_ustdint(vmHeader.litLength) - 1,
+            dataSegment, sizeof(dataSegment), systemCalls);
 
   VM_Call(NULL, 0);
 
