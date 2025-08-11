@@ -349,26 +349,28 @@ bool VM_Create(vm_t                *vm,
   Com_Memset(vm, 0, sizeof(vm_t));
   vm->header           = (vmHeader_t *)bytecode;
   vm->bytecodeLength   = length;
-  vm->dataBase         = workingRAM;
   vm->workingRAMLength = workingRAMLength;
 
   vm->litLength        = vm->header->litLength;
   vm->instructionCount = vm->header->instructionCount;
   vm->codeLength       = vm->header->codeLength;
 
-  vm->codeBase     = (uint8_t *)bytecode + vm->header->codeOffset;
-  vm->systemCall   = systemCalls;
-  vm->programStack = vm->workingRAMLength - 4;
+  vm->codeBase   = (uint8_t *)bytecode + vm->header->codeOffset;
+  vm->systemCall = systemCalls;
+
+  uint32_t fullLength = vm->header->dataLength + vm->header->litLength + vm->header->bssLength;
+  vm->programStack    = fullLength - 4;
 
   if (VM_ValidateHeader(vm))
     return -1;
 
   /* make sure data section is always initialized with 0
    * (bss would be enough) */
-  Com_Memset(vm->dataBase, 0, vm->workingRAMLength);
+  Com_Memset(workingRAM, 0, workingRAMLength);
 
-  /* copy the intialized data */
-  Com_Memcpy(vm->dataBase, bytecode + vm->header->dataOffset, vm->header->dataLength + vm->header->litLength);
+  /* copy the intialized data, excluding the lit segment */
+  Com_Memcpy(workingRAM, bytecode + vm->header->dataOffset + vm->header->litLength, vm->header->dataLength);
+  vm->dataBase = workingRAM - vm->header->litLength;
 
   /* the stack is implicitly at the end of the image */
 #ifdef DEBUG_VM
@@ -429,9 +431,11 @@ static bool VM_ValidateHeader(const vm_t *const vm) {
     /* round up to next power of 2 so all data operations can
        be mask protected */
     /*TODO: we can remove need for lit to be included in dataSegment*/
-    const vm_size_t dataLength = header->dataLength + header->litLength + header->bssLength;
+    const vm_size_t dataLength = header->dataLength + header->bssLength;
 
     if (dataLength > vm->workingRAMLength) {
+      Com_Printf("Error: Insufficient ram allocated for VM.  Granted %06X, image requires %06X\n", vm->workingRAMLength,
+                 dataLength);
       Com_Error(VM_NOT_ENOUGH_RAM, "Insufficient ram allocated for VM\n");
       return -1;
     }
@@ -492,10 +496,14 @@ void *VM_ArgPtr(intptr_t vmAddr, vm_t *vm) {
   if (!vmAddr) {
     return NULL;
   }
+
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Invalid VM pointer");
     return NULL;
   }
+
+  if (vmAddr < vm->litLength)
+    return (void *)(&vm->codeBase[vm->codeLength + vmAddr]);
 
   return (void *)(vm->dataBase + (vmAddr));
 }
@@ -551,7 +559,14 @@ static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n,
   if (VM_MemoryRangeValid(src, n, vm))
     return;
 
-  Com_Memcpy(vm->dataBase + dest, vm->dataBase + src, n);
+  uint8_t *true_src;
+
+  if (src < (vm_operand_t)vm->litLength)
+    true_src = &vm->codeBase[vm->codeLength + src];
+  else
+    true_src = &vm->dataBase[src];
+
+  Com_Memcpy(vm->dataBase + dest, true_src, n);
 }
 /*
 ==============
@@ -588,12 +603,6 @@ uint8_t *VM_RedirectLit(vm_t *vm, vm_operand_t a) {
   }
 
   return &vm->dataBase[a];
-}
-
-vm_operand_t VM_ProtectLit(vm_t *vm, vm_operand_t a) {
-  if (a < (vm_operand_t)vm->litLength)
-    printf("ERROR! Attempt to write to a literal at %08X\n", a);
-  return a;
 }
 
 static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
@@ -736,15 +745,15 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
       DISPATCH2();
 
     goto_OP_STORE4:
-      *(vm_operand_t *)&dataBase[VM_ProtectLit(vm, r1)] = r0;
+      *(vm_operand_t *)&dataBase[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_STORE2:
-      *(short *)&dataBase[VM_ProtectLit(vm, r1)] = r0;
+      *(short *)&dataBase[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_STORE1:
-      dataBase[VM_ProtectLit(vm, r1)] = r0;
+      dataBase[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_ARG:
@@ -775,6 +784,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
 #endif
         /* save the stack to allow recursive VM entry */
         vm->programStack = programStack - 4;
+
 #ifdef DEBUG_VM
         int stomped = *(int *)&dataBase[programStack + 4];
 #endif
@@ -794,7 +804,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
 #ifdef DEBUG_VM
         /* this is just our stack frame pointer, only needed
            for debugging */
-        *(int *)&image[programStack + 4] = stomped;
+        *(int *)&codeBase[programStack + 4] = stomped;
 #endif
 
         /* save return value */
@@ -825,6 +835,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
       v1 = r2;
       programCounter += INT_INCREMENT;
       programStack -= v1;
+
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter - 3);
       /* save old stack frame for debugging traces */

@@ -152,7 +152,7 @@ typedef struct vm_s {
   uint8_t  *litBase;
   vm_size_t litLength;
 
-  uint8_t  *dataBase;         /**< Start of .data memory segment aka workingRAM */
+  uint8_t  *dataBase;         /**< base address to apply for access DATA and BSS segments - aka workingRAM - litLength */
   vm_size_t workingRAMLength; /**< Number of bytes allocated for dataBase */
 
 #ifdef DEBUG_VM

@@ -1511,7 +1511,6 @@ int main(int argc, char **argv) {
 
     if (!strcmp(argv[i], "-s")) {
       stackSize = atoi(argv[i + 1]);
-
       i++;
       continue;
     }

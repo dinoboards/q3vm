@@ -61,10 +61,11 @@ int main(int argc, char **argv) {
 
   VM_Debug(3);
 
-  pData = malloc(0x10000); /* allocate 64k ram for data, bss and stack*/
+#define DATA_SIZE 0x414
+  pData = malloc(DATA_SIZE); /* allocate 64k ram for data, bss and stack*/
 
   /* set-up virtual machine */
-  if (VM_Create(&vm, image, imageSize, pData, 0x10000, systemCalls) == 0) {
+  if (VM_Create(&vm, image, imageSize, pData, DATA_SIZE, systemCalls) == 0) {
 #ifdef DEBUG_VM
     void *pDebugInfo = malloc(0x10000);
     int   mapFileImageSize;

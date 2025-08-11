@@ -16,6 +16,7 @@ This must be the very first function compiled into the .qvm file
 */
 
 char d;
+int  nn;
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
@@ -25,6 +26,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     printf("Hello World! - fib(5) = %i\n", fib(5));
     printf("someimmutabledata at: %d\n", (int)&someimmutabledata);
     printf("changingdata at: %d\n", (int)&changingdata);
+    printf("nn(%d) = %d\n", &nn, nn);
     return 0;
 
   case 1:
@@ -51,7 +53,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 
 void printf(const char *fmt, ...) {
   va_list argptr;
-  char    text[1024];
+  char    text[256];
 
   va_start(argptr, fmt);
   vsprintf(text, fmt, argptr);
@@ -61,6 +63,7 @@ void printf(const char *fmt, ...) {
 }
 
 int fib(int n) {
+  nn = n;
   if (n <= 2)
     return 1;
   else
