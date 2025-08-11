@@ -1375,6 +1375,7 @@ static void Assemble(void) {
     }
 
     // align all segment
+    // TODO: we can remove this
     for (i = 0; i < NUM_SEGMENTS; i++) {
       segment[i].imageUsed = (segment[i].imageUsed + 3) & ~3;
     }

@@ -91,7 +91,8 @@ typedef enum {
   VM_MALLOC_FAILED               = -13, /**< Not enough memory */
   VM_BAD_INSTRUCTION             = -14, /**< Unknown OP code in bytecode */
   VM_NOT_LOADED                  = -15, /**< VM not loaded */
-  VM_NOT_ENOUGH_RAM              = -16  /**< insufficient ram allocated for VM */
+  VM_NOT_ENOUGH_RAM              = -16, /**< insufficient ram allocated for VM */
+  VM_MALFORMED_HEADER            = -17
 } vmErrorCode_t;
 
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of
@@ -125,6 +126,9 @@ typedef struct vmSymbol_s {
  * everything. Call VM_Create(...) to initialize this struct. Call VM_Free(...)
  * to cleanup this struct and free the memory. */
 typedef struct vm_s {
+  vmHeader_t *header; /* Pointer to the bytecode header preceeding the main bytecode image */
+  vm_size_t   bytecodeLength;
+
   vm_size_t programStack; /**< Stack pointer into .data segment. */
 
   /** Function pointer to callback function for native functions called by
@@ -140,13 +144,16 @@ typedef struct vm_s {
 
   /*------------------------------------*/
 
+  std_int instructionCount; /**< Number of instructions for VM */
+
   uint8_t  *codeBase;   /**< Bytecode code segment */
   vm_size_t codeLength; /**< Number of bytes in code segment */
 
-  std_int instructionCount; /**< Number of instructions for VM */
+  uint8_t  *litBase;
+  vm_size_t litLength;
 
-  uint8_t  *dataBase;  /**< Start of .data memory segment */
-  vm_size_t dataAlloc; /**< Number of bytes allocated for dataBase */
+  uint8_t  *dataBase;         /**< Start of .data memory segment aka workingRAM */
+  vm_size_t workingRAMLength; /**< Number of bytes allocated for dataBase */
 
 #ifdef DEBUG_VM
   uint8_t  *debugStorage;
