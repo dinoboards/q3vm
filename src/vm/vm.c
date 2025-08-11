@@ -358,8 +358,7 @@ bool VM_Create(vm_t                *vm,
   vm->codeBase   = (uint8_t *)bytecode + vm->header->codeOffset;
   vm->systemCall = systemCalls;
 
-  uint32_t fullLength = vm->header->dataLength + vm->header->litLength + vm->header->bssLength;
-  vm->programStack    = fullLength - 4;
+  vm->programStack    = vm->header->dataLength + vm->header->litLength + vm->header->bssLength - 4;
 
   if (VM_ValidateHeader(vm))
     return -1;
