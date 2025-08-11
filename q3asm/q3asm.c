@@ -1219,16 +1219,27 @@ void InitTables(void) {
   }
 }
 
+static void writeMapFileForSegment(FILE *f, int seg) {
+  symbol_t *s;
+
+  for (s = symbols; s; s = s->next) {
+    if (s->name[0] == '$') {
+      continue; // skip locals
+    }
+    if (&segment[seg] != s->segment) {
+      continue;
+    }
+    fprintf(f, "%i %8x %s\n", seg, s->segment->segmentBase + s->value, s->name);
+  }
+}
 /*
 ==============
 WriteMapFile
 ==============
 */
 static void WriteMapFile(void) {
-  FILE     *f;
-  symbol_t *s;
-  char      imageName[MAX_OS_PATH];
-  int       seg;
+  FILE *f;
+  char  imageName[MAX_OS_PATH];
 
   strcpy(imageName, outputFilename);
   StripExtension(imageName);
@@ -1237,17 +1248,11 @@ static void WriteMapFile(void) {
   report("Writing %s...\n", imageName);
 
   f = SafeOpenWrite(imageName);
-  for (seg = CODESEG; seg <= BSSSEG; seg++) {
-    for (s = symbols; s; s = s->next) {
-      if (s->name[0] == '$') {
-        continue; // skip locals
-      }
-      if (&segment[seg] != s->segment) {
-        continue;
-      }
-      fprintf(f, "%i %8x %s\n", seg, s->value, s->name);
-    }
-  }
+  writeMapFileForSegment(f, CODESEG);
+  writeMapFileForSegment(f, LITSEG);
+  writeMapFileForSegment(f, DATASEG);
+  writeMapFileForSegment(f, BSSSEG);
+
   fclose(f);
 }
 
@@ -1273,6 +1278,7 @@ static void WriteVmFile(void) {
   report("code segment: %7i\n", segment[CODESEG].imageUsed);
   report("data segment: %7i\n", segment[DATASEG].imageUsed);
   report("lit  segment: %7i\n", segment[LITSEG].imageUsed);
+  report("jtr  segment: %7i\n", segment[JTRGSEG].imageUsed);
   report("bss  segment: %7i\n", segment[BSSSEG].imageUsed);
   report("instruction count: %i\n", instructionCount);
 
@@ -1314,8 +1320,8 @@ static void WriteVmFile(void) {
   f = SafeOpenWrite(imageName);
   SafeWrite(f, &header, headerSize);
   SafeWrite(f, &segment[CODESEG].image, segment[CODESEG].imageUsed);
-  SafeWrite(f, &segment[DATASEG].image, segment[DATASEG].imageUsed);
   SafeWrite(f, &segment[LITSEG].image, segment[LITSEG].imageUsed);
+  SafeWrite(f, &segment[DATASEG].image, segment[DATASEG].imageUsed);
 
   if (!options.vanillaQ3Compatibility) {
     SafeWrite(f, &segment[JTRGSEG].image, segment[JTRGSEG].imageUsed);
@@ -1344,14 +1350,16 @@ static void Assemble(void) {
 
   // assemble
   for (passNumber = 0; passNumber < 2; passNumber++) {
-    segment[LITSEG].segmentBase  = segment[DATASEG].imageUsed;
-    segment[BSSSEG].segmentBase  = segment[LITSEG].segmentBase + segment[LITSEG].imageUsed;
+    segment[LITSEG].segmentBase  = 0;
+    segment[DATASEG].segmentBase = segment[LITSEG].imageUsed;
+    segment[BSSSEG].segmentBase  = segment[DATASEG].segmentBase + segment[DATASEG].imageUsed;
     segment[JTRGSEG].segmentBase = segment[BSSSEG].segmentBase + segment[BSSSEG].imageUsed;
+
     for (i = 0; i < NUM_SEGMENTS; i++) {
       segment[i].imageUsed = 0;
     }
-    segment[DATASEG].imageUsed = 4; // skip the 0 byte, so NULL pointers are fixed up properly
-    instructionCount           = 0;
+    segment[LITSEG].imageUsed = 1; // skip the 0 byte, so NULL pointers are fixed up properly
+    instructionCount          = 0;
 
     for (i = 0; i < numAsmFiles; i++) {
       currentFileIndex = i;
@@ -1376,6 +1384,7 @@ static void Assemble(void) {
   }
 
   // reserve the stack in bss
+  currentSegment = &segment[BSSSEG];
   DefineSymbol("_stackStart", segment[BSSSEG].imageUsed);
   segment[BSSSEG].imageUsed += stackSize;
   DefineSymbol("_stackEnd", segment[BSSSEG].imageUsed);
@@ -1500,7 +1509,7 @@ int main(int argc, char **argv) {
     }
 
     if (!strcmp(argv[i], "-s")) {
-      stackSize = atoi(argv[i+1]);
+      stackSize = atoi(argv[i + 1]);
 
       i++;
       continue;

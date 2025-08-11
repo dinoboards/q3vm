@@ -704,7 +704,7 @@ static std_int VM_CallInterpreted(vm_t *vm, std_int *args) {
     }
 
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(%02X %08X);\tSP=%d, R0=%08X, R1=%08X \n", VM_Indent(vm), opStackOfs,
+      Com_Printf("%s%i %s\t(%02X %08X);\tSP=%08X, R0=%08X, R1=%08X \n", VM_Indent(vm), opStackOfs,
                  opnames[opcode & OPCODE_TABLE_MASK], opcode, r2, programStack, r0, r1);
     }
     profileSymbol->profileCount++;
@@ -1349,7 +1349,6 @@ static char *COM_Parse(char **data_p) {
 static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int debugStorageLength) {
   char        *text_p;
   char        *token;
-  char         symbols[VM_MAX_QPATH];
   vmSymbol_t **prev, *sym;
   int          count;
   int          value;
@@ -1410,7 +1409,7 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
   }
 
   vm->numSymbols = count;
-  Com_Printf("%i symbols parsed from %s\n", count, symbols);
+  Com_Printf("%i symbols parsed\n", count);
 }
 
 static void VM_StackTrace(vm_t *vm, int programCounter, int programStack) {
