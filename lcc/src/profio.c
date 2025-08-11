@@ -36,9 +36,9 @@ struct file {              /* per-file prof.out data: */
       char          *file; /* call site: file, x, y */
       int            x, y;
       int            count; /* number of calls from this site */
-    } * callers;
-  } * funcs; /* list of functions */
-} * filelist;
+    } *callers;
+  } *funcs; /* list of functions */
+}    *filelist;
 FILE *fp;
 
 /* acaller - add caller and site (file,x,y) to callee's callers list */

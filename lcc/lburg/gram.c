@@ -109,7 +109,7 @@ enum yytokentype { TERMINAL = 258, START = 259, PPERCENT = 260, ID = 261, TEMPLA
 
 /* Value type.  */
 #if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE            YYSTYPE;
+typedef union YYSTYPE YYSTYPE;
 union YYSTYPE {
 #line 8 "code/tools/lcc/lburg/gram.y" /* yacc.c:355  */
 
@@ -139,13 +139,13 @@ int yylex(void);
 #ifdef YYTYPE_UINT8
 typedef YYTYPE_UINT8 yytype_uint8;
 #else
-typedef unsigned char      yytype_uint8;
+typedef unsigned char yytype_uint8;
 #endif
 
 #ifdef YYTYPE_INT8
 typedef YYTYPE_INT8 yytype_int8;
 #else
-typedef signed char        yytype_int8;
+typedef signed char yytype_int8;
 #endif
 
 #ifdef YYTYPE_UINT16
@@ -157,7 +157,7 @@ typedef unsigned short int yytype_uint16;
 #ifdef YYTYPE_INT16
 typedef YYTYPE_INT16 yytype_int16;
 #else
-typedef short int          yytype_int16;
+typedef short int yytype_int16;
 #endif
 
 #ifndef YYSIZE_T
@@ -173,7 +173,7 @@ typedef short int          yytype_int16;
 #endif
 #endif
 
-#define YYSIZE_MAXIMUM ((YYSIZE_T)-1)
+#define YYSIZE_MAXIMUM ((YYSIZE_T) - 1)
 
 #ifndef YY_
 #if defined YYENABLE_NLS && YYENABLE_NLS
@@ -297,7 +297,7 @@ void *malloc(YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
 #ifndef YYFREE
 #define YYFREE free
 #if !defined free && !defined EXIT_SUCCESS
-void  free(void *);     /* INFRINGES ON USER NAME SPACE */
+void free(void *); /* INFRINGES ON USER NAME SPACE */
 #endif
 #endif
 #endif

@@ -28,7 +28,7 @@ void dodefine(Tokenrow *trp) {
     /* macro with args */
     int narg = 0;
     tp += 1;
-    args = new (Tokenrow);
+    args = new(Tokenrow);
     maketokenrow(2, args);
     if (tp->type != RP) {
       int err = 0;

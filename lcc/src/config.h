@@ -64,7 +64,7 @@ typedef struct {
   short    set;
   short    number;
   unsigned mask;
-} * Regnode;
+} *Regnode;
 enum { IREG = 0, FREG = 1 };
 typedef struct {
   char        *name;

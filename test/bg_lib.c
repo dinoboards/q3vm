@@ -90,7 +90,9 @@ int         n, swaptype;
 static char *med3(a, b, c, cmp)
 char        *a, *b, *c;
 cmp_t       *cmp;
-{ return cmp(a, b) < 0 ? (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a)) : (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c)); }
+{
+  return cmp(a, b) < 0 ? (cmp(b, c) < 0 ? b : (cmp(a, c) < 0 ? c : a)) : (cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c));
+}
 
 void   qsort(a, n, es, cmp) void *a;
 size_t n, es;

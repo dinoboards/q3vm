@@ -328,7 +328,7 @@ static void Q_strncpyz(char *dest, const char *src, int destsize);
  ******************************************************************************/
 
 #define ARRAY_LEN(x)            (sizeof(x) / sizeof(*(x)))
-#define PAD(base, alignment)    (((base) + (alignment)-1) & ~((alignment)-1))
+#define PAD(base, alignment)    (((base) + (alignment) - 1) & ~((alignment) - 1))
 #define PADLEN(base, alignment) (PAD((base), (alignment)) - (base))
 #define PADP(base, alignment)   ((void *)PAD((intptr_t)(base), (alignment)))
 #define Q_ftol(v)               ((long)(v))

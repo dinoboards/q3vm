@@ -81,7 +81,7 @@ Nlist *lookup(Token *tp, int install) {
     np = np->next;
   }
   if (install) {
-    np       = new (Nlist);
+    np       = new(Nlist);
     np->vp   = NULL;
     np->ap   = NULL;
     np->flag = 0;

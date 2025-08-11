@@ -9,7 +9,7 @@ struct table {
   struct entry {
     struct symbol sym;
     struct entry *link;
-  } * buckets[256];
+  }     *buckets[256];
   Symbol all;
 };
 #define HASHSIZE NELEMS(((Table)0)->buckets)

@@ -7,7 +7,7 @@ static Type  type(int, Type, int, int, void *);
 static struct entry {
   struct type   type;
   struct entry *link;
-} * typetable[128];
+}         *typetable[128];
 static int maxlevel;
 
 static Symbol pointersym;
@@ -284,7 +284,7 @@ Field newfield(char *name, Type ty, Type fty) {
     if (ty->u.sym->u.s.ftab == NULL)                         /* omit */
       ty->u.sym->u.s.ftab = table(NULL, level);              /* omit */
     install(name, &ty->u.sym->u.s.ftab, 0, PERM)->src = src; /* omit */
-  }                                                          /* omit */
+  } /* omit */
   return p;
 }
 int eqtype(Type ty1, Type ty2, int ret) {

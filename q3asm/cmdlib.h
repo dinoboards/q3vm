@@ -61,7 +61,7 @@ typedef unsigned char byte;
 #define MEM_BLOCKSIZE 4096
 
 // the dec offsetof macro doesn't work very well...
-#define myoffsetof(type, identifier) ((size_t) & ((type *)0)->identifier)
+#define myoffsetof(type, identifier) ((size_t)&((type *)0)->identifier)
 
 // set these before calling CheckParm
 extern int    myargc;

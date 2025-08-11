@@ -7,7 +7,7 @@ static Node forest;
 static struct dag {
   struct node node;
   struct dag *hlink;
-} * buckets[16];
+}           *buckets[16];
 int          nodecount;
 static Tree  firstarg;
 int          assignargs = 1;

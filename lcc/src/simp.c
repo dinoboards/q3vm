@@ -163,7 +163,7 @@ static int muld(double x, double y, double min, double max, int needconst) {
 static int subi(long x, long y, long min, long max, int needconst) { return addi(x, -y, min, max, needconst); }
 
 static int subd(double x, double y, double min, double max, int needconst) { return addd(x, -y, min, max, needconst); }
-Tree constexpr(int tok) {
+Tree       constexpr(int tok) {
   Tree p;
 
   needconst++;

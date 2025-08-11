@@ -571,7 +571,7 @@ int fillbuf(Source *s) {
  * if fd==-1 and str, then from the string.
  */
 Source *setsource(char *name, int fd, char *str) {
-  Source *s = new (Source);
+  Source *s = new(Source);
   int     len;
 
   s->line     = 1;

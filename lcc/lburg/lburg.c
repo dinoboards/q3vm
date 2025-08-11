@@ -19,7 +19,7 @@ static Rule    rules;
 static int     nrules;
 static struct block {
   struct block *link;
-} * memlist; /* list of allocated blocks */
+} *memlist; /* list of allocated blocks */
 
 static char *stringf(char *fmt, ...);
 static void  print(char *fmt, ...);
@@ -132,7 +132,7 @@ struct entry {
     struct nonterm nt;
   } sym;
   struct entry *link;
-} * table[211];
+} *table[211];
 #define HASHSIZE (sizeof table / sizeof table[0])
 
 /* hash - return hash number for str */

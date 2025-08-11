@@ -211,7 +211,7 @@ Tokenrow *copytokenrow(Tokenrow *dtr, Tokenrow *str) {
  */
 Tokenrow *normtokenrow(Tokenrow *trp) {
   Token    *tp;
-  Tokenrow *ntrp = new (Tokenrow);
+  Tokenrow *ntrp = new(Tokenrow);
   int       len;
 
   len = trp->lp - trp->tp;

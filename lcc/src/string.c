@@ -4,7 +4,7 @@ static struct string {
   char          *str;
   int            len;
   struct string *link;
-} * buckets[1024];
+}         *buckets[1024];
 static int scatter[] = {/* map characters to random values */
                         2078917053, 143302914,  1027100827, 1953210302, 755253631,  2002600785, 1405390230, 45248011,   1099951567,
                         433832350,  2018585307, 438263339,  813528929,  1703199216, 618906479,  573714703,  766270699,  275680090,
