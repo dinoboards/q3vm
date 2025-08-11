@@ -830,37 +830,6 @@ static int ParseExpression(void)
     return v;
 }
 
-/*
-==============
-HackToSegment
-
-BIG HACK: I want to put all 32 bit values in the data
-segment so they can be byte swapped, and all char data in the lit
-segment, but switch jump tables are emitted in the lit segment and
-initialized strng variables are put in the data segment.
-
-I can change segments here, but I also need to fixup the
-label that was just defined
-
-Note that the lit segment is read-write in the VM, so strings
-aren't read only as in some architectures.
-==============
-*/
-static void HackToSegment(segmentName_t seg)
-{
-    if (currentSegment == &segment[seg])
-    {
-        return;
-    }
-
-    currentSegment = &segment[seg];
-    if (passNumber == 0)
-    {
-        lastSymbol->segment = currentSegment;
-        lastSymbol->value   = currentSegment->imageUsed;
-    }
-}
-
 // #define STAT(L) report("STAT " L "\n");
 #define STAT(L)
 #define ASM(O) int TryAssemble##O()
@@ -1029,8 +998,6 @@ ASM(ADDRESS)
         Parse();
         v = ParseExpression();
 
-        /* Addresses are 32 bits wide, and therefore go into data segment. */
-        HackToSegment(DATASEG);
         EmitInt(currentSegment, v);
         if (passNumber == 1 && token[0] == '$') // crude test for labels
             EmitInt(&segment[JTRGSEG], v);
@@ -1174,17 +1141,7 @@ ASM(BYTE)
         v  = ParseValue();
         v2 = ParseValue();
 
-        if (v == 1)
-        {
-            /* Character (1-byte) values go into lit(eral) segment. */
-            HackToSegment(LITSEG);
-        }
-        else if (v == 4)
-        {
-            /* 32-bit (4-byte) values go into data segment. */
-            HackToSegment(DATASEG);
-        }
-        else if (v == 2)
+        if (v == 2)
         {
             /* and 16-bit (2-byte) values will cause q3asm to barf. */
             CodeError("16 bit initialized data not supported");
