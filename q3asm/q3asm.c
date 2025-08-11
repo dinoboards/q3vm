@@ -28,6 +28,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* 19079 total symbols in FI, 2002 Jan 23 */
 #define DEFAULT_HASHTABLE_SIZE 2048
 
+/* 4 MB MAX POTENTIAL SIZE */
+
+#define VM_MAX_IMAGE_SIZE 0x400000
+
 char outputFilename[MAX_OS_PATH];
 
 typedef enum {
@@ -181,8 +185,7 @@ int   currentFileIndex;
 char *currentFileName;
 int   currentFileLine;
 
-// int       stackSize = 16384;
-int stackSize = VM_PROGRAM_STACK_SIZE;
+int stackSize = 100;
 
 // we need to convert arg and ret instructions to
 // stores to the local stack frame, so we need to track the
@@ -1429,7 +1432,7 @@ Assemble LCC bytecode assembly to Q3VM bytecode.\n\
   -b BUCKETS     Set symbol hash table to BUCKETS buckets\n\
   -m             Generate a mapfile for each OUTPUT.qvm\n\
   -v             Verbose compilation report\n\
-  -vq3           Produce a qvm file compatible with Q3 1.32b\n\
+  -s SIZE        Stack size to reserve for application\n \
   -h --help -?   Show this help\n\
 ",
         argv0);
@@ -1493,6 +1496,13 @@ int main(int argc, char **argv) {
       }
       i++;
       symtablelen = atoiNoCap(argv[i]);
+      continue;
+    }
+
+    if (!strcmp(argv[i], "-s")) {
+      stackSize = atoi(argv[i+1]);
+
+      i++;
       continue;
     }
 

@@ -1,7 +1,7 @@
 # Makefile to build the test.qvm bytecode output file
 # Optional: test_native(.exe) is compiled from g_main.c
 # to benchmark the performance of the .qvm vs. the native build
-# 
+#
 # Run 'make'
 #
 # Jan Zwiener 2018-2022
@@ -60,7 +60,7 @@ all: $(TARGET) $(TARGET_NATIVE)
 default: $(TARGET)
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	$(LINK) -f bytecode
+	$(LINK) -m -v -s 16384 -f bytecode
 	@echo 'Executable created: '$@
 
 # Optional: build g_main.c as native application for benchmarks

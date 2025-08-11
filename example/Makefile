@@ -45,7 +45,7 @@ $(OBJDIR)/%.asm: %.c
 all: $(TARGET)
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	$(LINK) -m -v -f bytecode
+	$(LINK) -m -v -s 400  -f bytecode
 	@echo 'Bytecode created: '$@
 
 clean:
