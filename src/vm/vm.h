@@ -35,7 +35,7 @@ extern size_t strlcpy(char *dst, const char *src, size_t size);
 #endif
 
 /** File start magic number for .qvm files (4 bytes, little endian) */
-#define VM_MAGIC 0x12721444
+#define VM_MAGIC 0x44494E4F
 
 /** Don't change stack size: Hardcoded in q3asm and reserved at end of BSS */
 #define VM_PROGRAM_STACK_SIZE 0x1000
