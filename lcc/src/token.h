@@ -134,4 +134,4 @@ xx(EOI,         127,    0,      0,      0,      EOI,    "end of input")
 #undef xx
 #undef yy
 
-// clang-format on
+    // clang-format on

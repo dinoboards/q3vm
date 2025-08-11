@@ -10,3 +10,4 @@ BinPackParameters: false
 IncludeBlocks: Preserve
 SortIncludes: CaseInsensitive
 AllowShortFunctionsOnASingleLine: true
+BreakBeforeBraces: Attach
