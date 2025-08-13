@@ -837,7 +837,7 @@ ASM(RET) {
     STAT("RET");
     EmitByte(&segment[CODESEG], OP_LEAVE);
     instructionCount++;
-    EmitInt(&segment[CODESEG], 8 + currentLocals + currentArgs);
+    EmitUInt16(&segment[CODESEG], 8 + currentLocals + currentArgs);
     return 1;
   }
   return 0;
