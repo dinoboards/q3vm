@@ -269,7 +269,7 @@ static bool VM_ValidateHeader(const vm_t *const vm, const vmHeader_t *const head
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] args Arguments for function call.
  * @return Return value of the function call. */
-static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args);
+static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args);
 
 /** Executes a block copy operation (memcpy) within currentVM data space.
  * @param[out] dest Pointer (in VM space).
@@ -464,14 +464,14 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
 
   /* FIXME this is not nice. we should check the actual number of arguments */
   {
-    ustdint_t args[MAX_VMMAIN_ARGS];
-    va_list   ap;
-    uint8_t   i;
+    uint32_t args[MAX_VMMAIN_ARGS];
+    va_list  ap;
+    uint8_t  i;
 
     args[0] = command;
     va_start(ap, command);
     for (i = 1; i < (uint8_t)ARRAY_LEN(args); i++) {
-      args[i] = va_arg(ap, ustdint_t);
+      args[i] = va_arg(ap, uint32_t);
     }
     va_end(ap);
 
@@ -604,16 +604,10 @@ locals from sp
 #define DISPATCH2()         goto nextInstruction2
 #define DISPATCH()          goto nextInstruction
 
-const uint8_t *VM_RedirectLit(vm_t *vm, vm_operand_t a) {
-  if (a < (vm_operand_t)vm->litLength) {
-    return &vm->codeBase[vm->codeLength + a];
-  }
-
-  return &vm->dataBase[a];
-}
+#define VM_RedirectLit(vm, a) ((a < (vm_operand_t)vm->litLength) ? &vm->codeBase[vm->codeLength + a] : &vm->dataBase[a])
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
-static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
+static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   uint8_t        stack[OPSTACK_SIZE + 15]; /* 256 4 byte double words + 15 safety bytes */
   vm_operand_t  *opStack;
   uint8_t        opStackOfs;
