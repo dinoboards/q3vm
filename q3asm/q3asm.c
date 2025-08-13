@@ -122,6 +122,7 @@ typedef enum {
   OP_CONSTU1,
   OP_CONSTI1,
   OP_CONSTU2,
+  OP_CONSTI2,
 
 } opcode_t;
 
@@ -788,6 +789,23 @@ static int ParseExpression(void) {
  -PH
 */
 
+ASM(CNSTI2) {
+  if (!strncmp(token, "CNSTI2", 6)) {
+    STAT("CNSTI2");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+    if (v > 32767 || v < -32768)
+      CodeError("OP_CONSTI2 with overflow value for int16_t\n");
+
+    EmitByte(&segment[CODESEG], OP_CONSTI2);
+    EmitUInt16(&segment[CODESEG], v);
+
+    return 1;
+  }
+  return 0;
+}
+
 ASM(CNSTU2) {
   if (!strncmp(token, "CNSTU2", 6)) {
     STAT("CNSTU2");
@@ -1249,6 +1267,7 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
+  ASM(CNSTI2)
   ASM(CNSTU2)
   ASM(CNSTU1)
   ASM(CNSTI1)

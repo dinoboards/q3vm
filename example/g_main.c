@@ -22,6 +22,7 @@ typedef unsigned char uint8_t;
 typedef char          int8_t;
 
 typedef unsigned short uint16_t;
+typedef short          int16_t;
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
@@ -29,13 +30,16 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   int8_t   y;
   uint8_t  x;
   uint16_t xx;
+  int16_t  yy;
   x = 23;
   y = -2;
 
   xx = 65000;
+  yy = -32000;
 
   switch (command) {
   case 0:
+    printf("this is yy: %d\n", yy);
     printf("this is xx: %d\n", xx);
     printf("this is x: %d\n", x);
     printf("this is y: %d\n", x - y);
