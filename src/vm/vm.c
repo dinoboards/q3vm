@@ -608,7 +608,7 @@ const uint8_t *VM_RedirectLit(vm_t *vm, vm_operand_t a) {
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
-  uint8_t        stack[OPSTACK_SIZE + 15];
+  uint8_t        stack[OPSTACK_SIZE + 15]; /* 256 4 byte double words + 15 safety bytes */
   vm_operand_t  *opStack;
   uint8_t        opStackOfs;
   stdint_t       programCounter;
@@ -834,7 +834,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
       DISPATCH();
     goto_OP_ENTER:
       /* get size of stack frame */
-      v1 = r2;
+      v1 = r2; /*TODO: why bother using v1 - cant we just use r2*/
       programCounter += INT_INCREMENT;
       programStack -= v1;
 
@@ -855,7 +855,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
       DISPATCH();
     goto_OP_LEAVE:
       /* remove our stack frame */
-      v1 = r2;
+      v1 = r2; /*TODO: why bother using v1 - cant we just use r2*/
 
       programStack += v1;
 
