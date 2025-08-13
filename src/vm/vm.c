@@ -688,12 +688,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       return -1;
     }
 
-    if (programStack & 3) {
-      vm->lastError = VM_STACK_MISALIGNED;
-      Com_Error(vm->lastError, "VM program stack misaligned");
-      return -1;
-    }
-
     if (vm_debugLevel > 1) {
       Com_Printf("%s%i %s\t(%02X %08X);\tSP=%08X, R0=%08X, R1=%08X \n", VM_Indent(vm), opStackOfs,
                  opnames[opcode & OPCODE_TABLE_MASK], opcode, r2, programStack, r0, r1);
@@ -729,13 +723,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       programCounter += INT_INCREMENT;
       DISPATCH2();
     goto_OP_LOAD4:
-#ifdef DEBUG_VM
-      if (opStack[opStackOfs] & 3) {
-        vm->lastError = VM_OP_LOAD4_MISALIGNED;
-        Com_Error(vm->lastError, "OP_LOAD4 misaligned");
-        return -1;
-      }
-#endif
       r0 = opStack[opStackOfs] = *(vm_operand_t *)VM_RedirectLit(vm, r0);
       DISPATCH2();
     goto_OP_LOAD2:
@@ -1143,9 +1130,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       programCounter += INT8_INCREMENT;
       DISPATCH2();
-    }
-    default: {
-      Com_Error(VM_ILLEGAL_OPCODE, "Unknown Opcode encountered");
     }
     }
   }
