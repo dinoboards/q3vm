@@ -34,7 +34,7 @@
 | OP_CONSTI1 iv8    | CNSTI1                             | `OS++; *OS = (int32)iv8`                                      |
 | OP_CONSTU2 v16    | CNSTU2                             | `OS++; *OS = (uint32)v16`                                     |
 | OP_CONSTI2 iv16   | CNSTI2                             | `OS++; *OS = (int32)iv16`                                     |
-| OP_LOCAL          | ADDRFP4, ADDRLP4                   | `OS++; *OS = PS[v]`                                           |
+| OP_LOCAL v        | ADDRFP4, ADDRLP4                   | `OS++; *OS = PS[v]`                                           |
 | OP_JUMP           | JUMPV                              | `PC = R0; OS--;`                                              |
 | OP_EQ v           | EQI4, EQU4                         | `OS -= 2; PC = R1 == R0 ? v : sizeof(v)`                      |
 | OP_NE v           | NEI4, NEU4                         | `OS -= 2; PC = R1 != R0 ? v : sizeof(v)`                      |
@@ -44,7 +44,7 @@
 | OP_GEI            | GEI4                               | `OS -= 2; PC = R1 >= R0 ? v : sizeof(v)`                      |
 | OP_LTU            | LTU4                               | `OS -= 2; PC = (uint32_t)R1 >= (uint32_t)R0 ? v : sizeof(v) ` |
 | OP_LEU            | LEU4                               | `OS -= 2; PC = (uint32_t)R1 <= (uint32_t)R0 ? v : sizeof(v) ` |
-| OP_GTU            | GTU4                               | `OS -= 2; PC = (uint32_t)R1 > (uint32_t)R0 ? v : sizeof(v)  ` |
+| OP_GTU            | GTU4                               | `OS -= 2; pc = (uint32_t)R1 > (uint32_t)R0 ? v : sizeof(v)  ` |
 | OP_GEU            | GEU4                               | `OS -= 2; PC = (uint32_t)R1 >= (uint32_t)R0 ? v : sizeof(v) ` |
 | OP_EQF            | EQF4                               | `OS -= 2; PC = (float)R1 == (float)R0 ? v : sizeof(v)`        |
 | OP_NEF            | NEF4                               | `OS -= 2; PC = (float)R1 != (float)R0 ? v : sizeof(v)`        |

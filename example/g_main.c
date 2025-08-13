@@ -24,6 +24,8 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
+int16_t yyg;
+
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
   char     str[] = "local string ref\n";
@@ -34,8 +36,9 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   x = 23;
   y = -2;
 
-  xx = 65000;
-  yy = -32000;
+  xx  = 65000;
+  yy  = -32000;
+  yyg = 50;
 
   switch (command) {
   case 0:

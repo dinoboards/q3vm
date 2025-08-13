@@ -723,13 +723,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       programCounter += INT_INCREMENT;
       DISPATCH2();
+
     goto_OP_LOCAL:
       opStackOfs++;
       r1 = r0;
       r0 = opStack[opStackOfs] = r2 + programStack;
-
       programCounter += INT_INCREMENT;
       DISPATCH2();
+
     goto_OP_LOAD4:
       r0 = opStack[opStackOfs] = *(vm_operand_t *)VM_RedirectLit(vm, r0);
       DISPATCH2();
@@ -744,10 +745,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       *(vm_operand_t *)&dataBase[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
+
     goto_OP_STORE2:
       *(short *)&dataBase[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();
+
     goto_OP_STORE1:
       dataBase[r1] = r0;
       opStackOfs -= 2;
