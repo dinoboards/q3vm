@@ -152,7 +152,7 @@ typedef struct vm_s {
 
 #ifdef DEBUG_VM
   uint8_t  *debugStorage;
-  vm_size_t debugStorageLength;
+  stdint_t  debugStorageLength;
   vm_size_t stackBottom; /**< If programStack < stackBottom, error */
 #endif
 

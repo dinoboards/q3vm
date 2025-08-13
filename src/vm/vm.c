@@ -376,7 +376,7 @@ bool VM_Create(vm_t                *vm,
 
     /* the stack is implicitly at the end of the image */
 #ifdef DEBUG_VM
-    vm->stackBottom = vm->programStack - VM_PROGRAM_STACK_SIZE;
+    vm->stackBottom = vm->programStack - to_ustdint(header->bssLength);
 #endif
   }
   return 0;
@@ -677,7 +677,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
     opcode = codeBase[programCounter++];
 
 #ifdef DEBUG_VM
-    if (programCounter >= vm->codeLength) {
+    if (programCounter >= (stdint_t)vm->codeLength) {
       vm->lastError = VM_PC_OUT_OF_RANGE;
       Com_Error(vm->lastError, "VM pc out of range");
       return -1;
