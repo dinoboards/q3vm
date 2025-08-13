@@ -471,11 +471,6 @@ static void CodeError(char *fmt, ...) {
   va_end(argptr);
 }
 
-/*
-============
-EmitByte
-============
-*/
 static void EmitByte(segment_t *seg, int v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE) {
     Error("VM_MAX_IMAGE_SIZE");
@@ -484,11 +479,6 @@ static void EmitByte(segment_t *seg, int v) {
   seg->imageUsed++;
 }
 
-/*
-============
-EmitInt
-============
-*/
 static void EmitUInt16(segment_t *seg, uint16_t v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
     Error("VM_MAX_IMAGE_SIZE");
@@ -498,11 +488,16 @@ static void EmitUInt16(segment_t *seg, uint16_t v) {
   seg->imageUsed += 2;
 }
 
-/*
-============
-EmitInt
-============
-*/
+static void EmitUInt24(segment_t *seg, int v) {
+  if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
+    Error("VM_MAX_IMAGE_SIZE");
+  }
+  seg->image[seg->imageUsed]     = v & 255;
+  seg->image[seg->imageUsed + 1] = (v >> 8) & 255;
+  seg->image[seg->imageUsed + 2] = (v >> 16) & 255;
+  seg->imageUsed += 3;
+}
+
 static void EmitInt(segment_t *seg, int v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
     Error("VM_MAX_IMAGE_SIZE");
@@ -857,6 +852,22 @@ ASM(ADDRF) {
   return 0;
 }
 
+ASM(ASGNB) {
+  if (!strncmp(token, "ASGNB", 5)) {
+    STAT("ASGNB");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+    if (v > 0xFFFFFF)
+      CodeError("memcpy size larger than 24 bit number");
+
+    EmitByte(&segment[CODESEG], OP_BLOCK_COPY);
+    EmitUInt24(&segment[CODESEG], v);
+    return 1;
+  }
+  return 0;
+}
+
 // address of a local is converted to OP_LOCAL
 ASM(ADDRL) {
   int v;
@@ -1134,14 +1145,6 @@ static void AssembleLine(void) {
       if (token[0] && op->opcode != OP_CVIF && op->opcode != OP_CVFI) {
         expression = ParseExpression();
 
-        // code like this can generate non-dword block copies:
-        // auto char buf[2] = " ";
-        // we are just going to round up.  This might conceivably
-        // be incorrect if other initialized chars follow.
-        if (opcode == OP_BLOCK_COPY) {
-          expression = (expression + 3) & ~3;
-        }
-
         EmitByte(&segment[CODESEG], opcode);
         EmitInt(&segment[CODESEG], expression);
       } else {
@@ -1190,6 +1193,7 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
+  ASM(ASGNB)
   ASM(ADDRL)
   ASM(BYTE)
   ASM(LINE)

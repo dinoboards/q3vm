@@ -591,8 +591,10 @@ locals from sp
 
 #define r2                  (*((vm_operand_t *)&codeBase[programCounter]))
 #define r2_int16            (*((uint16_t *)&codeBase[programCounter]))
+#define r2_int24            (*((uint24_t *)&codeBase[programCounter]))
 #define INT_INCREMENT       sizeof(uint32_t)
 #define INT16_INCREMENT     sizeof(uint16_t)
+#define INT24_INCREMENT     sizeof(uint24_t)
 #define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
 #define DISPATCH2()         goto nextInstruction2
 #define DISPATCH()          goto nextInstruction
@@ -763,8 +765,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
       programCounter += 1;
       DISPATCH();
     goto_OP_BLOCK_COPY:
-      VM_BlockCopy(r1, r0, r2, vm);
-      programCounter += INT_INCREMENT;
+      VM_BlockCopy(r1, r0, to_ustdint(r2_int24), vm);
+      programCounter += INT24_INCREMENT;
       opStackOfs -= 2;
       DISPATCH();
     goto_OP_CALL:

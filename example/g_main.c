@@ -20,8 +20,10 @@ int  nn;
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
+  char str[] = "local string ref\n";
   switch (command) {
   case 0:
+    printf(str);
     printf("!!sizeof(int): %d\n", sizeof(int));
     printf("Hello World! - fib(5) = %i\n", fib(5));
     printf("someimmutabledata at: %d\n", (int)&someimmutabledata);
