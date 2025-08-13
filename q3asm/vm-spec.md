@@ -31,7 +31,8 @@
 | OP_POP            | POP                                | `OS--`                                                        |
 | OP_CONST v        | CNSTt, ADDRGP4                     | `OS++; *OS = v`                                               |
 | OP_CONSTU1 v8     | CNSTU1                             | `OS++; *OS = (uint32)v8`                                      |
-| OP_CONSTI1 iv8    | CNSTI1                             | `OS++; *OS = (int32)v8`                                       |
+| OP_CONSTI1 iv8    | CNSTI1                             | `OS++; *OS = (int32)iv8`                                      |
+| OP_CONSTU2 v16    | CNSTU2                             | `OS++; *OS = (uint32)v16`                                     |
 | OP_LOCAL          | ADDRFP4, ADDRLP4                   | `OS++; *OS = PS[v]`                                           |
 | OP_JUMP           | JUMPV                              | `PC = R0; OS--;`                                              |
 | OP_EQ v           | EQI4, EQU4                         | `OS -= 2; PC = R1 == R0 ? v : sizeof(v)`                      |

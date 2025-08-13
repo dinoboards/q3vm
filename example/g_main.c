@@ -21,16 +21,22 @@ int  nn;
 typedef unsigned char uint8_t;
 typedef char          int8_t;
 
+typedef unsigned short uint16_t;
+
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  char    str[] = "local string ref\n";
-  int8_t  y;
-  uint8_t x;
+  char     str[] = "local string ref\n";
+  int8_t   y;
+  uint8_t  x;
+  uint16_t xx;
   x = 23;
   y = -2;
 
+  xx = 65000;
+
   switch (command) {
   case 0:
+    printf("this is xx: %d\n", xx);
     printf("this is x: %d\n", x);
     printf("this is y: %d\n", x - y);
     printf(str);
