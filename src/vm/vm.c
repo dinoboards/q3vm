@@ -171,6 +171,7 @@ typedef enum {
   OP_CVFI, /* Convert to float from integer */
 
   OP_CONSTU1,
+  OP_CONSTI1,
 
   OP_MAX /* Make this the last item */
 } opcode_t;
@@ -187,6 +188,7 @@ typedef enum {
 #define goto_OP_POP        case OP_POP
 #define goto_OP_CONST      case OP_CONST
 #define goto_OP_CONSTU1    case OP_CONSTU1
+#define goto_OP_CONSTI1    case OP_CONSTI1
 #define goto_OP_LOCAL      case OP_LOCAL
 #define goto_OP_JUMP       case OP_JUMP
 #define goto_OP_EQ         case OP_EQ
@@ -596,6 +598,7 @@ locals from sp
 #define r2_int16            (*((uint16_t *)&codeBase[programCounter]))
 #define r2_int24            (*((uint24_t *)&codeBase[programCounter]))
 #define r2_uint8            (codeBase[programCounter])
+#define r2_int8             (*((int8_t *)&codeBase[programCounter]))
 #define INT_INCREMENT       sizeof(uint32_t)
 #define INT8_INCREMENT      sizeof(uint8_t)
 #define INT16_INCREMENT     sizeof(uint16_t)
@@ -1123,11 +1126,18 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     goto_OP_SEX16:
       opStack[opStackOfs] = (int16_t)opStack[opStackOfs];
       DISPATCH();
+
     goto_OP_CONSTU1: {
       opStackOfs++;
       r1 = r0;
       r0 = opStack[opStackOfs] = (vm_operand_t)(uint32_t)r2_uint8;
-
+      programCounter += INT8_INCREMENT;
+      DISPATCH2();
+    }
+    goto_OP_CONSTI1: {
+      opStackOfs++;
+      r1 = r0;
+      r0 = opStack[opStackOfs] = (vm_operand_t)r2_int8;
       programCounter += INT8_INCREMENT;
       DISPATCH2();
     }
