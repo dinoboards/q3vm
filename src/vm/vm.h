@@ -90,7 +90,8 @@ typedef enum {
   VM_BAD_INSTRUCTION             = -14, /**< Unknown OP code in bytecode */
   VM_NOT_LOADED                  = -15, /**< VM not loaded */
   VM_NOT_ENOUGH_RAM              = -16, /**< insufficient ram allocated for VM */
-  VM_MALFORMED_HEADER            = -17
+  VM_MALFORMED_HEADER            = -17,
+  VM_ILLEGAL_OPCODE              = -18
 } vmErrorCode_t;
 
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of

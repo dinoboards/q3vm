@@ -1,33 +1,35 @@
 ## Op byte codes
 
-PC => Program Counter
-PS => Program Stack
-OS => Operation Stack
 
-R0: int32_t
-R1: int32_t
+### Valid Opcode Param types:
 
-> int to float does not perform numerical conversion - assumes the int is actually a float representation
+ * v: int32_t
+ * v24: uint24_t
+ * v16: uint16_t
+ * v8: uint8_t
 
-Stack Register Reference:
-  *  R0 = *OS
-  *  R1 = *(OS - 1)  # OS-1 is converted to uint8_t and wraps ? why
 
-v: int32_t
-v24: uint24_t
-v16: uint16_t
+### Registers
+* PC => Program Counter
+* PS => Program Stack
+* OS => Operation Stack (stack of `int32_t` types)
+* R0: *OS
+* R1: *(OS - 1)  # OS-1 is converted to uint8_t and wraps ? not sure why?
+
+### Implemented Opcode functions
 
 | Op Code           | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | OP_UNDEF          | `Undefined?`                                                  |
 | OP_IGNORE         | Special code that is never emitted                            |
 | OP_BREAK          | `with DEBUG_VM defined, breaks into a debug mode`             |
-| OP_ENTER v16      | `PS -= v`                                                     |
-| OP_LEAVE v16      | `PS += v`                                                     |
+| OP_ENTER v16      | `PS -= v16`                                                   |
+| OP_LEAVE v16      | `PS += v16`                                                   |
 | OP_CALL           | `*PS = PC; PC = *OS--; if PC < 0, invoke a System Call`       |
 | OP_PUSH           | `OS++`                                                        |
 | OP_POP            | `OS--`                                                        |
 | OP_CONST v        | `OS++; *OS = v`                                               |
+| OP_CONSTU1 v8     | `OS++; *OS = (int32)v8`                                       |
 | OP_LOCAL          | `OS++; *OS = PS[v]`                                           |
 | OP_JUMP           | `PC = R0; OS--;`                                              |
 | OP_EQ v           | `OS -= 2; PC = R1 == R0 ? v : sizeof(v)`                      |
@@ -79,3 +81,5 @@ v16: uint16_t
 | OP_MULF           | `OS--; *OS = (float)R1 * (float)R0`                           |
 | OP_CVIF           | `*OS = convertToInt((float)*OS)`                              |
 | OP_CVFI           | `*OS = convertToFloat(*OS)`                                   |
+
+> int to float does not perform numerical conversion - assumes the int is actually a float representation

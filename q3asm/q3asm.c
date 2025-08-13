@@ -117,7 +117,9 @@ typedef enum {
   OP_MULF,
 
   OP_CVIF,
-  OP_CVFI
+  OP_CVFI,
+
+  OP_CONSTU1
 } opcode_t;
 
 typedef enum {
@@ -783,6 +785,23 @@ static int ParseExpression(void) {
  -PH
 */
 
+ASM(CNSTU1) {
+  if (!strncmp(token, "CNSTU1", 6)) {
+    STAT("CNSTU1");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+    if (v > 255 || v < 0)
+      CodeError("OP_CONSTU1 with overflow value for uint8_t\n");
+
+    EmitByte(&segment[CODESEG], OP_CONSTU1);
+    EmitByte(&segment[CODESEG], v);
+
+    return 1;
+  }
+  return 0;
+}
+
 // call instructions reset currentArgOffset
 ASM(CALL) {
   if (!strncmp(token, "CALL", 4)) {
@@ -1193,6 +1212,7 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
+  ASM(CNSTU1)
   ASM(ASGNB)
   ASM(ADDRL)
   ASM(BYTE)

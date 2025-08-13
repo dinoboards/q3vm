@@ -18,11 +18,16 @@ This must be the very first function compiled into the .qvm file
 char d;
 int  nn;
 
+typedef unsigned char uint8_t;
+
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  char str[] = "local string ref\n";
+  char    str[] = "local string ref\n";
+  uint8_t x;
+  x = 23;
   switch (command) {
   case 0:
+    printf("this is x: %d\n", x);
     printf(str);
     printf("!!sizeof(int): %d\n", sizeof(int));
     printf("Hello World! - fib(5) = %i\n", fib(5));
