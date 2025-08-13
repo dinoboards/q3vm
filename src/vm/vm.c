@@ -560,14 +560,11 @@ static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n,
   if (VM_MemoryRangeValid(src, n, vm))
     return;
 
-  const uint8_t *true_src;
+  {
+    const uint8_t *true_src = (src < vm->litLength) ? &vm->codeBase[vm->codeLength + src] : &vm->dataBase[src];
 
-  if (src < vm->litLength)
-    true_src = &vm->codeBase[vm->codeLength + src];
-  else
-    true_src = &vm->dataBase[src];
-
-  Com_Memcpy(vm->dataBase + dest, true_src, n);
+    Com_Memcpy(vm->dataBase + dest, true_src, n);
+  }
 }
 /*
 ==============
@@ -593,7 +590,9 @@ locals from sp
 */
 
 #define r2                  (*((vm_operand_t *)&codeBase[programCounter]))
+#define r2_int16            (*((uint16_t *)&codeBase[programCounter]))
 #define INT_INCREMENT       sizeof(uint32_t)
+#define INT16_INCREMENT     sizeof(uint16_t)
 #define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
 #define DISPATCH2()         goto nextInstruction2
 #define DISPATCH()          goto nextInstruction
@@ -616,7 +615,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
   ustdint_t      stackOnEntry;
   uint8_t       *dataBase;
   const uint8_t *codeBase;
-  vm_operand_t   v1;
   ustdint_t      arg;
   uint8_t        opcode;
   vm_operand_t   r0, r1;
@@ -832,16 +830,16 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
     goto_OP_POP:
       opStackOfs--;
       DISPATCH();
-    goto_OP_ENTER:
+    goto_OP_ENTER: {
+      const uint16_t localsAndArgsSize = r2_int16;
       /* get size of stack frame */
-      v1 = r2; /*TODO: why bother using v1 - cant we just use r2*/
-      programCounter += INT_INCREMENT;
-      programStack -= v1;
+      programCounter += INT16_INCREMENT;
+      programStack -= localsAndArgsSize;
 
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter - 3);
       /* save old stack frame for debugging traces */
-      *(int *)&dataBase[programStack + 4] = programStack + v1;
+      *(int *)&dataBase[programStack + 4] = programStack + localsAndArgsSize;
       if (vm_debugLevel) {
         Com_Printf("%s%i---> %s\n", VM_Indent(vm), opStackOfs, VM_ValueToSymbol(vm, programCounter - 5 - 3));
         if (vm->breakFunction && programCounter - 5 - 3 == vm->breakFunction) {
@@ -853,11 +851,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
       }
 #endif
       DISPATCH();
-    goto_OP_LEAVE:
+    }
+    goto_OP_LEAVE: {
       /* remove our stack frame */
-      v1 = r2; /*TODO: why bother using v1 - cant we just use r2*/
-
-      programStack += v1;
+      programStack += r2_int16;
 
       /* grab the saved program counter */
       programCounter = *(vm_operand_t *)&dataBase[programStack];
@@ -875,7 +872,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, ustdint_t *args) {
         return -1;
       }
       DISPATCH();
-
+    }
       /*
          ===================================================================
          BRANCHES

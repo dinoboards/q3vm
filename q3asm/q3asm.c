@@ -489,6 +489,20 @@ static void EmitByte(segment_t *seg, int v) {
 EmitInt
 ============
 */
+static void EmitUInt16(segment_t *seg, uint16_t v) {
+  if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
+    Error("VM_MAX_IMAGE_SIZE");
+  }
+  seg->image[seg->imageUsed]     = v & 255;
+  seg->image[seg->imageUsed + 1] = (v >> 8) & 255;
+  seg->imageUsed += 2;
+}
+
+/*
+============
+EmitInt
+============
+*/
 static void EmitInt(segment_t *seg, int v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
     Error("VM_MAX_IMAGE_SIZE");
@@ -879,7 +893,7 @@ ASM(PROC) {
 
     instructionCount++;
     EmitByte(&segment[CODESEG], OP_ENTER);
-    EmitInt(&segment[CODESEG], 8 + currentLocals + currentArgs);
+    EmitUInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
     return 1;
   }
   return 0;
@@ -898,7 +912,7 @@ ASM(ENDPROC) {
 
     instructionCount++;
     EmitByte(&segment[CODESEG], OP_LEAVE);
-    EmitInt(&segment[CODESEG], 8 + currentLocals + currentArgs);
+    EmitUInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
 
     return 1;
   }
