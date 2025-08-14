@@ -92,7 +92,7 @@ typedef enum {
   OP_PUSH,  /* Push to stack. */
   OP_POP,   /* Discard top-of-stack. */
 
-  OP_CONST, /* Load constant to stack. */
+  OP_CONSTGP4, /* Load constant to stack. */
   OP_LOCAL, /* Get local variable. */
 
   OP_JUMP, /* Unconditional jump. */
@@ -192,7 +192,7 @@ typedef enum {
 #define goto_OP_CALL       case OP_CALL
 #define goto_OP_PUSH       case OP_PUSH
 #define goto_OP_POP        case OP_POP
-#define goto_OP_CONST      case OP_CONST
+#define goto_OP_CONSTGP4      case OP_CONSTGP4
 #define goto_OP_CONSTU1    case OP_CONSTU1
 #define goto_OP_CONSTI1    case OP_CONSTI1
 #define goto_OP_CONSTU2    case OP_CONSTU2
@@ -272,7 +272,7 @@ static const char *opnames[OPCODE_TABLE_SIZE] = {
     "OP_CALL",
     "OP_PUSH",
     "OP_POP",
-    "OP_CONST",
+    "OP_CONSTGP4",
     "OP_LOCAL",
     "OP_JUMP",
     "OP_EQ",
@@ -676,6 +676,7 @@ locals from sp
 
 #define r2_int8  (*((int8_t *)&codeBase[programCounter]))
 #define r2_int16 (*((int16_t *)&codeBase[programCounter]))
+#define r2_int24 (*((int24_t *)&codeBase[programCounter]))
 #define r2_int32 (*((int32_t *)&codeBase[programCounter]))
 
 #define r2_uint8  (codeBase[programCounter])
@@ -796,12 +797,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       vm->breakCount++;
 #endif
       DISPATCH2();
-    goto_OP_CONST:
+
+    goto_OP_CONSTGP4:
       opStackOfs++;
       r1 = r0;
-      r0 = opStack[opStackOfs] = r2;
-
-      programCounter += INT_INCREMENT;
+      r0 = opStack[opStackOfs] = to_stdint(r2_int24);
+      programCounter += INT24_INCREMENT;
       DISPATCH2();
 
     goto_OP_LOCAL:

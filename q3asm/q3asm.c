@@ -47,7 +47,7 @@ typedef enum {
   OP_PUSH,
   OP_POP,
 
-  OP_CONST,
+  OP_CONSTGP4,
   OP_LOCAL,
 
   OP_JUMP,
@@ -794,6 +794,18 @@ static int ParseExpression(void) {
   An optimizing compiler should reconstruct these back into inline code.
  -PH
 */
+ASM(ADDRGP4) {
+  if (!strncmp(token, "ADDRGP4", 7)) {
+    STAT("ADDRGP4");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+    EmitByte(&segment[CODESEG], OP_CONSTGP4);
+    EmitInt24(&segment[CODESEG], v);
+    return 1;
+  }
+  return 0;
+}
 
 ASM(CNSTP4) {
   if (!strncmp(token, "CNSTP4", 6)) {
@@ -1333,6 +1345,7 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
+  ASM(ADDRGP4)
   ASM(CNSTP4)
   ASM(CNSTF4)
   ASM(CNSTI4)
