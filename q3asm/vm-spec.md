@@ -35,6 +35,7 @@
 | OP_CONSTU2 v16    | CNSTU2                             | `OS++; *OS = (uint32)v16`                                     |
 | OP_CONSTI2 iv16   | CNSTI2                             | `OS++; *OS = (int32)iv16`                                     |
 | OP_CONSTU4 v32    | CNSTU4                             | `OS++; *OS = (uint32)v32`                                     |
+| OP_CONSTI4 v32    | CNSTI4                             | `OS++; *OS = (int32)v32`                                     |
 | OP_LOCAL v        | ADDRFP4, ADDRLP4                   | `OS++; *OS = PS[v]`                                           |
 | OP_JUMP           | JUMPV                              | `PC = R0; OS--;`                                              |
 | OP_EQ v           | EQI4, EQU4                         | `OS -= 2; PC = R1 == R0 ? v : sizeof(v)`                      |
