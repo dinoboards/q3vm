@@ -29,13 +29,14 @@
 | OP_CALL           | CALL                               | `*PS = PC; PC = *OS--; if PC < 0, invoke a System Call`       |
 | OP_PUSH           | ENDPROC                            | `OS++`                                                        |
 | OP_POP            | POP                                | `OS--`                                                        |
-| OP_CONST v        | CNSTF4, CNSTP4, ADDRGP4            | `OS++; *OS = v`                                               |
+| OP_CONST v        | CNSTP4, ADDRGP4                    | `OS++; *OS = v`                                               |
 | OP_CONSTU1 v8     | CNSTU1                             | `OS++; *OS = (uint32)v8`                                      |
 | OP_CONSTI1 iv8    | CNSTI1                             | `OS++; *OS = (int32)iv8`                                      |
 | OP_CONSTU2 v16    | CNSTU2                             | `OS++; *OS = (uint32)v16`                                     |
 | OP_CONSTI2 iv16   | CNSTI2                             | `OS++; *OS = (int32)iv16`                                     |
 | OP_CONSTU4 v32    | CNSTU4                             | `OS++; *OS = (uint32)v32`                                     |
 | OP_CONSTI4 v32    | CNSTI4                             | `OS++; *OS = (int32)v32`                                      |
+| OP_CONSTF4 f      | CNSTF4                             | `OS++; *OS = f`                                               |
 | OP_LOCAL v16      | ADDRFP4, ADDRLP4                   | `OS++; *OS = PS[v16]`                                         |
 | OP_JUMP           | JUMPV                              | `PC = R0; OS--;`                                              |
 | OP_EQ v           | EQI4, EQU4                         | `OS -= 2; PC = R1 == R0 ? v : sizeof(v)`                      |

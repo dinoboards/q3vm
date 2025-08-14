@@ -24,28 +24,32 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-int16_t yyg;
+typedef unsigned long uint32_t;
+typedef long          int32_t;
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
   char     str[] = "local string ref\n";
-  int8_t   y;
-  uint8_t  x;
-  uint16_t xx;
-  int16_t  yy;
-  x = 23;
-  y = -2;
+  uint8_t  ua;
+  int8_t   a;
+  uint16_t ub;
+  int16_t  b;
+  uint32_t ud;
+  int32_t  d;
 
-  xx  = 65000;
-  yy  = -32000;
-  yyg = 50;
+  float f;
+
+  a  = -123;
+  ub = 45000;
+  b  = -32000;
+  ud = 0x12345678;
+  d  = 0x11223344;
+
+  f = 1.345;
 
   switch (command) {
   case 0:
-    printf("this is yy: %d\n", yy);
-    printf("this is xx: %d\n", xx);
-    printf("this is x: %d\n", x);
-    printf("this is y: %d\n", x - y);
+    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
     printf(str);
     printf("!!sizeof(int): %d\n", sizeof(int));
     printf("Hello World! - fib(5) = %i\n", fib(5));
