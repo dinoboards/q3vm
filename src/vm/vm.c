@@ -78,107 +78,6 @@
  * TYPEDEFS
  ******************************************************************************/
 
-/** Enum for the virtual machine op codes */
-typedef enum {
-  OP_UNDEF, /* Error: VM halt */
-
-  OP_IGNORE, /* No operation */
-
-  OP_BREAK, /* vm->breakCount++ */
-
-  OP_ENTER, /* Begin subroutine. */
-  OP_LEAVE, /* End subroutine. */
-  OP_CALL,  /* Call subroutine. */
-  OP_PUSH,  /* Push to stack. */
-  OP_POP,   /* Discard top-of-stack. */
-
-  OP_CONSTGP4, /* Load constant to stack. */
-  OP_LOCAL,    /* Get local variable. */
-
-  OP_JUMP, /* Unconditional jump. */
-
-  /*-------------------*/
-
-  OP_EQ, /* Compare integers, jump if equal. */
-  OP_NE, /* Compare integers, jump if not equal. */
-
-  OP_LTI, /* Compare integers, jump if less-than. */
-  OP_LEI, /* Compare integers, jump if less-than-or-equal. */
-  OP_GTI, /* Compare integers, jump if greater-than. */
-  OP_GEI, /* Compare integers, jump if greater-than-or-equal. */
-
-  OP_LTU, /* Compare unsigned integers, jump if less-than */
-  OP_LEU, /* Compare unsigned integers, jump if less-than-or-equal */
-  OP_GTU, /* Compare unsigned integers, jump if greater-than */
-  OP_GEU, /* Compare unsigned integers, jump if greater-than-or-equal */
-
-  OP_EQF, /* Compare floats, jump if equal */
-  OP_NEF, /* Compare floats, jump if not-equal */
-
-  OP_LTF, /* Compare floats, jump if less-than */
-  OP_LEF, /* Compare floats, jump if less-than-or-equal */
-  OP_GTF, /* Compare floats, jump if greater-than */
-  OP_GEF, /* Compare floats, jump if greater-than-or-equal */
-
-  /*-------------------*/
-
-  OP_LOAD1, /* Load 1-byte from memory */
-  OP_LOAD2, /* Load 2-bytes from memory */
-  OP_LOAD4, /* Load 4-bytes from memory */
-  OP_LOADF4,
-  OP_STORE1,  /* Store 1-byte to memory */
-  OP_STORE2,  /* Store 2-byte to memory */
-  OP_STORE4,  /* *(stack[top-1]) = stack[top] */
-  OP_STOREF4, /* *(stack[top-1]) = stack[top] */
-  OP_ARG,     /* Marshal argument */
-
-  OP_BLOCK_COPY, /* memcpy */
-
-  /*-------------------*/
-
-  OP_SEX8,  /* Sign-Extend 8-bit */
-  OP_SEX16, /* Sign-Extend 16-bit */
-
-  OP_NEGI, /* Negate integer. */
-  OP_ADD,  /* Add integers (two's complement). */
-  OP_SUB,  /* Subtract integers (two's complement). */
-  OP_DIVI, /* Divide signed integers. */
-  OP_DIVU, /* Divide unsigned integers. */
-  OP_MODI, /* Modulus (signed). */
-  OP_MODU, /* Modulus (unsigned). */
-  OP_MULI, /* Multiply signed integers. */
-  OP_MULU, /* Multiply unsigned integers. */
-
-  OP_BAND, /* Bitwise AND */
-  OP_BOR,  /* Bitwise OR */
-  OP_BXOR, /* Bitwise eXclusive-OR */
-  OP_BCOM, /* Bitwise COMplement */
-
-  OP_LSH,  /* Left-shift */
-  OP_RSHI, /* Right-shift (algebraic; preserve sign) */
-  OP_RSHU, /* Right-shift (bitwise; ignore sign) */
-
-  OP_NEGF, /* Negate float */
-  OP_ADDF, /* Add floats */
-  OP_SUBF, /* Subtract floats */
-  OP_DIVF, /* Divide floats */
-  OP_MULF, /* Multiply floats */
-
-  OP_CVIF, /* Convert to integer from float */
-  OP_CVFI, /* Convert to float from integer */
-
-  OP_CONSTU1,
-  OP_CONSTI1,
-  OP_CONSTU2,
-  OP_CONSTI2,
-  OP_CONSTU4,
-  OP_CONSTI4,
-  OP_CONSTF4,
-  OP_CONSTP4,
-
-  OP_MAX /* Make this the last item */
-} opcode_t;
-
 /** Max. number of op codes in op codes table */
 #define OPCODE_TABLE_SIZE OP_MAX
 
@@ -264,76 +163,15 @@ static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes
 
 /** Table to convert op codes to readable names */
 static const char *opnames[OPCODE_TABLE_SIZE] = {
-    "OP_UNDEF",
-    "OP_IGNORE",
-    "OP_BREAK",
-    "OP_ENTER",
-    "OP_LEAVE",
-    "OP_CALL",
-    "OP_PUSH",
-    "OP_POP",
-    "OP_CONSTGP4",
-    "OP_LOCAL",
-    "OP_JUMP",
-    "OP_EQ",
-    "OP_NE",
-    "OP_LTI",
-    "OP_LEI",
-    "OP_GTI",
-    "OP_GEI",
-    "OP_LTU",
-    "OP_LEU",
-    "OP_GTU",
-    "OP_GEU",
-    "OP_EQF",
-    "OP_NEF",
-    "OP_LTF",
-    "OP_LEF",
-    "OP_GTF",
-    "OP_GEF",
-    "OP_LOAD1",
-    "OP_LOAD2",
-    "OP_LOAD4",
-    "OP_LOADF4"
-    "OP_STORE1",
-    "OP_STORE2",
-    "OP_STORE4",
-    "OP_STOREF4",
-    "OP_ARG",
-    "OP_BLOCK_COPY",
-    "OP_SEX8",
-    "OP_SEX16",
-    "OP_NEGI",
-    "OP_ADD",
-    "OP_SUB",
-    "OP_DIVI",
-    "OP_DIVU",
-    "OP_MODI",
-    "OP_MODU",
-    "OP_MULI",
-    "OP_MULU",
-    "OP_BAND",
-    "OP_BOR",
-    "OP_BXOR",
-    "OP_BCOM",
-    "OP_LSH",
-    "OP_RSHI",
-    "OP_RSHU",
-    "OP_NEGF",
-    "OP_ADDF",
-    "OP_SUBF",
-    "OP_DIVF",
-    "OP_MULF",
-    "OP_CVIF",
-    "OP_CVFI",
-    "OP_CONSTU1",
-    "OP_CONSTI1",
-    "OP_CONSTU2",
-    "OP_CONSTI2",
-    "OP_CONSTU4",
-    "OP_CONSTI4",
-    "OP_CONSTF4",
-    "OP_CONSTP4",
+    "OP_UNDEF",    "OP_IGNORE",  "OP_BREAK",   "OP_ENTER",   "OP_LEAVE",      "OP_CALL",    "OP_PUSH",    "OP_POP",
+    "OP_CONSTGP4", "OP_LOCAL",   "OP_JUMP",    "OP_EQ",      "OP_NE",         "OP_LTI",     "OP_LEI",     "OP_GTI",
+    "OP_GEI",      "OP_LTU",     "OP_LEU",     "OP_GTU",     "OP_GEU",        "OP_EQF",     "OP_NEF",     "OP_LTF",
+    "OP_LEF",      "OP_GTF",     "OP_GEF",     "OP_LOAD1",   "OP_LOAD2",      "OP_LOAD4",   "OP_LOADF4",  "OP_STORE1",
+    "OP_STORE2",   "OP_STORE4",  "OP_STOREF4", "OP_ARG",     "OP_BLOCK_COPY", "OP_SEX8",    "OP_SEX16",   "OP_NEGI",
+    "OP_ADD",      "OP_SUB",     "OP_DIVI",    "OP_DIVU",    "OP_MODI",       "OP_MODU",    "OP_MULI",    "OP_MULU",
+    "OP_BAND",     "OP_BOR",     "OP_BXOR",    "OP_BCOM",    "OP_LSH",        "OP_RSHI",    "OP_RSHU",    "OP_NEGF",
+    "OP_ADDF",     "OP_SUBF",    "OP_DIVF",    "OP_MULF",    "OP_CVIF",       "OP_CVFI",    "OP_CONSTU1", "OP_CONSTI1",
+    "OP_CONSTU2",  "OP_CONSTI2", "OP_CONSTU4", "OP_CONSTI4", "OP_CONSTF4",    "OP_CONSTP4",
 
 };
 #endif
