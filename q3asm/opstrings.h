@@ -53,7 +53,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     {"INDIRB", OP_IGNORE},
     // block copy deals with this
-    {"INDIRF4", OP_LOAD4},
+    {"INDIRF4", OP_LOADF4},
     {"INDIRI4", OP_LOAD4},
     {"INDIRP4", OP_LOAD4},
     {"INDIRU4", OP_LOAD4},
