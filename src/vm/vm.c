@@ -692,10 +692,13 @@ locals from sp
 
 #define VM_RedirectLit(vm, a) ((a < (vm_operand_t)vm->litLength) ? &vm->codeBase[vm->codeLength + a] : &vm->dataBase[a])
 
+#define opStack32  ((int32_t *)opStack8)
+#define opStackFlt ((float *)opStack8)
+
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   uint8_t        _opStack[OPSTACK_SIZE + 4]; /* 256 4 byte double words + 4 safety bytes */
-  vm_operand_t  *opStack = ((vm_operand_t *)&_opStack[4]);
+  uint8_t       *opStack8 = &_opStack[4];
   stdint_t       programCounter;
   ustdint_t      programStack;
   ustdint_t      stackOnEntry;
@@ -734,15 +737,15 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   *(vm_operand_t *)&dataBase[programStack + 4] = 0;  /* return stack */
   *(vm_operand_t *)&dataBase[programStack]     = -1; /* will terminate the loop on return */
 
-  opStack[0] = 0x0000BEEF;
+  opStack32[0] = 0x0000BEEF;
 
   /* main interpreter loop, will exit when a LEAVE instruction
      grabs the -1 program counter */
 
   while (1) {
   nextInstruction:
-    r0 = opStack[0];
-    r1 = opStack[-1];
+    r0 = opStack32[0];
+    r1 = opStack32[-1];
   nextInstruction2:
 
 #ifdef DEBUG_VM
@@ -790,62 +793,62 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
 
     goto_OP_CONSTGP4:
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = to_stdint(r2_int24);
+      r0 = *opStack32 = to_stdint(r2_int24);
       programCounter += INT24_INCREMENT;
       DISPATCH2();
 
     goto_OP_LOCAL:
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = r2_uint16 + programStack;
+      r0 = *opStack32 = r2_uint16 + programStack;
       programCounter += INT16_INCREMENT;
       DISPATCH2();
 
     goto_OP_LOADF4:
-      r0 = *opStack = *(vm_operand_t *)VM_RedirectLit(vm, r0);
+      r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
       DISPATCH2();
 
     goto_OP_LOAD4:
-      r0 = *opStack = *(vm_operand_t *)VM_RedirectLit(vm, r0);
+      r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
       DISPATCH2();
     goto_OP_LOAD2:
-      r0 = *opStack = *(unsigned short *)VM_RedirectLit(vm, r0);
+      r0 = *opStack32 = *(unsigned short *)VM_RedirectLit(vm, r0);
       DISPATCH2();
     goto_OP_LOAD1:
-      r0 = *opStack = *VM_RedirectLit(vm, r0);
+      r0 = *opStack32 = *VM_RedirectLit(vm, r0);
       DISPATCH2();
 
     goto_OP_STORE4:
       *(vm_operand_t *)&dataBase[r1] = r0;
-      opStack -= 2;
+      opStack8 -= 8;
       DISPATCH();
 
     goto_OP_STOREF4:
       *(vm_operand_t *)&dataBase[r1] = r0;
-      opStack -= 2;
+      opStack8 -= 8;
       DISPATCH();
 
     goto_OP_STORE2:
       *(short *)&dataBase[r1] = r0;
-      opStack -= 2;
+      opStack8 -= 8;
       DISPATCH();
 
     goto_OP_STORE1:
       dataBase[r1] = r0;
-      opStack -= 2;
+      opStack8 -= 8;
       DISPATCH();
     goto_OP_ARG:
       /* single byte offset from programStack */
       *(vm_operand_t *)&dataBase[(codeBase[programCounter] + programStack)] = r0;
-      opStack--;
+      opStack8 -= 4;
       programCounter += 1;
       DISPATCH();
     goto_OP_BLOCK_COPY:
       VM_BlockCopy(r1, r0, to_ustdint(r2_uint24), vm);
       programCounter += INT24_INCREMENT;
-      opStack -= 2;
+      opStack8 -= 8;
       DISPATCH();
     goto_OP_CALL:
       /* save current program counter */
@@ -853,7 +856,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       /* jump to the location on the stack */
       programCounter = r0;
-      opStack--;
+      opStack8 -= 4;
       if (programCounter < 0) /* system call */
       {
         vm_operand_t r;
@@ -888,8 +891,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #endif
 
         /* save return value */
-        opStack++;
-        *opStack       = r;
+        opStack8 += 4;
+        *opStack32     = r;
         programCounter = *(vm_operand_t *)&dataBase[programStack];
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
@@ -905,10 +908,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     /* push and pop are only needed for discarded or bad function return
        values */
     goto_OP_PUSH:
-      opStack++;
+      opStack8 += 4;
       DISPATCH();
     goto_OP_POP:
-      opStack--;
+      opStack8 -= 4;
       DISPATCH();
     goto_OP_ENTER: {
       const uint16_t localsAndArgsSize = r2_int16;
@@ -967,10 +970,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       programCounter = r0;
 
-      opStack--;
+      opStack8 -= 4;
       DISPATCH();
     goto_OP_EQ:
-      opStack -= 2;
+      opStack8 -= 8;
       if (r1 == r0) {
         programCounter = r2;
         DISPATCH();
@@ -979,7 +982,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_NE:
-      opStack -= 2;
+      opStack8 -= 8;
       if (r1 != r0) {
         programCounter = r2;
         DISPATCH();
@@ -988,7 +991,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_LTI:
-      opStack -= 2;
+      opStack8 -= 8;
       if (r1 < r0) {
         programCounter = r2;
         DISPATCH();
@@ -997,7 +1000,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_LEI:
-      opStack -= 2;
+      opStack8 -= 8;
       if (r1 <= r0) {
         programCounter = r2;
         DISPATCH();
@@ -1006,7 +1009,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_GTI:
-      opStack -= 2;
+      opStack8 -= 8;
       if (r1 > r0) {
         programCounter = r2;
         DISPATCH();
@@ -1015,7 +1018,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_GEI:
-      opStack -= 2;
+      opStack8 -= 8;
       if (r1 >= r0) {
         programCounter = r2;
         DISPATCH();
@@ -1024,7 +1027,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_LTU:
-      opStack -= 2;
+      opStack8 -= 8;
       if (((unsigned)r1) < ((unsigned)r0)) {
         programCounter = r2;
         DISPATCH();
@@ -1033,7 +1036,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_LEU:
-      opStack -= 2;
+      opStack8 -= 8;
       if (((unsigned)r1) <= ((unsigned)r0)) {
         programCounter = r2;
         DISPATCH();
@@ -1042,7 +1045,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_GTU:
-      opStack -= 2;
+      opStack8 -= 8;
       if (((unsigned)r1) > ((unsigned)r0)) {
         programCounter = r2;
         DISPATCH();
@@ -1051,7 +1054,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_GEU:
-      opStack -= 2;
+      opStack8 -= 8;
       if (((unsigned)r1) >= ((unsigned)r0)) {
         programCounter = r2;
         DISPATCH();
@@ -1060,9 +1063,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_EQF:
-      opStack -= 2;
+      opStack8 -= 8;
 
-      if (((float *)opStack)[1] == ((float *)opStack)[2]) {
+      if (opStackFlt[1] == opStackFlt[2]) {
         programCounter = r2;
         DISPATCH();
       } else {
@@ -1070,9 +1073,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_NEF:
-      opStack -= 2;
+      opStack8 -= 8;
 
-      if (((float *)opStack)[1] != ((float *)opStack)[2]) {
+      if (opStackFlt[1] != opStackFlt[2]) {
         programCounter = r2;
         DISPATCH();
       } else {
@@ -1080,9 +1083,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_LTF:
-      opStack -= 2;
+      opStack8 -= 8;
 
-      if (((float *)opStack)[1] < ((float *)opStack)[2]) {
+      if (opStackFlt[1] < opStackFlt[2]) {
         programCounter = r2;
         DISPATCH();
       } else {
@@ -1090,9 +1093,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_LEF:
-      opStack -= 2;
+      opStack8 -= 8;
 
-      if (((float *)opStack)[1] <= ((float *)opStack)[2]) {
+      if (opStackFlt[1] <= opStackFlt[2]) {
         programCounter = r2;
         DISPATCH();
       } else {
@@ -1100,9 +1103,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_GTF:
-      opStack -= 2;
+      opStack8 -= 8;
 
-      if (((float *)opStack)[1] > ((float *)opStack)[2]) {
+      if (opStackFlt[1] > opStackFlt[2]) {
         programCounter = r2;
         DISPATCH();
       } else {
@@ -1110,9 +1113,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         DISPATCH();
       }
     goto_OP_GEF:
-      opStack -= 2;
+      opStack8 -= 8;
 
-      if (((float *)opStack)[1] >= ((float *)opStack)[2]) {
+      if (opStackFlt[1] >= opStackFlt[2]) {
         programCounter = r2;
         DISPATCH();
       } else {
@@ -1123,159 +1126,159 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       /*===================================================================*/
 
     goto_OP_NEGI:
-      *opStack = -r0;
+      *opStack32 = -r0;
       DISPATCH();
     goto_OP_ADD:
-      opStack--;
-      *opStack = r1 + r0;
+      opStack8 -= 4;
+      *opStack32 = r1 + r0;
       DISPATCH();
     goto_OP_SUB:
-      opStack--;
-      *opStack = r1 - r0;
+      opStack8 -= 4;
+      *opStack32 = r1 - r0;
       DISPATCH();
     goto_OP_DIVI:
-      opStack--;
-      *opStack = r1 / r0;
+      opStack8 -= 4;
+      *opStack32 = r1 / r0;
       DISPATCH();
     goto_OP_DIVU:
-      opStack--;
-      *opStack = ((unsigned)r1) / ((unsigned)r0);
+      opStack8 -= 4;
+      *opStack32 = ((unsigned)r1) / ((unsigned)r0);
       DISPATCH();
     goto_OP_MODI:
-      opStack--;
-      *opStack = r1 % r0;
+      opStack8 -= 4;
+      *opStack32 = r1 % r0;
       DISPATCH();
     goto_OP_MODU:
-      opStack--;
-      *opStack = ((unsigned)r1) % ((unsigned)r0);
+      opStack8 -= 4;
+      *opStack32 = ((unsigned)r1) % ((unsigned)r0);
       DISPATCH();
     goto_OP_MULI:
-      opStack--;
-      *opStack = r1 * r0;
+      opStack8 -= 4;
+      *opStack32 = r1 * r0;
       DISPATCH();
     goto_OP_MULU:
-      opStack--;
-      *opStack = ((unsigned)r1) * ((unsigned)r0);
+      opStack8 -= 4;
+      *opStack32 = ((unsigned)r1) * ((unsigned)r0);
       DISPATCH();
     goto_OP_BAND:
-      opStack--;
-      *opStack = ((unsigned)r1) & ((unsigned)r0);
+      opStack8 -= 4;
+      *opStack32 = ((unsigned)r1) & ((unsigned)r0);
       DISPATCH();
     goto_OP_BOR:
-      opStack--;
-      *opStack = ((unsigned)r1) | ((unsigned)r0);
+      opStack8 -= 4;
+      *opStack32 = ((unsigned)r1) | ((unsigned)r0);
       DISPATCH();
     goto_OP_BXOR:
-      opStack--;
-      *opStack = ((unsigned)r1) ^ ((unsigned)r0);
+      opStack8 -= 4;
+      *opStack32 = ((unsigned)r1) ^ ((unsigned)r0);
       DISPATCH();
     goto_OP_BCOM:
-      *opStack = ~((unsigned)r0);
+      *opStack32 = ~((unsigned)r0);
       DISPATCH();
     goto_OP_LSH:
-      opStack--;
-      *opStack = r1 << r0;
+      opStack8 -= 4;
+      *opStack32 = r1 << r0;
       DISPATCH();
     goto_OP_RSHI:
-      opStack--;
-      *opStack = r1 >> r0;
+      opStack8 -= 4;
+      *opStack32 = r1 >> r0;
       DISPATCH();
     goto_OP_RSHU:
-      opStack--;
-      *opStack = ((unsigned)r1) >> r0;
+      opStack8 -= 4;
+      *opStack32 = ((unsigned)r1) >> r0;
       DISPATCH();
     goto_OP_NEGF:
-      ((float *)opStack)[0] = -((float *)opStack)[0];
+      opStackFlt[0] = -opStackFlt[0];
       DISPATCH();
     goto_OP_ADDF:
-      opStack--;
-      ((float *)opStack)[0] = ((float *)opStack)[0] + ((float *)opStack)[1];
+      opStack8 -= 4;
+      opStackFlt[0] = opStackFlt[0] + opStackFlt[1];
       DISPATCH();
     goto_OP_SUBF:
-      opStack--;
-      ((float *)opStack)[0] = ((float *)opStack)[0] - ((float *)opStack)[1];
+      opStack8 -= 4;
+      opStackFlt[0] = opStackFlt[0] - opStackFlt[1];
       DISPATCH();
     goto_OP_DIVF:
-      opStack--;
-      ((float *)opStack)[0] = ((float *)opStack)[0] / ((float *)opStack)[1];
+      opStack8 -= 4;
+      opStackFlt[0] = opStackFlt[0] / opStackFlt[1];
       DISPATCH();
     goto_OP_MULF:
-      opStack--;
-      ((float *)opStack)[0] = ((float *)opStack)[0] * ((float *)opStack)[1];
+      opStack8 -= 4;
+      opStackFlt[0] = opStackFlt[0] * opStackFlt[1];
       DISPATCH();
     goto_OP_CVIF:
-      ((float *)opStack)[0] = (float)*opStack;
+      opStackFlt[0] = opStackFlt[0];
       DISPATCH();
     goto_OP_CVFI:
-      *opStack = Q_ftol(((float *)opStack)[0]);
+      *opStack32 = Q_ftol(opStackFlt[0]);
       DISPATCH();
     goto_OP_SEX8:
-      *opStack = (int8_t)*opStack;
+      *opStack32 = (int8_t)*opStack32;
       DISPATCH();
     goto_OP_SEX16:
-      *opStack = (int16_t)*opStack;
+      *opStack32 = (int16_t)*opStack32;
       DISPATCH();
 
     goto_OP_CONSTU1: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)(uint32_t)r2_uint8;
+      r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint8;
       programCounter += INT8_INCREMENT;
       DISPATCH2();
     }
 
     goto_OP_CONSTI1: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)r2_int8;
+      r0 = *opStack32 = (vm_operand_t)r2_int8;
       programCounter += INT8_INCREMENT;
       DISPATCH2();
     }
 
     goto_OP_CONSTU2: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)(uint32_t)r2_uint16;
+      r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint16;
       programCounter += INT16_INCREMENT;
       DISPATCH2();
     }
 
     goto_OP_CONSTI2: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)(int32_t)r2_int16;
+      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int16;
       programCounter += INT16_INCREMENT;
       DISPATCH2();
     }
 
     goto_OP_CONSTU4: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)(uint32_t)r2_uint32;
+      r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint32;
       programCounter += INT32_INCREMENT;
       DISPATCH2();
     }
 
     goto_OP_CONSTI4: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)(int32_t)r2_int32;
+      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int32;
       programCounter += INT32_INCREMENT;
       DISPATCH2();
     }
 
     goto_OP_CONSTF4: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)(int32_t)r2_int32;
+      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int32;
       programCounter += INT32_INCREMENT;
       DISPATCH2();
     }
 
     goto_OP_CONSTP4: {
-      opStack++;
+      opStack8 += 4;
       r1 = r0;
-      r0 = *opStack = (vm_operand_t)(int32_t)to_ustdint(r2_uint24);
+      r0 = *opStack32 = (vm_operand_t)(int32_t)to_ustdint(r2_uint24);
       programCounter += INT24_INCREMENT;
       DISPATCH2();
     }
@@ -1283,14 +1286,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   }
 
 done:
-  if (opStack[-1] != 0x0000BEEF) {
+  if (opStack32[-1] != 0x0000BEEF) {
     Com_Error(vm->lastError = VM_STACK_ERROR, "Interpreter stack error");
   }
 
   vm->programStack = stackOnEntry;
 
   /* return the result of the bytecode computations */
-  return *opStack;
+  return *opStack32;
 }
 
 /* DEBUG FUNCTIONS */
