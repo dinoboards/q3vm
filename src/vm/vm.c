@@ -224,11 +224,6 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
 /** Print a stack trace on OP_ENTER if vm_debugLevel is > 0 */
 static void VM_StackTrace(vm_t *vm, int programCounter, int programStack);
 
-/** @brief Safe strncpy that ensures a trailing zero.
- * @param[out] dest Output string.
- * @param[in] src Input string.
- * @param[in] destsize Number of free bytes in dest. */
-static void Q_strncpyz(char *dest, const char *src, int destsize);
 #endif
 
 /******************************************************************************
@@ -460,16 +455,6 @@ bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, const vm_t
   return 0;
 }
 
-#ifdef DEBUG_VM
-static void Q_strncpyz(char *dest, const char *src, int destsize) {
-  if (!dest || !src || destsize < 1) {
-    return;
-  }
-  strlcpy(dest, src, destsize - 1);
-  dest[destsize - 1] = 0;
-}
-#endif
-
 static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, const vm_t *vm) {
 
   if (VM_MemoryRangeValid(src, n, vm))
@@ -679,7 +664,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     goto_OP_ARG:
       /* single byte offset from programStack */
-      *(vm_operand_t *)&dataBase[(codeBase[programCounter] + programStack)] = r0;
+      *(vm_operand_t *)&dataBase[programStack + r2_int8] = r0;
       opStack8 -= 4;
       programCounter += 1;
       DISPATCH();
@@ -762,7 +747,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       /* save old stack frame for debugging traces */
       *(int *)&dataBase[programStack + 4] = programStack + localsAndArgsSize;
       if (vm_debugLevel) {
-        Com_Printf("%s%i---> %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter - 5 - 3));
+        Com_Printf("%s%i---> %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter  - 3));
         if (vm->breakFunction && programCounter - 5 - 3 == vm->breakFunction) {
           /* this is to allow setting breakpoints here in the
            * debugger */
@@ -1379,7 +1364,7 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
     sym->next = NULL;
 
     sym->symValue = value;
-    Q_strncpyz(sym->symName, token, chars + 1);
+    strlcpy(sym->symName, token, chars+1);
 
     count++;
   }
