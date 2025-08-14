@@ -71,11 +71,6 @@
 #endif
 #endif
 
-/** Max. number of op codes in op codes table */
-#define OPCODE_TABLE_SIZE 64
-/** Mask for a valid opcode (so no one can escape the sandbox) */
-#define OPCODE_TABLE_MASK (OPCODE_TABLE_SIZE - 1)
-
 /** Max. size of BSS section */
 #define VM_MAX_BSS_LENGTH 10485760
 
@@ -184,6 +179,9 @@ typedef enum {
   OP_MAX /* Make this the last item */
 } opcode_t;
 
+/** Max. number of op codes in op codes table */
+#define OPCODE_TABLE_SIZE OP_MAX
+
 /* for the the computed gotos we need labels,
  * but for the normal switch case we need the cases */
 #define goto_OP_UNDEF      case OP_UNDEF
@@ -266,13 +264,77 @@ static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes
 
 /** Table to convert op codes to readable names */
 static const char *opnames[OPCODE_TABLE_SIZE] = {
-    "OP_UNDEF",  "OP_IGNORE", "OP_BREAK",  "OP_ENTER", "OP_LEAVE",      "OP_CALL", "OP_PUSH",  "OP_POP",   "OP_CONST", "OP_LOCAL",
-    "OP_JUMP",   "OP_EQ",     "OP_NE",     "OP_LTI",   "OP_LEI",        "OP_GTI",  "OP_GEI",   "OP_LTU",   "OP_LEU",   "OP_GTU",
-    "OP_GEU",    "OP_EQF",    "OP_NEF",    "OP_LTF",   "OP_LEF",        "OP_GTF",  "OP_GEF",   "OP_LOAD1", "OP_LOAD2", "OP_LOAD4",
-    "OP_STORE1", "OP_STORE2", "OP_STORE4", "OP_ARG",   "OP_BLOCK_COPY", "OP_SEX8", "OP_SEX16", "OP_NEGI",  "OP_ADD",   "OP_SUB",
-    "OP_DIVI",   "OP_DIVU",   "OP_MODI",   "OP_MODU",  "OP_MULI",       "OP_MULU", "OP_BAND",  "OP_BOR",   "OP_BXOR",  "OP_BCOM",
-    "OP_LSH",    "OP_RSHI",   "OP_RSHU",   "OP_NEGF",  "OP_ADDF",       "OP_SUBF", "OP_DIVF",  "OP_MULF",  "OP_CVIF",  "OP_CVFI",
-    "OP_UNDEF",  "OP_UNDEF",  "OP_UNDEF",  "OP_UNDEF",
+    "OP_UNDEF",
+    "OP_IGNORE",
+    "OP_BREAK",
+    "OP_ENTER",
+    "OP_LEAVE",
+    "OP_CALL",
+    "OP_PUSH",
+    "OP_POP",
+    "OP_CONST",
+    "OP_LOCAL",
+    "OP_JUMP",
+    "OP_EQ",
+    "OP_NE",
+    "OP_LTI",
+    "OP_LEI",
+    "OP_GTI",
+    "OP_GEI",
+    "OP_LTU",
+    "OP_LEU",
+    "OP_GTU",
+    "OP_GEU",
+    "OP_EQF",
+    "OP_NEF",
+    "OP_LTF",
+    "OP_LEF",
+    "OP_GTF",
+    "OP_GEF",
+    "OP_LOAD1",
+    "OP_LOAD2",
+    "OP_LOAD4",
+    "OP_LOADF4"
+    "OP_STORE1",
+    "OP_STORE2",
+    "OP_STORE4",
+    "OP_STOREF4",
+    "OP_ARG",
+    "OP_BLOCK_COPY",
+    "OP_SEX8",
+    "OP_SEX16",
+    "OP_NEGI",
+    "OP_ADD",
+    "OP_SUB",
+    "OP_DIVI",
+    "OP_DIVU",
+    "OP_MODI",
+    "OP_MODU",
+    "OP_MULI",
+    "OP_MULU",
+    "OP_BAND",
+    "OP_BOR",
+    "OP_BXOR",
+    "OP_BCOM",
+    "OP_LSH",
+    "OP_RSHI",
+    "OP_RSHU",
+    "OP_NEGF",
+    "OP_ADDF",
+    "OP_SUBF",
+    "OP_DIVF",
+    "OP_MULF",
+    "OP_CVIF",
+    "OP_CVFI",
+    "OP_CONSTU1",
+    "OP_CONSTI1",
+    "OP_CONSTU2",
+    "OP_CONSTI2",
+    "OP_CONSTU4",
+    "OP_CONSTI4",
+    "OP_CONSTF4",
+    "OP_CONSTP4",
+
 };
 #endif
 
@@ -715,8 +777,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(%02X %08X);\tSP=%08X, R0=%08X, R1=%08X \n", VM_Indent(vm), opStackOfs,
-                 opnames[opcode & OPCODE_TABLE_MASK], opcode, r2, programStack, r0, r1);
+      Com_Printf("%s%i %s\t(%02X %08X);\tSP=%08X, R0=%08X, R1=%08X \n", VM_Indent(vm), opStackOfs, opnames[opcode], opcode, r2,
+                 programStack, r0, r1);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
