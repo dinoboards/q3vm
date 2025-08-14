@@ -28,7 +28,7 @@ typedef uint32_t vm_size_t; /* type to represent size of a vm image (32bits or 2
 #define vm_sizeof(x) ((vm_size_t)(sizeof(x)))
 
 extern ustdint_t to_ustdint(const uint24_t x);
-extern stdint_t to_stdint(int24_t x);
+extern stdint_t  to_stdint(int24_t x);
 
 extern uint24_t to_uint24(const ustdint_t x);
 
