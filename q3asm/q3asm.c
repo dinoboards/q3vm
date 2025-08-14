@@ -478,7 +478,7 @@ static void CodeError(char *fmt, ...) {
   va_end(argptr);
 }
 
-static void EmitByte(segment_t *seg, int v) {
+static void EmitByte(segment_t *seg, uint8_t v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE) {
     Error("VM_MAX_IMAGE_SIZE");
   }
@@ -486,7 +486,7 @@ static void EmitByte(segment_t *seg, int v) {
   seg->imageUsed++;
 }
 
-static void EmitUInt16(segment_t *seg, uint16_t v) {
+static void EmitInt16(segment_t *seg, int16_t v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
     Error("VM_MAX_IMAGE_SIZE");
   }
@@ -495,7 +495,7 @@ static void EmitUInt16(segment_t *seg, uint16_t v) {
   seg->imageUsed += 2;
 }
 
-static void EmitUInt24(segment_t *seg, int v) {
+static void EmitInt24(segment_t *seg, int v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
     Error("VM_MAX_IMAGE_SIZE");
   }
@@ -505,7 +505,7 @@ static void EmitUInt24(segment_t *seg, int v) {
   seg->imageUsed += 3;
 }
 
-static void EmitInt32(segment_t *seg, int v) {
+static void EmitInt32(segment_t *seg, int32_t v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
     Error("VM_MAX_IMAGE_SIZE");
   }
@@ -815,7 +815,7 @@ ASM(CNSTI2) {
       CodeError("OP_CONSTI2 with overflow value for int16_t\n");
 
     EmitByte(&segment[CODESEG], OP_CONSTI2);
-    EmitUInt16(&segment[CODESEG], v);
+    EmitInt16(&segment[CODESEG], v);
 
     return 1;
   }
@@ -832,7 +832,7 @@ ASM(CNSTU2) {
       CodeError("OP_CONSTU2 with overflow value for uint16_t\n");
 
     EmitByte(&segment[CODESEG], OP_CONSTU2);
-    EmitUInt16(&segment[CODESEG], v);
+    EmitInt16(&segment[CODESEG], v);
 
     return 1;
   }
@@ -908,7 +908,7 @@ ASM(RET) {
     STAT("RET");
     EmitByte(&segment[CODESEG], OP_LEAVE);
     instructionCount++;
-    EmitUInt16(&segment[CODESEG], 8 + currentLocals + currentArgs);
+    EmitInt16(&segment[CODESEG], 8 + currentLocals + currentArgs);
     return 1;
   }
   return 0;
@@ -952,7 +952,7 @@ ASM(ASGNB) {
       CodeError("memcpy size larger than 24 bit number");
 
     EmitByte(&segment[CODESEG], OP_BLOCK_COPY);
-    EmitUInt24(&segment[CODESEG], v);
+    EmitInt24(&segment[CODESEG], v);
     return 1;
   }
   return 0;
@@ -994,7 +994,7 @@ ASM(PROC) {
 
     instructionCount++;
     EmitByte(&segment[CODESEG], OP_ENTER);
-    EmitUInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
+    EmitInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
     return 1;
   }
   return 0;
@@ -1013,7 +1013,7 @@ ASM(ENDPROC) {
 
     instructionCount++;
     EmitByte(&segment[CODESEG], OP_LEAVE);
-    EmitUInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
+    EmitInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
 
     return 1;
   }
