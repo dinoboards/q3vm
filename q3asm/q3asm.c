@@ -126,6 +126,7 @@ typedef enum {
   OP_CONSTU4,
   OP_CONSTI4,
   OP_CONSTF4,
+  OP_CONSTP4,
 
 } opcode_t;
 
@@ -792,6 +793,21 @@ static int ParseExpression(void) {
  -PH
 */
 
+ASM(CNSTP4) {
+  if (!strncmp(token, "CNSTP4", 6)) {
+    STAT("CNSTP4");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+
+    EmitByte(&segment[CODESEG], OP_CONSTP4);
+    EmitInt24(&segment[CODESEG], v);
+
+    return 1;
+  }
+  return 0;
+}
+
 ASM(CNSTF4) {
   if (!strncmp(token, "CNSTF4", 6)) {
     STAT("CNSTF4");
@@ -806,6 +822,7 @@ ASM(CNSTF4) {
   }
   return 0;
 }
+
 ASM(CNSTI4) {
   if (!strncmp(token, "CNSTI4", 6)) {
     STAT("CNSTI4");
@@ -1314,6 +1331,7 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
+  ASM(CNSTP4)
   ASM(CNSTF4)
   ASM(CNSTI4)
   ASM(CNSTU4)

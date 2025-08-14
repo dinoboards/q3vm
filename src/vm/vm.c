@@ -177,6 +177,7 @@ typedef enum {
   OP_CONSTU4,
   OP_CONSTI4,
   OP_CONSTF4,
+  OP_CONSTP4,
 
   OP_MAX /* Make this the last item */
 } opcode_t;
@@ -199,6 +200,7 @@ typedef enum {
 #define goto_OP_CONSTU4    case OP_CONSTU4
 #define goto_OP_CONSTI4    case OP_CONSTI4
 #define goto_OP_CONSTF4    case OP_CONSTF4
+#define goto_OP_CONSTP4    case OP_CONSTP4
 #define goto_OP_LOCAL      case OP_LOCAL
 #define goto_OP_JUMP       case OP_JUMP
 #define goto_OP_EQ         case OP_EQ
@@ -1200,6 +1202,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       r1 = r0;
       r0 = opStack[opStackOfs] = (vm_operand_t)(int32_t)r2_int32;
       programCounter += INT32_INCREMENT;
+      DISPATCH2();
+    }
+
+    goto_OP_CONSTP4: {
+      opStackOfs++;
+      r1 = r0;
+      r0 = opStack[opStackOfs] = (vm_operand_t)(int32_t)to_ustdint(r2_uint24);
+      programCounter += INT24_INCREMENT;
       DISPATCH2();
     }
     }
