@@ -575,7 +575,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     if (vm_debugLevel > 1) {
       std_int diff       = programCounter - prevProgramCounter;
       prevProgramCounter = programCounter;
-      Com_Printf("%08X[%d]:\t", programCounter, diff);
+      Com_Printf("%06X[%d]:\t", programCounter, diff);
     }
 #endif
 
@@ -595,7 +595,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(%02X %08X);\tSP=%08X, R0=%08X, R1=%08X \n", VM_Indent(vm), (int)(opStack8 - _opStack), opnames[opcode],
+      Com_Printf("%s%i %s\t(%02X %06X);\tSP=%06X, R0=%06X, R1=%06X \n", VM_Indent(vm), (int)(opStack8 - _opStack), opnames[opcode],
                  opcode, r2, programStack, r0, r1);
     }
     profileSymbol->profileCount++;
@@ -626,6 +626,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = r2_uint16 + programStack;
+#ifdef DEBUG_VM
+      printf(" LOCAL: R0 = %06X = *[%06X + %04X (%06X)]\n", r0, programStack, r2_uint16, programStack + r2_uint16);
+#endif
       programCounter += INT16_INCREMENT;
       DISPATCH2();
 
@@ -664,6 +667,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     goto_OP_ARG:
       /* single byte offset from programStack */
+#ifdef DEBUG_VM
+      printf("  ARG *[%06X + %02X (%06X)] = %06X\n", programStack, r2_int8, programStack + r2_int8, r0);
+#endif
       *(vm_operand_t *)&dataBase[programStack + r2_int8] = r0;
       opStack8 -= 4;
       programCounter += 1;
@@ -747,7 +753,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       /* save old stack frame for debugging traces */
       *(int *)&dataBase[programStack + 4] = programStack + localsAndArgsSize;
       if (vm_debugLevel) {
-        Com_Printf("%s%i---> %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter  - 3));
+        Com_Printf("%s%i---> %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter - 3));
         if (vm->breakFunction && programCounter - 5 - 3 == vm->breakFunction) {
           /* this is to allow setting breakpoints here in the
            * debugger */
@@ -1364,7 +1370,7 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
     sym->next = NULL;
 
     sym->symValue = value;
-    strlcpy(sym->symName, token, chars+1);
+    strlcpy(sym->symName, token, chars + 1);
 
     count++;
   }

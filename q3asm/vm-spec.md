@@ -64,7 +64,7 @@
 | OP_STORE2         | ASGNI2, ASGNU2            | `OS - =2; *((uint16_t)R1) = R0`                               |
 | OP_STORE4         | ASGNI4, ASGNP4, ASGNU4    | `OS - =2; *((uint32_t)R1) = R0`                               |
 | OP_STOREF4        | ASGNF4                    | `OS - =2; *((float)R1) = R0`                                  |
-| OP_ARG v          | ARGt                      | `OS--; PS[v]= R0`                                             |
+| OP_ARG v8         | ARGt                      | `OS--; PS[v8]= R0`                                             |
 | OP_BLOCK_COPY v24 | ASGNB                     | `memcpy(R1, R0, v24); OS -= 2`                                |
 | OP_SEX8           | CVII4 1                   | `*OS = (int32_t)(int8_t)*OS`                                  |
 | OP_SEX16          | CVII4 2                   | `*OS = (int32_t)(int16_t)*OS`                                 |
