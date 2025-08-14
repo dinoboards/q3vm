@@ -127,14 +127,15 @@ typedef enum {
 
   /*-------------------*/
 
-  OP_LOAD1,  /* Load 1-byte from memory */
-  OP_LOAD2,  /* Load 2-bytes from memory */
-  OP_LOAD4,  /* Load 4-bytes from memory */
+  OP_LOAD1, /* Load 1-byte from memory */
+  OP_LOAD2, /* Load 2-bytes from memory */
+  OP_LOAD4, /* Load 4-bytes from memory */
   OP_LOADF4,
-  OP_STORE1, /* Store 1-byte to memory */
-  OP_STORE2, /* Store 2-byte to memory */
-  OP_STORE4, /* *(stack[top-1]) = stack[top] */
-  OP_ARG,    /* Marshal argument */
+  OP_STORE1,  /* Store 1-byte to memory */
+  OP_STORE2,  /* Store 2-byte to memory */
+  OP_STORE4,  /* *(stack[top-1]) = stack[top] */
+  OP_STOREF4, /* *(stack[top-1]) = stack[top] */
+  OP_ARG,     /* Marshal argument */
 
   OP_BLOCK_COPY, /* memcpy */
 
@@ -223,10 +224,11 @@ typedef enum {
 #define goto_OP_LOAD1      case OP_LOAD1
 #define goto_OP_LOAD2      case OP_LOAD2
 #define goto_OP_LOAD4      case OP_LOAD4
-#define goto_OP_LOADF4      case OP_LOADF4
+#define goto_OP_LOADF4     case OP_LOADF4
 #define goto_OP_STORE1     case OP_STORE1
 #define goto_OP_STORE2     case OP_STORE2
 #define goto_OP_STORE4     case OP_STORE4
+#define goto_OP_STOREF4    case OP_STOREF4
 #define goto_OP_ARG        case OP_ARG
 #define goto_OP_BLOCK_COPY case OP_BLOCK_COPY
 #define goto_OP_SEX8       case OP_SEX8
@@ -762,6 +764,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
 
     goto_OP_STORE4:
+      *(vm_operand_t *)&dataBase[r1] = r0;
+      opStackOfs -= 2;
+      DISPATCH();
+
+    goto_OP_STOREF4:
       *(vm_operand_t *)&dataBase[r1] = r0;
       opStackOfs -= 2;
       DISPATCH();

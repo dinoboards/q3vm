@@ -84,6 +84,7 @@ typedef enum {
   OP_STORE1,
   OP_STORE2,
   OP_STORE4, // *(stack[top-1]) = stack[yop
+  OP_STOREF4,
   OP_ARG,
   OP_BLOCK_COPY,
 
