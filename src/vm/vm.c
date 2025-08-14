@@ -772,8 +772,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(%02X %08X);\tSP=%08X, R0=%08X, R1=%08X \n", VM_Indent(vm), opStackOfs, opnames[opcode], opcode, r2,
-                 programStack, r0, r1);
+      Com_Printf("%s%i %s\t(%02X %08X);\tSP=%08X, R0=%08X, R1=%08X \n", VM_Indent(vm), (int)(opStack8 - _opStack), opnames[opcode],
+                 opcode, r2, programStack, r0, r1);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
@@ -862,7 +862,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         vm_operand_t r;
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
-          Com_Printf("%s%i---> systemcall(%i)\n", VM_Indent(vm), opStackOfs, -1 - programCounter);
+          Com_Printf("%s%i---> systemcall(%i)\n", VM_Indent(vm), (int)(opStack8 - _opStack), -1 - programCounter);
         }
 #endif
         /* save the stack to allow recursive VM entry */
@@ -896,7 +896,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter = *(vm_operand_t *)&dataBase[programStack];
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
-          Com_Printf("%s%i<--- %s\n", VM_Indent(vm), opStackOfs, VM_ValueToSymbol(vm, programCounter));
+          Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter));
         }
 #endif
       } else if ((unsigned)programCounter >= MAX_PROGRAM_COUNTER) {
@@ -924,7 +924,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       /* save old stack frame for debugging traces */
       *(int *)&dataBase[programStack + 4] = programStack + localsAndArgsSize;
       if (vm_debugLevel) {
-        Com_Printf("%s%i---> %s\n", VM_Indent(vm), opStackOfs, VM_ValueToSymbol(vm, programCounter - 5 - 3));
+        Com_Printf("%s%i---> %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter - 5 - 3));
         if (vm->breakFunction && programCounter - 5 - 3 == vm->breakFunction) {
           /* this is to allow setting breakpoints here in the
            * debugger */
@@ -944,7 +944,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter);
       if (vm_debugLevel) {
-        Com_Printf("%s%i<--- %s\n", VM_Indent(vm), opStackOfs, VM_ValueToSymbol(vm, programCounter));
+        Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter));
       }
 #endif
       /* check for leaving the VM */
