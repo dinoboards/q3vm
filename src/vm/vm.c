@@ -737,8 +737,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     goto_OP_LOCAL:
       opStackOfs++;
       r1 = r0;
-      r0 = opStack[opStackOfs] = r2 + programStack;
-      programCounter += INT_INCREMENT;
+      r0 = opStack[opStackOfs] = r2_uint16 + programStack;
+      programCounter += INT16_INCREMENT;
       DISPATCH2();
 
     goto_OP_LOAD4:

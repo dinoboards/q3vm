@@ -952,7 +952,7 @@ ASM(ADDRF) {
     v = ParseExpression();
     v = 16 + currentArgs + currentLocals + v;
     EmitByte(&segment[CODESEG], OP_LOCAL);
-    EmitInt32(&segment[CODESEG], v);
+    EmitInt16(&segment[CODESEG], v);
     return 1;
   }
   return 0;
@@ -984,7 +984,7 @@ ASM(ADDRL) {
     v = ParseExpression();
     v = 8 + currentArgs + v;
     EmitByte(&segment[CODESEG], OP_LOCAL);
-    EmitInt32(&segment[CODESEG], v);
+    EmitInt16(&segment[CODESEG], v);
     return 1;
   }
   return 0;
