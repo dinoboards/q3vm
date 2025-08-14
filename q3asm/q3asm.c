@@ -123,6 +123,7 @@ typedef enum {
   OP_CONSTI1,
   OP_CONSTU2,
   OP_CONSTI2,
+  OP_CONSTU4,
 
 } opcode_t;
 
@@ -504,7 +505,7 @@ static void EmitUInt24(segment_t *seg, int v) {
   seg->imageUsed += 3;
 }
 
-static void EmitInt(segment_t *seg, int v) {
+static void EmitInt32(segment_t *seg, int v) {
   if (seg->imageUsed >= VM_MAX_IMAGE_SIZE - 4) {
     Error("VM_MAX_IMAGE_SIZE");
   }
@@ -789,6 +790,21 @@ static int ParseExpression(void) {
  -PH
 */
 
+ASM(CNSTU4) {
+  if (!strncmp(token, "CNSTU4", 6)) {
+    STAT("CNSTU4");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+
+    EmitByte(&segment[CODESEG], OP_CONSTU4);
+    EmitInt32(&segment[CODESEG], v);
+
+    return 1;
+  }
+  return 0;
+}
+
 ASM(CNSTI2) {
   if (!strncmp(token, "CNSTI2", 6)) {
     STAT("CNSTI2");
@@ -920,7 +936,7 @@ ASM(ADDRF) {
     v = ParseExpression();
     v = 16 + currentArgs + currentLocals + v;
     EmitByte(&segment[CODESEG], OP_LOCAL);
-    EmitInt(&segment[CODESEG], v);
+    EmitInt32(&segment[CODESEG], v);
     return 1;
   }
   return 0;
@@ -952,7 +968,7 @@ ASM(ADDRL) {
     v = ParseExpression();
     v = 8 + currentArgs + v;
     EmitByte(&segment[CODESEG], OP_LOCAL);
-    EmitInt(&segment[CODESEG], v);
+    EmitInt32(&segment[CODESEG], v);
     return 1;
   }
   return 0;
@@ -1011,9 +1027,9 @@ ASM(ADDRESS) {
     Parse();
     v = ParseExpression();
 
-    EmitInt(currentSegment, v);
+    EmitInt32(currentSegment, v);
     if (passNumber == 1 && token[0] == '$') // crude test for labels
-      EmitInt(&segment[JTRGSEG], v);
+      EmitInt32(&segment[JTRGSEG], v);
     return 1;
   }
   return 0;
@@ -1220,7 +1236,7 @@ static void AssembleLine(void) {
         expression = ParseExpression();
 
         EmitByte(&segment[CODESEG], opcode);
-        EmitInt(&segment[CODESEG], expression);
+        EmitInt32(&segment[CODESEG], expression);
       } else {
         EmitByte(&segment[CODESEG], opcode);
       }
@@ -1267,6 +1283,7 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
+  ASM(CNSTU4)
   ASM(CNSTI2)
   ASM(CNSTU2)
   ASM(CNSTU1)
