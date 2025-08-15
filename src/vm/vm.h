@@ -27,7 +27,7 @@
  * DEFINES
  ******************************************************************************/
 
-#if 1
+#if 0
 extern int snprintf(char *__restrict __s, size_t __maxlen, const char *__restrict __format, ...) __THROWNL
     __attribute__((__format__(__printf__, 3, 4)));
 
@@ -278,7 +278,7 @@ void VM_Debug(uint8_t level);
 void Com_Error(vmErrorCode_t level, const char *error);
 
 /** Enum for the virtual machine op codes */
-typedef enum {
+typedef enum : uint8_t {
   OP_UNDEF,      /* 00: Error: VM halt */
   OP_IGNORE,     /* 01: No operation */
   OP_BREAK,      /* 02: vm->breakCount++ */
@@ -349,8 +349,45 @@ typedef enum {
   OP_CONSTI4,    /* 43: */
   OP_CONSTF4,    /* 44: */
   OP_CONSTP4,    /* 45: */
+  OP_LOAD3,      /* 46: Load 3-bytes from memory */
+  OP_ADD3,
+  OP_BAND3,
+  OP_BCOM3,
+  OP_BOR3,
+  OP_BXOR3,
+  OP_CONSTI3,
+  OP_CONSTU3,
+  OP_CVFI3,
+  OP_CVIU3,
+  OP_CVUI3,
+  OP_DIVI3,
+  OP_DIVU3,
+  OP_EQ3,
+  OP_GEI3,
+  OP_GEU3,
+  OP_GTI3,
+  OP_GTU3,
+  OP_LEI3,
+  OP_LEU3,
+  OP_LSH3,
+  OP_LTI3,
+  OP_LTU3,
+  OP_MODI3,
+  OP_MODU3,
+  OP_MULI3,
+  OP_MULU3,
+  OP_NE3,
+  OP_NEGI3,
+  OP_RSHI3,
+  OP_RSHU3,
+  OP_SEX24,
+  OP_SEX8_3,
+  OP_STORE3,
+  OP_SUB3,
+  OP_CONSTGP3,
+  OP_CONSTP3,
 
-  OP_MAX /* 46: Make this the last item */
+  OP_MAX /* ??: Make this the last item */
 } opcode_t;
 
 #endif /* __Q3VM_H */

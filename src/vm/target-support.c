@@ -26,3 +26,11 @@ uint24_t to_uint24(ustdint_t x) {
   retVal.byt[2] = (x >> 16) & 0xff;
   return retVal;
 }
+
+int24_t to_int24(ustdint_t x) {
+  int24_t retVal;
+  retVal.byt[0] = x & 0xff;
+  retVal.byt[1] = (x >> 8) & 0xff;
+  retVal.byt[2] = (x >> 16) & 0xff;
+  return retVal;
+}

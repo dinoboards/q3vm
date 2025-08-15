@@ -355,7 +355,7 @@ static void I(stabline)(Coordinate *cp) {
 Interface bytecodeIR = {
     {1, 1, 0}, /* char */
     {2, 1, 0}, /* short */
-    {4, 1, 0}, /* int */
+    {3, 1, 0}, /* int */
     {4, 1, 0}, /* long */
     {4, 1, 0}, /* long long */
     {4, 1, 0},
@@ -364,7 +364,7 @@ Interface bytecodeIR = {
     /* double */ // JDC: don't ever emit 8 byte double code
     {4, 1, 0},
     /* long double */ // JDC: don't ever emit 8 byte double code
-    {4, 1, 0},        /* T* */
+    {3, 1, 0},        /* T* */
     {0, 1, 0},        /* struct */
     0,                /* little_endian */
     0,                /* mulops_calls */

@@ -58,6 +58,7 @@
 | OP_GEF            | GEF                       | `OS -= 2; PC = (float)R1 >= (float)R0 ? v : sizeof(v)`        |
 | OP_LOAD1          | INDIRI1, INDIRU1          | `*OS = *((int8_t*)R0)`                                        |
 | OP_LOAD2          | INDIRI2, INDIRU2          | `*OS = *((int16_t*)R0)`                                       |
+| OP_LOAD3          | INDIRI3                   | `*OS = *((int24_t*)R0)`                                       |
 | OP_LOAD4          | INDIRI4, INDIRP4, INDIRU4 | `*OS = *((int32_t*)R0)`                                       |
 | OP_LOADF4         | INDIRF4                   | `*OS = *((float*)R0)`                                         |
 | OP_STORE1         | ASGNI1, ASGNU1            | `OS - =2; *((uint8_t)R1) = R0`                                |

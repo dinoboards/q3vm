@@ -81,79 +81,6 @@
 /** Max. number of op codes in op codes table */
 #define OPCODE_TABLE_SIZE OP_MAX
 
-/* for the the computed gotos we need labels,
- * but for the normal switch case we need the cases */
-#define goto_OP_UNDEF      case OP_UNDEF
-#define goto_OP_IGNORE     case OP_IGNORE
-#define goto_OP_BREAK      case OP_BREAK
-#define goto_OP_ENTER      case OP_ENTER
-#define goto_OP_LEAVE      case OP_LEAVE
-#define goto_OP_CALL       case OP_CALL
-#define goto_OP_PUSH       case OP_PUSH
-#define goto_OP_POP        case OP_POP
-#define goto_OP_CONSTGP4   case OP_CONSTGP4
-#define goto_OP_CONSTU1    case OP_CONSTU1
-#define goto_OP_CONSTI1    case OP_CONSTI1
-#define goto_OP_CONSTU2    case OP_CONSTU2
-#define goto_OP_CONSTI2    case OP_CONSTI2
-#define goto_OP_CONSTU4    case OP_CONSTU4
-#define goto_OP_CONSTI4    case OP_CONSTI4
-#define goto_OP_CONSTF4    case OP_CONSTF4
-#define goto_OP_CONSTP4    case OP_CONSTP4
-#define goto_OP_LOCAL      case OP_LOCAL
-#define goto_OP_JUMP       case OP_JUMP
-#define goto_OP_EQ         case OP_EQ
-#define goto_OP_NE         case OP_NE
-#define goto_OP_LTI        case OP_LTI
-#define goto_OP_LEI        case OP_LEI
-#define goto_OP_GTI        case OP_GTI
-#define goto_OP_GEI        case OP_GEI
-#define goto_OP_LTU        case OP_LTU
-#define goto_OP_LEU        case OP_LEU
-#define goto_OP_GTU        case OP_GTU
-#define goto_OP_GEU        case OP_GEU
-#define goto_OP_EQF        case OP_EQF
-#define goto_OP_NEF        case OP_NEF
-#define goto_OP_LTF        case OP_LTF
-#define goto_OP_LEF        case OP_LEF
-#define goto_OP_GTF        case OP_GTF
-#define goto_OP_GEF        case OP_GEF
-#define goto_OP_LOAD1      case OP_LOAD1
-#define goto_OP_LOAD2      case OP_LOAD2
-#define goto_OP_LOAD4      case OP_LOAD4
-#define goto_OP_LOADF4     case OP_LOADF4
-#define goto_OP_STORE1     case OP_STORE1
-#define goto_OP_STORE2     case OP_STORE2
-#define goto_OP_STORE4     case OP_STORE4
-#define goto_OP_STOREF4    case OP_STOREF4
-#define goto_OP_ARG        case OP_ARG
-#define goto_OP_BLOCK_COPY case OP_BLOCK_COPY
-#define goto_OP_SEX8       case OP_SEX8
-#define goto_OP_SEX16      case OP_SEX16
-#define goto_OP_NEGI       case OP_NEGI
-#define goto_OP_ADD        case OP_ADD
-#define goto_OP_SUB        case OP_SUB
-#define goto_OP_DIVI       case OP_DIVI
-#define goto_OP_DIVU       case OP_DIVU
-#define goto_OP_MODI       case OP_MODI
-#define goto_OP_MODU       case OP_MODU
-#define goto_OP_MULI       case OP_MULI
-#define goto_OP_MULU       case OP_MULU
-#define goto_OP_BAND       case OP_BAND
-#define goto_OP_BOR        case OP_BOR
-#define goto_OP_BXOR       case OP_BXOR
-#define goto_OP_BCOM       case OP_BCOM
-#define goto_OP_LSH        case OP_LSH
-#define goto_OP_RSHI       case OP_RSHI
-#define goto_OP_RSHU       case OP_RSHU
-#define goto_OP_NEGF       case OP_NEGF
-#define goto_OP_ADDF       case OP_ADDF
-#define goto_OP_SUBF       case OP_SUBF
-#define goto_OP_DIVF       case OP_DIVF
-#define goto_OP_MULF       case OP_MULF
-#define goto_OP_CVIF       case OP_CVIF
-#define goto_OP_CVFI       case OP_CVFI
-
 /******************************************************************************
  * LOCAL DATA DEFINITIONS
  ******************************************************************************/
@@ -172,6 +99,14 @@ static const char *opnames[OPCODE_TABLE_SIZE] = {
     "OP_BAND",     "OP_BOR",     "OP_BXOR",    "OP_BCOM",    "OP_LSH",        "OP_RSHI",    "OP_RSHU",    "OP_NEGF",
     "OP_ADDF",     "OP_SUBF",    "OP_DIVF",    "OP_MULF",    "OP_CVIF",       "OP_CVFI",    "OP_CONSTU1", "OP_CONSTI1",
     "OP_CONSTU2",  "OP_CONSTI2", "OP_CONSTU4", "OP_CONSTI4", "OP_CONSTF4",    "OP_CONSTP4",
+
+    "OP_LOAD3",    "OP_ADD3",    "OP_BAND3",   "OP_BCOM3",   "OP_BOR3",       "OP_BXOR3",   "OP_CONSTI3", "OP_CONSTU3",
+    "OP_CVFI3",    "OP_CVIU3",   "OP_CVUI3",   "OP_DIVI3",   "OP_DIVU3",      "OP_EQ3",     "OP_GEI3",    "OP_GEU3",
+    "OP_GTI3",     "OP_GTU3",    "OP_LEI3",    "OP_LEU3",    "OP_LSH3",       "OP_LTI3",    "OP_LTU3",    "OP_MODI3",
+    "OP_MODU3",    "OP_MULI3",   "OP_MULU3",   "OP_NE3",     "OP_NEGI3",      "OP_RSHI3",   "OP_RSHU3",   "OP_SEX24",
+    "OP_SEX8_3",   "OP_STORE3",  "OP_SUB3",
+
+    "OP_CONSTGP3", "OP_CONSTP3",
 
 };
 #endif
@@ -560,20 +495,21 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   vm->breakFunction = 0;
 #endif
 
-  dataBase       = vm->dataBase;
-  codeBase       = vm->codeBase;
+  dataBase = vm->dataBase;
+  codeBase = vm->codeBase;
+
   programCounter = 0;
 #ifdef DEBUG_VM
   prevProgramCounter = 0;
 #endif
-  programStack -= (8 + 4 * MAX_VMMAIN_ARGS);
+  programStack -= (6 + 3 * MAX_VMMAIN_ARGS);
 
   for (arg = 0; arg < MAX_VMMAIN_ARGS; arg++) {
-    *(vm_operand_t *)&dataBase[programStack + 8 + arg * 4] = args[arg];
+    *(int24_t *)&dataBase[programStack + 6 + arg * 3] = to_int24(args[arg]);
   }
 
-  *(vm_operand_t *)&dataBase[programStack + 4] = 0;  /* return stack */
-  *(vm_operand_t *)&dataBase[programStack]     = -1; /* will terminate the loop on return */
+  *(int24_t *)&dataBase[programStack + 3] = to_int24(0);  /* return stack */
+  *(int24_t *)&dataBase[programStack]     = to_int24(-1); /* will terminate the loop on return */
 
   opStack32[0] = 0x0000BEEF;
 
@@ -591,6 +527,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       std_int diff       = programCounter - prevProgramCounter;
       prevProgramCounter = programCounter;
       Com_Printf("%06X[%d]:\t", programCounter, diff);
+
+      /*VM_StackTrace(vm, programCounter - 3, programStack);*/
     }
 #endif
 
@@ -610,8 +548,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(%02X %06X);\tSP=%06X, R0=%06X, R1=%06X \n", VM_Indent(vm), (int)(opStack8 - _opStack), opnames[opcode],
-                 opcode, r2, programStack, r0, r1);
+      Com_Printf("%s%i %s\t(%02X %06X);\tSP=%06X, (*SP)=%06X R0=%06X, R1=%06X \n", VM_Indent(vm), (int)(opStack8 - _opStack),
+                 opnames[opcode], opcode, r2, programStack, to_stdint(*(int24_t *)&dataBase[programStack]), r0, r1);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
@@ -619,25 +557,32 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #ifdef DEBUG_VM
     default: /* fall through */
 #endif
-    goto_OP_UNDEF:
+    case OP_UNDEF:
       Com_Error(vm->lastError = VM_BAD_INSTRUCTION, "Bad VM instruction");
       return -1;
-    goto_OP_IGNORE:
+    case OP_IGNORE:
       DISPATCH2();
-    goto_OP_BREAK:
+    case OP_BREAK:
 #ifdef DEBUG_VM
       vm->breakCount++;
 #endif
       DISPATCH2();
 
-    goto_OP_CONSTGP4:
+    case OP_CONSTGP3:
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = to_stdint(r2_int24);
       programCounter += INT24_INCREMENT;
       DISPATCH2();
 
-    goto_OP_LOCAL:
+    case OP_CONSTGP4:
+      opStack8 += 4;
+      r1 = r0;
+      r0 = *opStack32 = to_stdint(r2_int24);
+      programCounter += INT24_INCREMENT;
+      DISPATCH2();
+
+    case OP_LOCAL:
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = r2_uint16 + programStack;
@@ -648,56 +593,71 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       programCounter += INT16_INCREMENT;
       DISPATCH2();
 
-    goto_OP_LOADF4:
+    case OP_LOADF4:
       r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
       DISPATCH2();
 
-    goto_OP_LOAD4:
+    case OP_LOAD4:
       r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
       DISPATCH2();
-    goto_OP_LOAD2:
+
+    case OP_LOAD3: {
+      if ((r0 < (vm_operand_t)vm->litLength))
+        r0 = *opStack32 = to_stdint(*((int24_t *)&vm->codeBase[vm->codeLength + r0]));
+      else
+        r0 = *opStack32 = to_stdint((*((int24_t *)&vm->dataBase[r0])));
+      DISPATCH2();
+    }
+
+    case OP_LOAD2:
       r0 = *opStack32 = *(unsigned short *)VM_RedirectLit(vm, r0);
       DISPATCH2();
-    goto_OP_LOAD1:
+
+    case OP_LOAD1:
       r0 = *opStack32 = *VM_RedirectLit(vm, r0);
       DISPATCH2();
 
-    goto_OP_STORE4:
+    case OP_STORE3:
+      *(int24_t *)&dataBase[r1] = to_int24(r0);
+      opStack8 -= 8;
+      DISPATCH();
+
+    case OP_STORE4:
       *(vm_operand_t *)&dataBase[r1] = r0;
       opStack8 -= 8;
       DISPATCH();
 
-    goto_OP_STOREF4:
+    case OP_STOREF4:
       *(vm_operand_t *)&dataBase[r1] = r0;
       opStack8 -= 8;
       DISPATCH();
 
-    goto_OP_STORE2:
+    case OP_STORE2:
       *(short *)&dataBase[r1] = r0;
       opStack8 -= 8;
       DISPATCH();
 
-    goto_OP_STORE1:
+    case OP_STORE1:
       dataBase[r1] = r0;
       opStack8 -= 8;
       DISPATCH();
-    goto_OP_ARG:
+    case OP_ARG:
       /* single byte offset from programStack */
 #ifdef DEBUG_VM
       printf("  ARG *[%06X + %02X (%06X)] = %06X\n", programStack, r2_int8, programStack + r2_int8, r0);
 #endif
-      *(vm_operand_t *)&dataBase[programStack + r2_int8] = r0;
+      *(int24_t *)&dataBase[programStack + r2_int8] = to_int24(r0);
       opStack8 -= 4;
       programCounter += 1;
       DISPATCH();
-    goto_OP_BLOCK_COPY:
+    case OP_BLOCK_COPY:
       VM_BlockCopy(r1, r0, to_ustdint(r2_uint24), vm);
       programCounter += INT24_INCREMENT;
       opStack8 -= 8;
       DISPATCH();
-    goto_OP_CALL:
+    case OP_CALL:
       /* save current program counter */
-      *(vm_operand_t *)&dataBase[programStack] = (vm_operand_t)programCounter;
+      *(int24_t *)&dataBase[programStack] = to_int24(programCounter);
 
       /* jump to the location on the stack */
       programCounter = r0;
@@ -711,20 +671,20 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         }
 #endif
         /* save the stack to allow recursive VM entry */
-        vm->programStack = programStack - 4;
+        vm->programStack = programStack - 3;
 
 #ifdef DEBUG_VM
-        int stomped = *(int *)&dataBase[programStack + 4];
+        int stomped = to_stdint(*(int24_t *)&dataBase[programStack + 3]);
 #endif
-        *(vm_operand_t *)&dataBase[programStack + 4] = -1 - programCounter;
+        *(int24_t *)&dataBase[programStack + 3] = to_int24(-1 - programCounter);
 
         {
-          intptr_t      argarr[MAX_VMSYSCALL_ARGS];
-          vm_operand_t *imagePtr = (vm_operand_t *)&dataBase[programStack];
-          ustdint_t     i;
+          intptr_t  argarr[MAX_VMSYSCALL_ARGS];
+          int24_t  *imagePtr = (int24_t *)&dataBase[programStack];
+          ustdint_t i;
 
           for (i = 0; i < (ustdint_t)ARRAY_LEN(argarr); ++i)
-            argarr[i] = *(++imagePtr);
+            argarr[i] = to_stdint(*(++imagePtr));
 
           r = vm->systemCall(vm, argarr);
         }
@@ -732,13 +692,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #ifdef DEBUG_VM
         /* this is just our stack frame pointer, only needed
            for debugging */
-        *(int *)&codeBase[programStack + 4] = stomped;
+        *(int24_t *)&codeBase[programStack + 3] = to_int24(stomped);
 #endif
 
         /* save return value */
         opStack8 += 4;
         *opStack32     = r;
-        programCounter = *(vm_operand_t *)&dataBase[programStack];
+        programCounter = to_stdint(*(int24_t *)&dataBase[programStack]);
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
           Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter));
@@ -752,13 +712,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     /* push and pop are only needed for discarded or bad function return
        values */
-    goto_OP_PUSH:
+    case OP_PUSH:
       opStack8 += 4;
       DISPATCH();
-    goto_OP_POP:
+    case OP_POP:
       opStack8 -= 4;
       DISPATCH();
-    goto_OP_ENTER: {
+    case OP_ENTER: {
       const uint16_t localsAndArgsSize = r2_int16;
       /* get size of stack frame */
       programCounter += INT16_INCREMENT;
@@ -767,10 +727,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter - 3);
       /* save old stack frame for debugging traces */
-      *(int *)&dataBase[programStack + 4] = programStack + localsAndArgsSize;
+      *(int24_t *)&dataBase[programStack + 3] = to_int24(programStack + localsAndArgsSize);
       if (vm_debugLevel) {
         Com_Printf("%s%i---> %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter - 3));
-        if (vm->breakFunction && programCounter - 5 - 3 == vm->breakFunction) {
+        {
           /* this is to allow setting breakpoints here in the
            * debugger */
           vm->breakCount++;
@@ -780,12 +740,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #endif
       DISPATCH();
     }
-    goto_OP_LEAVE: {
+    case OP_LEAVE: {
       /* remove our stack frame */
       programStack += r2_int16;
 
       /* grab the saved program counter */
-      programCounter = *(vm_operand_t *)&dataBase[programStack];
+      programCounter = to_stdint(*(int24_t *)&dataBase[programStack]);
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter);
       if (vm_debugLevel) {
@@ -807,7 +767,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
          ===================================================================
          */
 
-    goto_OP_JUMP:
+    case OP_JUMP:
       if ((unsigned)r0 >= MAX_PROGRAM_COUNTER) {
         Com_Error(vm->lastError = VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_JUMP");
         return -1;
@@ -817,7 +777,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       opStack8 -= 4;
       DISPATCH();
-    goto_OP_EQ:
+    case OP_EQ:
       opStack8 -= 8;
       if (r1 == r0) {
         programCounter = r2;
@@ -826,7 +786,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_NE:
+    case OP_NE:
       opStack8 -= 8;
       if (r1 != r0) {
         programCounter = r2;
@@ -835,7 +795,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_LTI:
+
+    case OP_LTI: {
       opStack8 -= 8;
       if (r1 < r0) {
         programCounter = r2;
@@ -844,7 +805,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_LEI:
+    }
+
+    case OP_LEI:
       opStack8 -= 8;
       if (r1 <= r0) {
         programCounter = r2;
@@ -853,7 +816,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_GTI:
+    case OP_GTI:
       opStack8 -= 8;
       if (r1 > r0) {
         programCounter = r2;
@@ -862,7 +825,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_GEI:
+    case OP_GEI:
       opStack8 -= 8;
       if (r1 >= r0) {
         programCounter = r2;
@@ -871,7 +834,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_LTU:
+    case OP_LTU:
       opStack8 -= 8;
       if (((unsigned)r1) < ((unsigned)r0)) {
         programCounter = r2;
@@ -880,7 +843,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_LEU:
+    case OP_LEU:
       opStack8 -= 8;
       if (((unsigned)r1) <= ((unsigned)r0)) {
         programCounter = r2;
@@ -889,7 +852,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_GTU:
+    case OP_GTU:
       opStack8 -= 8;
       if (((unsigned)r1) > ((unsigned)r0)) {
         programCounter = r2;
@@ -898,7 +861,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_GEU:
+    case OP_GEU:
       opStack8 -= 8;
       if (((unsigned)r1) >= ((unsigned)r0)) {
         programCounter = r2;
@@ -907,7 +870,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_EQF:
+    case OP_EQF:
       opStack8 -= 8;
 
       if (opStackFlt[1] == opStackFlt[2]) {
@@ -917,7 +880,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_NEF:
+    case OP_NEF:
       opStack8 -= 8;
 
       if (opStackFlt[1] != opStackFlt[2]) {
@@ -927,7 +890,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_LTF:
+    case OP_LTF:
       opStack8 -= 8;
 
       if (opStackFlt[1] < opStackFlt[2]) {
@@ -937,7 +900,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_LEF:
+    case OP_LEF:
       opStack8 -= 8;
 
       if (opStackFlt[1] <= opStackFlt[2]) {
@@ -947,7 +910,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_GTF:
+    case OP_GTF:
       opStack8 -= 8;
 
       if (opStackFlt[1] > opStackFlt[2]) {
@@ -957,7 +920,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    goto_OP_GEF:
+    case OP_GEF:
       opStack8 -= 8;
 
       if (opStackFlt[1] >= opStackFlt[2]) {
@@ -970,101 +933,107 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       /*===================================================================*/
 
-    goto_OP_NEGI:
+    case OP_NEGI:
       *opStack32 = -r0;
       DISPATCH();
-    goto_OP_ADD:
+
+    case OP_ADD3:
       opStack8 -= 4;
       *opStack32 = r1 + r0;
       DISPATCH();
-    goto_OP_SUB:
+
+    case OP_ADD:
+      opStack8 -= 4;
+      *opStack32 = r1 + r0;
+      DISPATCH();
+    case OP_SUB:
       opStack8 -= 4;
       *opStack32 = r1 - r0;
       DISPATCH();
-    goto_OP_DIVI:
+    case OP_DIVI:
       opStack8 -= 4;
       *opStack32 = r1 / r0;
       DISPATCH();
-    goto_OP_DIVU:
+    case OP_DIVU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) / ((unsigned)r0);
       DISPATCH();
-    goto_OP_MODI:
+    case OP_MODI:
       opStack8 -= 4;
       *opStack32 = r1 % r0;
       DISPATCH();
-    goto_OP_MODU:
+    case OP_MODU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) % ((unsigned)r0);
       DISPATCH();
-    goto_OP_MULI:
+    case OP_MULI:
       opStack8 -= 4;
       *opStack32 = r1 * r0;
       DISPATCH();
-    goto_OP_MULU:
+    case OP_MULU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) * ((unsigned)r0);
       DISPATCH();
-    goto_OP_BAND:
+    case OP_BAND:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) & ((unsigned)r0);
       DISPATCH();
-    goto_OP_BOR:
+    case OP_BOR:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) | ((unsigned)r0);
       DISPATCH();
-    goto_OP_BXOR:
+    case OP_BXOR:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) ^ ((unsigned)r0);
       DISPATCH();
-    goto_OP_BCOM:
+    case OP_BCOM:
       *opStack32 = ~((unsigned)r0);
       DISPATCH();
-    goto_OP_LSH:
+    case OP_LSH:
       opStack8 -= 4;
       *opStack32 = r1 << r0;
       DISPATCH();
-    goto_OP_RSHI:
+    case OP_RSHI:
       opStack8 -= 4;
       *opStack32 = r1 >> r0;
       DISPATCH();
-    goto_OP_RSHU:
+    case OP_RSHU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) >> r0;
       DISPATCH();
-    goto_OP_NEGF:
+    case OP_NEGF:
       opStackFlt[0] = -opStackFlt[0];
       DISPATCH();
-    goto_OP_ADDF:
+    case OP_ADDF:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] + opStackFlt[1];
       DISPATCH();
-    goto_OP_SUBF:
+    case OP_SUBF:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] - opStackFlt[1];
       DISPATCH();
-    goto_OP_DIVF:
+    case OP_DIVF:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] / opStackFlt[1];
       DISPATCH();
-    goto_OP_MULF:
+    case OP_MULF:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] * opStackFlt[1];
       DISPATCH();
-    goto_OP_CVIF:
+    case OP_CVIF:
       opStackFlt[0] = opStackFlt[0];
       DISPATCH();
-    goto_OP_CVFI:
+    case OP_CVFI:
       *opStack32 = Q_ftol(opStackFlt[0]);
       DISPATCH();
-    goto_OP_SEX8:
+    case OP_SEX8:
       *opStack32 = (int8_t)*opStack32;
       DISPATCH();
-    goto_OP_SEX16:
+    case OP_SEX16:
       *opStack32 = (int16_t)*opStack32;
       DISPATCH();
 
-    goto_OP_CONSTU1: {
+    case OP_CONSTU1: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint8;
@@ -1072,7 +1041,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
     }
 
-    goto_OP_CONSTI1: {
+    case OP_CONSTI1: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)r2_int8;
@@ -1080,7 +1049,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
     }
 
-    goto_OP_CONSTU2: {
+    case OP_CONSTU2: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint16;
@@ -1088,7 +1057,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
     }
 
-    goto_OP_CONSTI2: {
+    case OP_CONSTI2: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int16;
@@ -1096,7 +1065,15 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
     }
 
-    goto_OP_CONSTU4: {
+    case OP_CONSTI3: {
+      opStack8 += 4;
+      r1 = r0;
+      r0 = *opStack32 = (vm_operand_t)(uint32_t)to_stdint(to_int24(r2));
+      programCounter += INT32_INCREMENT;
+      DISPATCH2();
+    }
+
+    case OP_CONSTU4: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint32;
@@ -1104,7 +1081,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
     }
 
-    goto_OP_CONSTI4: {
+    case OP_CONSTI4: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int32;
@@ -1112,7 +1089,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
     }
 
-    goto_OP_CONSTF4: {
+    case OP_CONSTF4: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int32;
@@ -1120,7 +1097,15 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH2();
     }
 
-    goto_OP_CONSTP4: {
+    case OP_CONSTP3: {
+      opStack8 += 4;
+      r1 = r0;
+      r0 = *opStack32 = (vm_operand_t)(int32_t)to_ustdint(r2_uint24);
+      programCounter += INT24_INCREMENT;
+      DISPATCH2();
+    }
+
+    case OP_CONSTP4: {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(int32_t)to_ustdint(r2_uint24);
@@ -1398,12 +1383,15 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
 static void VM_StackTrace(vm_t *vm, int programCounter, int programStack) {
   int count;
 
+  printf("-------\n");
   count = 0;
   do {
     Com_Printf("%s\n", VM_ValueToSymbol(vm, programCounter));
-    programStack   = *(int *)&vm->dataBase[programStack + 4];
-    programCounter = *(int *)&vm->dataBase[programStack];
-  } while (programCounter != -1 && ++count < 32);
+    programStack   = to_stdint(*(int24_t *)&vm->dataBase[programStack + 3]);
+    programCounter = to_stdint(*(int24_t *)&vm->dataBase[programStack]);
+  } while (programCounter != -1 && ++count < 5);
+
+  printf("-------\n");
 }
 
 static int VM_ProfileSort(const void *a, const void *b) {

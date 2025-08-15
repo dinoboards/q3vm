@@ -31,5 +31,6 @@ extern ustdint_t to_ustdint(const uint24_t x);
 extern stdint_t  to_stdint(int24_t x);
 
 extern uint24_t to_uint24(const ustdint_t x);
+extern int24_t  to_int24(ustdint_t x);
 
 #endif

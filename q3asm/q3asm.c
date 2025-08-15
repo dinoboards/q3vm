@@ -685,7 +685,7 @@ static int ParseExpression(void) {
   return v;
 }
 
-// #define STAT(L) report("STAT " L "\n");
+// #define STAT(L) report(L "\n");
 #define STAT(L)
 #define ASM(O) int TryAssemble##O()
 
@@ -694,6 +694,19 @@ static int ParseExpression(void) {
   An optimizing compiler should reconstruct these back into inline code.
  -PH
 */
+ASM(ADDRGP3) {
+  if (!strncmp(token, "ADDRGP3", 7)) {
+    STAT("OP_CONSTGP3");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+    EmitByte(&segment[CODESEG], OP_CONSTGP3);
+    EmitInt24(&segment[CODESEG], v);
+    return 1;
+  }
+  return 0;
+}
+
 ASM(ADDRGP4) {
   if (!strncmp(token, "ADDRGP4", 7)) {
     STAT("ADDRGP4");
@@ -702,6 +715,21 @@ ASM(ADDRGP4) {
     const int v = ParseExpression();
     EmitByte(&segment[CODESEG], OP_CONSTGP4);
     EmitInt24(&segment[CODESEG], v);
+    return 1;
+  }
+  return 0;
+}
+
+ASM(CNSTP3) {
+  if (!strncmp(token, "CNSTP3", 6)) {
+    STAT("CNSTP3");
+    instructionCount++;
+    Parse();
+    const int v = ParseExpression();
+
+    EmitByte(&segment[CODESEG], OP_CONSTP3);
+    EmitInt24(&segment[CODESEG], v);
+
     return 1;
   }
   return 0;
@@ -857,8 +885,8 @@ ASM(ARG) {
       CodeError("currentArgOffset >= 256");
       return 1;
     }
-    EmitByte(&segment[CODESEG], 8 + currentArgOffset);
-    currentArgOffset += 4;
+    EmitByte(&segment[CODESEG], 6 + currentArgOffset);
+    currentArgOffset += 3;
     return 1;
   }
   return 0;
@@ -870,7 +898,7 @@ ASM(RET) {
     STAT("RET");
     EmitByte(&segment[CODESEG], OP_LEAVE);
     instructionCount++;
-    EmitInt16(&segment[CODESEG], 8 + currentLocals + currentArgs);
+    EmitInt16(&segment[CODESEG], 6 + currentLocals + currentArgs);
     return 1;
   }
   return 0;
@@ -896,7 +924,7 @@ ASM(ADDRF) {
     instructionCount++;
     Parse();
     v = ParseExpression();
-    v = 16 + currentArgs + currentLocals + v;
+    v = 12 + currentArgs + currentLocals + v;
     EmitByte(&segment[CODESEG], OP_LOCAL);
     EmitInt16(&segment[CODESEG], v);
     return 1;
@@ -924,11 +952,11 @@ ASM(ASGNB) {
 ASM(ADDRL) {
   int v;
   if (!strncmp(token, "ADDRL", 5)) {
-    STAT("ADDRL");
+    STAT("OP_LOCAL");
     instructionCount++;
     Parse();
     v = ParseExpression();
-    v = 8 + currentArgs + v;
+    v = 6 + currentArgs + v;
     EmitByte(&segment[CODESEG], OP_LOCAL);
     EmitInt16(&segment[CODESEG], v);
     return 1;
@@ -946,9 +974,7 @@ ASM(PROC) {
     DefineSymbol(token, segment[CODESEG].imageUsed);
 
     currentLocals = ParseValue(); // locals
-    currentLocals = (currentLocals + 3) & ~3;
     currentArgs   = ParseValue(); // arg marshalling
-    currentArgs   = (currentArgs + 3) & ~3;
 
     if (8 + currentLocals + currentArgs >= 32767) {
       CodeError("Locals > 32k in %s\n", name);
@@ -956,7 +982,7 @@ ASM(PROC) {
 
     instructionCount++;
     EmitByte(&segment[CODESEG], OP_ENTER);
-    EmitInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
+    EmitInt16(&segment[CODESEG], (uint16_t)(6 + currentLocals + currentArgs));
     return 1;
   }
   return 0;
@@ -975,7 +1001,7 @@ ASM(ENDPROC) {
 
     instructionCount++;
     EmitByte(&segment[CODESEG], OP_LEAVE);
-    EmitInt16(&segment[CODESEG], (uint16_t)(8 + currentLocals + currentArgs));
+    EmitInt16(&segment[CODESEG], (uint16_t)(6 + currentLocals + currentArgs));
 
     return 1;
   }
@@ -989,7 +1015,7 @@ ASM(ADDRESS) {
     Parse();
     v = ParseExpression();
 
-    EmitInt32(currentSegment, v);
+    EmitInt24(currentSegment, v);
     if (passNumber == 1 && token[0] == '$') // crude test for labels
       EmitInt32(&segment[JTRGSEG], v);
     return 1;
@@ -1144,6 +1170,29 @@ AssembleLine
 
 ==============
 */
+
+/** Table to convert op codes to readable names */
+static const char *opnames[] = {
+    "OP_UNDEF",    "OP_IGNORE",  "OP_BREAK",   "OP_ENTER",   "OP_LEAVE",      "OP_CALL",    "OP_PUSH",    "OP_POP",
+    "OP_CONSTGP4", "OP_LOCAL",   "OP_JUMP",    "OP_EQ",      "OP_NE",         "OP_LTI",     "OP_LEI",     "OP_GTI",
+    "OP_GEI",      "OP_LTU",     "OP_LEU",     "OP_GTU",     "OP_GEU",        "OP_EQF",     "OP_NEF",     "OP_LTF",
+    "OP_LEF",      "OP_GTF",     "OP_GEF",     "OP_LOAD1",   "OP_LOAD2",      "OP_LOAD4",   "OP_LOADF4",  "OP_STORE1",
+    "OP_STORE2",   "OP_STORE4",  "OP_STOREF4", "OP_ARG",     "OP_BLOCK_COPY", "OP_SEX8",    "OP_SEX16",   "OP_NEGI",
+    "OP_ADD",      "OP_SUB",     "OP_DIVI",    "OP_DIVU",    "OP_MODI",       "OP_MODU",    "OP_MULI",    "OP_MULU",
+    "OP_BAND",     "OP_BOR",     "OP_BXOR",    "OP_BCOM",    "OP_LSH",        "OP_RSHI",    "OP_RSHU",    "OP_NEGF",
+    "OP_ADDF",     "OP_SUBF",    "OP_DIVF",    "OP_MULF",    "OP_CVIF",       "OP_CVFI",    "OP_CONSTU1", "OP_CONSTI1",
+    "OP_CONSTU2",  "OP_CONSTI2", "OP_CONSTU4", "OP_CONSTI4", "OP_CONSTF4",    "OP_CONSTP4",
+
+    "OP_LOAD3",    "OP_ADD3",    "OP_BAND3",   "OP_BCOM3",   "OP_BOR3",       "OP_BXOR3",   "OP_CONSTI3", "OP_CONSTU3",
+    "OP_CVFI3",    "OP_CVIU3",   "OP_CVUI3",   "OP_DIVI3",   "OP_DIVU3",      "OP_EQ3",     "OP_GEI3",    "OP_GEU3",
+    "OP_GTI3",     "OP_GTU3",    "OP_LEI3",    "OP_LEU3",    "OP_LSH3",       "OP_LTI3",    "OP_LTU3",    "OP_MODI3",
+    "OP_MODU3",    "OP_MULI3",   "OP_MULU3",   "OP_NE3",     "OP_NEGI3",      "OP_RSHI3",   "OP_RSHU3",   "OP_SEX24",
+    "OP_SEX8_3",   "OP_STORE3",  "OP_SUB3",
+
+    "OP_CONSTGP3", "OP_CONSTP3",
+
+};
+
 static void AssembleLine(void) {
   hashchain_t *hc;
   sourceOps_t *op;
@@ -1175,6 +1224,7 @@ static void AssembleLine(void) {
         CodeError("Undefined opcode: %s\n", token);
       }
       if (op->opcode == OP_IGNORE) {
+        STAT("IGNORE")
         return; // we ignore most conversions
       }
 
@@ -1184,9 +1234,24 @@ static void AssembleLine(void) {
         Parse();
         if (token[0] == '1') {
           opcode = OP_SEX8;
+          STAT("SEX8");
         } else if (token[0] == '2') {
           opcode = OP_SEX16;
+          STAT("SEX16");
+
+        } else if (token[0] == '3') {
+          STAT("IGNORE");
+
+          // ignore
+          return;
+
+        } else if (token[0] == '4') {
+          STAT("IGNORE");
+          // ignore
+          return;
+
         } else {
+
           CodeError("Bad sign extension: %s\n", token);
           return;
         }
@@ -1195,11 +1260,20 @@ static void AssembleLine(void) {
       // check for expression
       Parse();
       if (token[0] && op->opcode != OP_CVIF && op->opcode != OP_CVFI) {
+
+        /*printf("%s\n", opnames[op->opcode]);*/
+
         expression = ParseExpression();
 
         EmitByte(&segment[CODESEG], opcode);
+
+        /* if ((op->name[strlen(op->name) - 1]) == '3') {
+          // EmitInt24(&segment[CODESEG], expression);
+        // } else {*/
         EmitInt32(&segment[CODESEG], expression);
+        /*}*/
       } else {
+        /*printf("%s\n", opnames[op->opcode]);*/
         EmitByte(&segment[CODESEG], opcode);
       }
 
@@ -1245,7 +1319,9 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
+  ASM(ADDRGP3)
   ASM(ADDRGP4)
+  ASM(CNSTP3)
   ASM(CNSTP4)
   ASM(CNSTF4)
   ASM(CNSTI4)
@@ -1447,6 +1523,8 @@ static void Assemble(void) {
       ptr = asmFiles[i];
       while (ptr) {
         ptr = ExtractLine(ptr);
+        /*if(lineBuffer[0] != ';')
+          printf("\nSOURCE: %s: ", lineBuffer);*/
         AssembleLine();
       }
     }
