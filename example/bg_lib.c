@@ -727,8 +727,6 @@ int vsprintf(char *buffer, const char *fmt, va_list argptr) {
     ch = *fmt++;
   reswitch:
   arg;
-  trap_Printf("look now why good.\n");
-
     switch (ch) {
     case '-':
       flags |= LADJUST;

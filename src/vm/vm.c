@@ -482,7 +482,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   vm_operand_t   r0, r1;
 
 #ifdef DEBUG_VM
-  std_int     prevProgramCounter;
   vmSymbol_t *profileSymbol;
 #endif
 
@@ -499,9 +498,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   codeBase = vm->codeBase;
 
   programCounter = 0;
-#ifdef DEBUG_VM
-  prevProgramCounter = 0;
-#endif
   programStack -= (6 + 3 * MAX_VMMAIN_ARGS);
 
   for (arg = 0; arg < MAX_VMMAIN_ARGS; arg++) {
@@ -524,9 +520,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
-      std_int diff       = programCounter - prevProgramCounter;
-      prevProgramCounter = programCounter;
-      Com_Printf("%06X[%d]:\t", programCounter, diff);
+      Com_Printf("%06X:\t", programCounter);
 
       /*VM_StackTrace(vm, programCounter - 3, programStack);*/
     }
@@ -1389,7 +1383,7 @@ static void VM_StackTrace(vm_t *vm, int programCounter, int programStack) {
     Com_Printf("%s\n", VM_ValueToSymbol(vm, programCounter));
     programStack   = to_stdint(*(int24_t *)&vm->dataBase[programStack + 3]);
     programCounter = to_stdint(*(int24_t *)&vm->dataBase[programStack]);
-  } while (programCounter != -1 && ++count < 5);
+  } while (programCounter != -1 && ++count < 2);
 
   printf("-------\n");
 }
