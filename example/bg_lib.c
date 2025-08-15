@@ -704,7 +704,6 @@ int vsprintf(char *buffer, const char *fmt, va_list argptr) {
   buf_p = buffer;
   arg   = (int *)argptr;
 
-
   while (1) {
     // run through the format string until we hit a '%' or '\0'
     for (ch = *fmt; (ch = *fmt) != '\0' && ch != '%'; fmt++) {
@@ -726,7 +725,6 @@ int vsprintf(char *buffer, const char *fmt, va_list argptr) {
   rflag:
     ch = *fmt++;
   reswitch:
-  arg;
     switch (ch) {
     case '-':
       flags |= LADJUST;
@@ -758,7 +756,6 @@ int vsprintf(char *buffer, const char *fmt, va_list argptr) {
       width = n;
       goto reswitch;
     case 'c':
-      trap_Printf("OK IF LOOK BEFORE!!!!\n");
       *buf_p++ = (char)*arg;
       arg++;
       break;

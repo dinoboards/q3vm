@@ -3,6 +3,8 @@
 void printf(const char *fmt, ...);
 int  fib(int n);
 
+int trap_Printf(char *c);
+
 #if 0
 static const char *const someimmutabledata;
 char                    *changingdata;
@@ -31,40 +33,27 @@ typedef long          int32_t;
 
 void spike(short a, short b, short c);
 void spike_print(char *a, ...);
-void alpha(int a, int b);
-void beta(int a, ...);
-void gamma();
+void alpha(int a);
+void beta(int a);
+void gamma(int a);
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  printf("AAAAA %d", 66);
+  alpha(1);
   return 1;
 }
 
-void alpha(int a, int b) {
-  beta(a, b);
-
+void alpha(int a) {
+  beta(a);
+  gamma(a);
   return;
 }
 
 int p;
 
-void beta(int a, ...) {
-  va_list argptr;
+void beta(int a) { printf("beta %d\n", a); }
 
-  va_start(argptr, a);
-  p = va_arg(argptr, int);
-  if (p == 2)
-    trap_Printf("p == 2\n");
-  else
-    trap_Printf("p != 2\n");
-
-  va_end(argptr);
-
-  trap_Printf("beta done!\n");
-}
-
-void gamma() { trap_Printf("GAMMA\n"); }
+void gamma(int a) { printf("GAMMA %d\n", a); }
 
 void spike(short a, short b, short c) {
   int aa = (int)&a;

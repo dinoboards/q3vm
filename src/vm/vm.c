@@ -521,8 +521,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
       Com_Printf("%06X:\t", programCounter);
-
-      /*VM_StackTrace(vm, programCounter - 3, programStack);*/
     }
 #endif
 
@@ -649,6 +647,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       programCounter += INT24_INCREMENT;
       opStack8 -= 8;
       DISPATCH();
+
     case OP_CALL:
       /* save current program counter */
       *(int24_t *)&dataBase[programStack] = to_int24(programCounter);
@@ -670,8 +669,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #ifdef DEBUG_VM
         int stomped = to_stdint(*(int24_t *)&dataBase[programStack + 3]);
 #endif
-        *(int24_t *)&dataBase[programStack + 3] = to_int24(-1 - programCounter);
-
+        *(int24_t *)&dataBase[programStack + 3] = to_int24(-1 - programCounter); /*command*/
         {
           intptr_t  argarr[MAX_VMSYSCALL_ARGS];
           int24_t  *imagePtr = (int24_t *)&dataBase[programStack];
@@ -1377,15 +1375,17 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
 static void VM_StackTrace(vm_t *vm, int programCounter, int programStack) {
   int count;
 
-  printf("-------\n");
   count = 0;
   do {
-    Com_Printf("%s\n", VM_ValueToSymbol(vm, programCounter));
+    Com_Printf("STACK: %s %06X %06X\n", VM_ValueToSymbol(vm, programCounter), programCounter, programStack);
     programStack   = to_stdint(*(int24_t *)&vm->dataBase[programStack + 3]);
     programCounter = to_stdint(*(int24_t *)&vm->dataBase[programStack]);
-  } while (programCounter != -1 && ++count < 2);
+  } while (programCounter != -1 && ++count < 5);
 
-  printf("-------\n");
+  if (programCounter == 0) {
+    Com_Printf("STACK: %s %06X %06X\n", VM_ValueToSymbol(vm, programCounter), programCounter, programStack);
+    printf("%06X\n", to_stdint(*(int24_t *)&vm->dataBase[programStack - 6]));
+  }
 }
 
 static int VM_ProfileSort(const void *a, const void *b) {

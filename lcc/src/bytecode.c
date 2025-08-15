@@ -249,8 +249,6 @@ static void I(global)(Symbol p) {
 static void I(import)(Symbol p) { print("import %s\n", p->x.name); }
 
 static void I(local)(Symbol p) {
-  // offset      = roundup(offset, p->type->align);
-  printf(";????????offset: %d, %d\n", offset,p->type->align);
   p->x.name   = stringf("%d", offset);
   p->x.offset = offset;
   offset += p->type->size;
