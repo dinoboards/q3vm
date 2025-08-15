@@ -181,7 +181,7 @@ static const char *opnames[OPCODE_TABLE_SIZE] = {
  *******************
  ***********************************************************/
 
-static bool VM_ValidateHeader(const vm_t *const vm, const vmHeader_t *const header);
+static bool VM_ValidateHeader(const vm_t *const vm, const vmHeader_t *const header, const vm_size_t bytecodeLength);
 
 /** Run a function from the virtual machine with the interpreter (i.e. no JIT).
  * @param[in] vm Pointer to initialized virtual machine.
@@ -263,19 +263,21 @@ bool VM_Create(vm_t                *vm,
     const vmHeader_t *const header = (const vmHeader_t *const)bytecode;
 
     Com_Memset(vm, 0, sizeof(vm_t));
-    vm->bytecodeLength   = length;
+    vm->systemCall       = systemCalls;
+    vm->instructionCount = to_ustdint(header->instructionCount);
+
+    vm->codeBase         = &bytecode[sizeof(vmHeader_t)];
+    vm->codeLength       = to_ustdint(header->codeLength);
+    vm->litBase          = vm->codeBase + vm->codeLength;
+    vm->litLength        = to_ustdint(header->litLength);
+    vm->dataBase         = workingRAM - to_ustdint(header->litLength);
+    vm->dataLength       = to_ustdint(header->dataLength);
+    vm->bssBase          = vm->dataBase + to_ustdint(header->dataLength);
+    vm->bssLength        = to_ustdint(header->bssLength);
+    vm->programStack     = workingRAMLength - 3;
     vm->workingRAMLength = workingRAMLength;
 
-    vm->litLength        = to_ustdint(header->litLength);
-    vm->instructionCount = to_ustdint(header->instructionCount);
-    vm->codeLength       = to_ustdint(header->codeLength);
-
-    vm->codeBase   = &bytecode[sizeof(vmHeader_t)];
-    vm->systemCall = systemCalls;
-
-    vm->programStack = to_ustdint(header->dataLength) + to_ustdint(header->litLength) + to_ustdint(header->bssLength) - 4;
-
-    if (VM_ValidateHeader(vm, header))
+    if (VM_ValidateHeader(vm, header, length))
       return -1;
 
     /* make sure data section is always initialized with 0
@@ -285,11 +287,24 @@ bool VM_Create(vm_t                *vm,
     /* copy the intialized data, excluding the lit segment */
     Com_Memcpy(workingRAM, &bytecode[to_ustdint(header->codeLength) + to_ustdint(header->litLength) + sizeof(vmHeader_t)],
                to_ustdint(header->dataLength));
-    vm->dataBase = workingRAM - to_ustdint(header->litLength);
 
     /* the stack is implicitly at the end of the image */
 #ifdef DEBUG_VM
-    vm->stackBottom = vm->programStack - to_ustdint(header->bssLength);
+    vm->stackBottom = workingRAMLength - (vm->dataLength + vm->bssLength);
+
+    printf("Memory Layout:\n");
+    printf("  CodeBase Store: %p\n", vm->codeBase);
+    printf("  LitBase Store:  %p\n", vm->litBase);
+    printf(" dataBase Store:  %p\n", vm->dataBase + to_ustdint(header->litLength));
+    printf("  bssBase Store:  %p\n\n", vm->bssBase + to_ustdint(header->litLength));
+
+    printf("  RAM Length:     %06X\n", vm->workingRAMLength);
+    printf("  Code Length:    %06X\n", vm->codeLength);
+    printf("  Lit Length:     %06X\n", vm->litLength);
+    printf("  Data Length:    %06X\n", vm->dataLength);
+    printf("  BSS Length:     %06X\n", vm->bssLength);
+    printf("  BSS End:        %06X\n", vm->dataLength + vm->bssLength);
+    printf("  Prog. Stack:    %06X\n", vm->programStack);
 #endif
   }
   return 0;
@@ -317,9 +332,9 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 }
 #endif
 
-static bool VM_ValidateHeader(const vm_t *const vm, const vmHeader_t *const header) {
+static bool VM_ValidateHeader(const vm_t *const vm, const vmHeader_t *const header, const vm_size_t bytecodeLength) {
 
-  if (!header || vm->bytecodeLength <= vm_sizeof(vmHeader_t) || vm->bytecodeLength > VM_MAX_IMAGE_SIZE) {
+  if (!header || bytecodeLength <= vm_sizeof(vmHeader_t) || bytecodeLength > VM_MAX_IMAGE_SIZE) {
     Com_Printf("Failed.\n");
     return -1;
   }
@@ -327,7 +342,7 @@ static bool VM_ValidateHeader(const vm_t *const vm, const vmHeader_t *const head
   if (header->vmMagic == VM_MAGIC) {
     if (to_ustdint(header->codeLength) == 0 || to_ustdint(header->instructionCount) == 0 ||
         to_ustdint(header->bssLength) > VM_MAX_BSS_LENGTH ||
-        to_ustdint(header->codeLength) + to_ustdint(header->litLength) + to_ustdint(header->dataLength) > vm->bytecodeLength) {
+        to_ustdint(header->codeLength) + to_ustdint(header->litLength) + to_ustdint(header->dataLength) > bytecodeLength) {
       Com_Printf("Warning: bad header\n");
       Com_Error(VM_MALFORMED_HEADER, "Malformed bytecode image\n");
       return -1;
@@ -627,7 +642,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       r1 = r0;
       r0 = *opStack32 = r2_uint16 + programStack;
 #ifdef DEBUG_VM
-      printf(" LOCAL: R0 = %06X = *[%06X + %04X (%06X)]\n", r0, programStack, r2_uint16, programStack + r2_uint16);
+      if (vm_debugLevel > 3)
+        printf(" LOCAL: R0 = %06X = *[%06X + %04X (%06X)]\n", r0, programStack, r2_uint16, programStack + r2_uint16);
 #endif
       programCounter += INT16_INCREMENT;
       DISPATCH2();
