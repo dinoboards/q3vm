@@ -60,7 +60,7 @@ all: $(TARGET) $(TARGET_NATIVE)
 default: $(TARGET)
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	$(LINK) -m -s 16384 -f bytecode
+	$(LINK) -m -f bytecode
 	@echo 'Executable created: '$@
 
 # Optional: build g_main.c as native application for benchmarks

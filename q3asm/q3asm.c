@@ -99,8 +99,6 @@ int   currentFileIndex;
 char *currentFileName;
 int   currentFileLine;
 
-int stackSize = 100;
-
 // we need to convert arg and ret instructions to
 // stores to the local stack frame, so we need to track the
 // characteristics of the current functions stack frame
@@ -1460,10 +1458,7 @@ static void Assemble(void) {
 
   // reserve the stack in bss
   currentSegment = &segment[BSSSEG];
-  DefineSymbol("_stackStart", segment[BSSSEG].imageUsed);
-  segment[BSSSEG].imageUsed += stackSize;
-  DefineSymbol("_stackEnd", segment[BSSSEG].imageUsed);
-
+  DefineSymbol("_stackBottom", segment[BSSSEG].imageUsed);
   // write the image
   WriteVmFile();
 
@@ -1516,7 +1511,6 @@ Assemble LCC bytecode assembly to Q3VM bytecode.\n\
   -b BUCKETS     Set symbol hash table to BUCKETS buckets\n\
   -m             Generate a mapfile for each OUTPUT.qvm\n\
   -v             Verbose compilation report\n\
-  -s SIZE        Stack size to reserve for application\n \
   -h --help -?   Show this help\n\
 ",
         argv0);
@@ -1580,12 +1574,6 @@ int main(int argc, char **argv) {
       }
       i++;
       symtablelen = atoiNoCap(argv[i]);
-      continue;
-    }
-
-    if (!strcmp(argv[i], "-s")) {
-      stackSize = atoi(argv[i + 1]);
-      i++;
       continue;
     }
 

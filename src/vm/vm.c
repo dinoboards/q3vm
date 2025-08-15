@@ -290,7 +290,7 @@ bool VM_Create(vm_t                *vm,
 
     /* the stack is implicitly at the end of the image */
 #ifdef DEBUG_VM
-    vm->stackBottom = workingRAMLength - (vm->dataLength + vm->bssLength);
+    vm->stackBottom = (vm->dataLength + vm->bssLength);
 
     printf("Memory Layout:\n");
     printf("  CodeBase Store: %p\n", vm->codeBase);
@@ -304,7 +304,8 @@ bool VM_Create(vm_t                *vm,
     printf("  Data Length:    %06X\n", vm->dataLength);
     printf("  BSS Length:     %06X\n", vm->bssLength);
     printf("  BSS End:        %06X\n", vm->dataLength + vm->bssLength);
-    printf("  Prog. Stack:    %06X\n", vm->programStack);
+    printf("  PS Top:         %06X\n", vm->programStack);
+    printf("  PS Bottom:      %06X\n", vm->stackBottom);
 #endif
   }
   return 0;
@@ -327,7 +328,6 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
   Com_Printf("Stack size:   %6i bytes\n", VM_PROGRAM_STACK_SIZE);
   Com_Printf("Allocated memory: %6i bytes\n", vm->workingRAMLength);
   Com_Printf("Instruction count: %i\n", vm->instructionCount);
-
   return 0;
 }
 #endif
