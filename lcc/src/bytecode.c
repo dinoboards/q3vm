@@ -217,7 +217,7 @@ static void gen02(Node p) {
   assert(p);
   if (generic(p->op) == ARG) {
     assert(p->syms[0]);
-    argoffset += (p->syms[0]->u.c.v.i < 4 ? 4 : p->syms[0]->u.c.v.i);
+    argoffset += (p->syms[0]->u.c.v.i < 3 ? 3 : p->syms[0]->u.c.v.i);
   } else if (generic(p->op) == CALL) {
     maxargoffset = (argoffset > maxargoffset ? argoffset : maxargoffset);
     argoffset    = 0;
@@ -249,7 +249,8 @@ static void I(global)(Symbol p) {
 static void I(import)(Symbol p) { print("import %s\n", p->x.name); }
 
 static void I(local)(Symbol p) {
-  offset      = roundup(offset, p->type->align);
+  // offset      = roundup(offset, p->type->align);
+  printf(";????????offset: %d, %d\n", offset,p->type->align);
   p->x.name   = stringf("%d", offset);
   p->x.offset = offset;
   offset += p->type->size;

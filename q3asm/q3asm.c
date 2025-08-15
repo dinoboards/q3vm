@@ -956,6 +956,7 @@ ASM(ADDRL) {
     instructionCount++;
     Parse();
     v = ParseExpression();
+    printf("ADDRL v -> %d, %d\n", v, 6 + currentArgs);
     v = 6 + currentArgs + v;
     EmitByte(&segment[CODESEG], OP_LOCAL);
     EmitInt16(&segment[CODESEG], v);
@@ -975,8 +976,9 @@ ASM(PROC) {
 
     currentLocals = ParseValue(); // locals
     currentArgs   = ParseValue(); // arg marshalling
+    printf("PROC: %s, %d, %d\n", name, currentLocals, currentArgs);
 
-    if (8 + currentLocals + currentArgs >= 32767) {
+    if (6 + currentLocals + currentArgs >= 32767) {
       CodeError("Locals > 32k in %s\n", name);
     }
 

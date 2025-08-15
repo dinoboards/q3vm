@@ -37,8 +37,7 @@ void gamma();
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  /*alpha(1,2);*/
-  printf("AAAAAAAAAAAAAAAAAAAA\n%d", 2);
+  printf("AAAAA%c", 66);
   return 1;
 }
 
@@ -50,15 +49,19 @@ void alpha(int a, int b) {
 
 int p;
 
-char *arg_ptr = 0;
-
 void beta(int a, ...) {
-  /*  arg_ptr = (va_list)&a + sizeof(a);*/
+  va_list argptr;
 
-  arg_ptr = arg_ptr + 1;
+  va_start(argptr, a);
+  p = va_arg(argptr, int);
+  if (p == 2)
+    trap_Printf("p == 2\n");
+  else
+    trap_Printf("p != 2\n");
 
-  /*  va_arg(argptr, int);
-    va_end(argptr);*/
+  va_end(argptr);
+
+  trap_Printf("beta done!\n");
 }
 
 void gamma() { trap_Printf("GAMMA\n"); }
@@ -89,6 +92,61 @@ void spike_print(char *a, ...) {
 
 #if 1
 char text[256];
+
+#define ALT       0x00000001 /* alternate form */
+#define HEXPREFIX 0x00000002 /* add 0x or 0X prefix */
+#define LADJUST   0x00000004 /* left adjustment */
+#define LONGDBL   0x00000008 /* long double */
+#define LONGINT   0x00000010 /* long integer */
+#define QUADINT   0x00000020 /* quad integer */
+#define SHORTINT  0x00000040 /* short integer */
+#define ZEROPAD   0x00000080 /* zero (as opposed to blank) pad */
+#define FPT       0x00000100 /* floating point number */
+
+#define to_digit(c) ((c) - '0')
+#define is_digit(c) ((unsigned)to_digit(c) <= 9)
+#define to_char(n)  ((n) + '0')
+
+int xxvsprintf(char *buffer, const char *fmt, va_list argptr) {
+  int  *arg;
+  char *buf_p;
+  char  ch;
+  int   width;
+
+  buf_p = buffer;
+  arg   = (int *)argptr;
+
+
+  while (1) {
+    // run through the format string until we hit a '%' or '\0'
+    for (ch = *fmt; (ch = *fmt) != '\0' && ch != '%'; fmt++) {
+      *buf_p++ = ch;
+    }
+    if (ch == '\0') {
+      goto done;
+    }
+
+    // skip over the '%'
+    fmt++;
+
+   trap_Printf("Break it by setting width\n");
+    // reset formatting state
+    width = 0;
+
+    ch = *fmt;
+    switch (ch) {
+    case 'c':
+      trap_Printf("OK IF LOOK BEFORE!!!!\n");
+      *buf_p++ = (char)*arg;
+      arg++;
+      break;
+    }
+  }
+
+done:
+  *buf_p = 0;
+  return buf_p - buffer;
+}
 
 void printf(const char *fmt, ...) {
   va_list argptr;
