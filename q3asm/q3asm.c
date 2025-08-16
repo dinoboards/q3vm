@@ -914,20 +914,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-// pop is needed to discard the return value of
-// a function
-ASM(POP) {
-  if (!strncmp(token, "pop", 3)) {
-    STAT("POP");
-    WriteCode(OP_POP);
-
-    EmitByte(&segment[CODESEG], OP_POP);
-    instructionCount++;
-    return 1;
-  }
-  return 0;
-}
-
 ASM(PROC) {
   char name[1024];
   if (!strcmp(token, "proc")) {
@@ -1247,7 +1233,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(POP)
   ASM(ALIGN)
   ASM(PROC)
   ASM(ENDPROC)

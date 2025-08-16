@@ -176,3 +176,10 @@ ASMFn(ADDRF) {
   EmitByte(&segment[CODESEG], assembler.opcode);
   EmitInt16(&segment[CODESEG], v);
 }
+
+ASMFn(CODE_OP) {
+  instructionCount++;
+  WriteCode(assembler.opcode);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+}

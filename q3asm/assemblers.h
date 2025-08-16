@@ -26,5 +26,6 @@ assemblers_t assemblers[] = {
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"LABEL",   DIRECTIVE,     assfn(LABEL)     },
     {"LINE",    DIRECTIVE,     assfn(COMMENT)   },
+    {"POP",     OP_POP,        assfn(CODE_OP)   },
     {"RET",     OP_LEAVE,      assfn(RET)       },
 };
