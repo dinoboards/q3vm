@@ -10,6 +10,8 @@ typedef struct assemblers_s {
 
 #define ASMFn(O) void TryNewAssemble_##O(const assemblers_t assembler)
 
+#define ASMMultipleFn(O) void TryNewAssemble_##O(const assemblers_t _unsued __attribute__((unused)))
+
 #define DIRFn(O) void TryNewAssemble_##O(const assemblers_t _unsued __attribute__((unused)))
 
 ASMFn(CODE_24BIT) {
@@ -209,6 +211,26 @@ ASMFn(PROC) {
   WriteInt16Code(assembler.opcode, v);
 
   EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitInt16(&segment[CODESEG], v);
+}
+
+ASMMultipleFn(ENDPROC) {
+  instructionCount += 2;
+  Parse();      // skip the function name
+  ParseValue(); // locals
+  ParseValue(); // arg marshalling
+
+  WriteCode(OP_PUSH);
+  // all functions must leave something on the opstack
+  EmitByte(&segment[CODESEG], OP_PUSH);
+
+  const uint16_t v = 6 + currentLocals + currentArgs;
+  WritePC();
+  WriteOpcode(OP_LEAVE);
+  WriteInt16(v);
+  WriteNewLine();
+
+  EmitByte(&segment[CODESEG], OP_LEAVE);
   EmitInt16(&segment[CODESEG], v);
 }
 

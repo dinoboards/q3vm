@@ -914,33 +914,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-ASM(ENDPROC) {
-  if (!strcmp(token, "endproc")) {
-    STAT("ENDPROC");
-    Parse();      // skip the function name
-    ParseValue(); // locals
-    ParseValue(); // arg marshalling
-
-    // all functions must leave something on the opstack
-    instructionCount++;
-    WriteCode(OP_PUSH);
-    EmitByte(&segment[CODESEG], OP_PUSH);
-
-    instructionCount++;
-
-    WritePC();
-    WriteOpcode(OP_LEAVE);
-    WriteInt16(6 + currentLocals + currentArgs);
-    WriteNewLine();
-
-    EmitByte(&segment[CODESEG], OP_LEAVE);
-    EmitInt16(&segment[CODESEG], (uint16_t)(6 + currentLocals + currentArgs));
-
-    return 1;
-  }
-  return 0;
-}
-
 ASM(ADDRESS) {
   int v;
   if (!strcmp(token, "address")) {
@@ -1185,7 +1158,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(ENDPROC)
   ASM(ADDRESS)
   ASM(SKIP)
   ASM(EQU)
