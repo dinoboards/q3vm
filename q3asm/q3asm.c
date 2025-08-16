@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "../src/vm/opcodes.h"
+#include "../src/vm/opcodes.c.h"
 #include "../src/vm/vm.h"
 
 #include "cmdlib.h"
@@ -1113,6 +1113,22 @@ ASM(CALL) {
 
 // arg is converted to a reversed store
 ASM(ARG) {
+  if (!strncmp(token, "ARGF", 4)) {
+    STAT("ARGF");
+
+    WriteInt8Code(OP_ARGF, 6 + currentArgOffset);
+
+    EmitByte(&segment[CODESEG], OP_ARGF);
+    instructionCount++;
+    if (8 + currentArgOffset >= 256) {
+      CodeError("currentArgOffset >= 256");
+      return 1;
+    }
+    EmitByte(&segment[CODESEG], 6 + currentArgOffset);
+    currentArgOffset += 4;
+    return 1;
+  }
+
   if (!strncmp(token, "ARG", 3)) {
     STAT("ARG");
 

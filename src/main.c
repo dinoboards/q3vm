@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  VM_Debug(3);
+  VM_Debug(4);
 
 #define DATA_SIZE 0x600
   pData = malloc(DATA_SIZE); /* allocate 64k ram for data, bss and stack*/

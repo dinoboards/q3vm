@@ -112,6 +112,7 @@ typedef enum : uint8_t {
   OP_SUB3,
   OP_CONSTGP3,
   OP_CONSTP3,
+  OP_ARGF,
 
   OP_MAX /* ??: Make this the last item */
 } opcode_t;

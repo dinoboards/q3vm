@@ -5,7 +5,7 @@ CFLAGS=-g -Wall -Wextra -O2
 
 default:	q3asm
 
-q3asm:	q3asm.c cmdlib.c ../src/vm/target-support.c ../src/vm/opcodes.c
+q3asm:	q3asm.c cmdlib.c ../src/vm/target-support.c
 	$(CC) $(CFLAGS) -o $@ $^
 	@echo 'Executable created: '$@
 

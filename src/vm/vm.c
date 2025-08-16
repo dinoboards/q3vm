@@ -87,7 +87,7 @@
 
 static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes */
 
-#include "opcodes.c"
+#include "opcodes.c.h"
 
 #endif
 
@@ -520,8 +520,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(%02X %06X);\tSP=%06X, (*SP)=%06X R0=%06X, R1=%06X \n", VM_Indent(vm), (int)(opStack8 - _opStack),
-                 opnames[opcode], opcode, r2, programStack, to_stdint(*(int24_t *)&dataBase[programStack]), r0, r1);
+      Com_Printf("%s%i %s\t(%02X %06X);\tSP=%06X,  R0=%06X, R1=%06X \n", VM_Indent(vm), (int)(opStack8 - _opStack), opnames[opcode],
+                 opcode, r2, programStack, r0, r1);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
@@ -565,9 +565,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       programCounter += INT16_INCREMENT;
       DISPATCH2();
 
-    case OP_LOADF4:
-      r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
+    case OP_LOADF4: {
+      r0 = *opStack32 = *((uint32_t *)VM_RedirectLit(vm, r0));
       DISPATCH2();
+    }
 
     case OP_LOAD4:
       r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
@@ -613,6 +614,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       dataBase[r1] = r0;
       opStack8 -= 8;
       DISPATCH();
+
     case OP_ARG:
       /* single byte offset from programStack */
 #ifdef DEBUG_VM
@@ -622,6 +624,20 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       programCounter += 1;
       DISPATCH();
+
+    case OP_ARGF: {
+      /* single byte offset from programStack */
+#ifdef DEBUG_VM
+      printf("  ARGF *[%06X + %02X (%06X)] = %f (%08X) (from: %06X)\n", programStack, r2_int8, programStack + r2_int8, f, i,
+             (int)(opStack8 - _opStack));
+#endif
+
+      *((uint32_t *)&dataBase[programStack + r2_int8]) = r0;
+      opStack8 -= 4;
+      programCounter += 1;
+      DISPATCH();
+    }
+
     case OP_BLOCK_COPY:
       VM_BlockCopy(r1, r0, to_ustdint(r2_uint24), vm);
       programCounter += INT24_INCREMENT;
@@ -1064,7 +1080,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CONSTF4: {
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int32;
+      r0 = *opStack32 = r2;
       programCounter += INT32_INCREMENT;
       DISPATCH2();
     }
