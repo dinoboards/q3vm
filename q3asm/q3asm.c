@@ -1024,24 +1024,6 @@ ASM(ADDRESS) {
   return 0;
 }
 
-ASM(EXPORT) {
-  if (!strcmp(token, "export")) {
-    STAT("EXPORT");
-    WriteComment();
-    return 1;
-  }
-  return 0;
-}
-
-ASM(IMPORT) {
-  if (!strcmp(token, "import")) {
-    STAT("IMPORT");
-    WriteComment();
-    return 1;
-  }
-  return 0;
-}
-
 ASM(CODE) {
   if (!strcmp(token, "code")) {
     STAT("CODE");
@@ -1081,15 +1063,6 @@ ASM(LIT) {
     currentSegment = &segment[LITSEG];
 
     WriteDirectiveSegment(LITSEG);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(LINE) {
-  if (!strcmp(token, "line")) {
-    STAT("LINE");
-    WriteComment();
     return 1;
   }
   return 0;
@@ -1314,13 +1287,10 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(LINE)
-  ASM(IMPORT)
   ASM(LABEL)
   ASM(ADDRF)
   ASM(POP)
   ASM(ALIGN)
-  ASM(EXPORT)
   ASM(PROC)
   ASM(ENDPROC)
   ASM(ADDRESS)

@@ -21,5 +21,8 @@ assemblers_t assemblers[] = {
     {"CNSTU1",  OP_CONSTU1,    assfn(CODE_8BIT) },
     {"CNSTU2",  OP_CONSTU2,    assfn(CODE_16BIT)},
     {"CNSTU4",  OP_CONSTU4,    assfn(CODE_32BIT)},
-    {"RET",     OP_LEAVE,      assfn(RET)       }
+    {"EXPORT",  OP_NONE,       assfn(COMMENT)   },
+    {"IMPORT",  OP_NONE,       assfn(COMMENT)   },
+    {"LINE",    OP_NONE,       assfn(COMMENT)   },
+    {"RET",     OP_LEAVE,      assfn(RET)       },
 };

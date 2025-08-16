@@ -10,6 +10,8 @@ typedef struct assemblers_s {
 
 #define ASMFn(O) void TryNewAssemble_##O(const assemblers_t assembler)
 
+#define DIRFn(O) void TryNewAssemble_##O(const assemblers_t assembler __attribute__((unused)))
+
 ASMFn(CODE_24BIT) {
   instructionCount++;
   Parse();
@@ -120,9 +122,7 @@ ASMFn(ADDRL) {
   EmitInt16(&segment[CODESEG], v);
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-ASMFn(BYTE) {
+DIRFn(BYTE) {
   int       i;
   const int v  = ParseValue();
   int       v2 = ParseValue();
@@ -138,7 +138,6 @@ ASMFn(BYTE) {
     v2 >>= 8;
   }
 }
-#pragma GCC diagnostic pop
 
 // ret just leaves something on the op stack
 ASMFn(RET) {
@@ -150,3 +149,5 @@ ASMFn(RET) {
   EmitByte(&segment[CODESEG], assembler.opcode);
   EmitInt16(&segment[CODESEG], v);
 }
+
+DIRFn(COMMENT) { WriteComment(); }
