@@ -26,19 +26,19 @@ typedef long          int32_t;
 
 float f;
 float r;
+int   xx;
 
 float alpha(float x);
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
 
-  f = 1.2;
+  f  = 1.2;
+  xx = 99;
+
+  f = f + xx;
 
   printf("f: %f\n", f);
-
-  r = alpha(f);
-
-  printf("r: %f\n", r);
 }
 
 float alpha(float f) {

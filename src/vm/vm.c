@@ -1008,9 +1008,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] * opStackFlt[1];
       DISPATCH();
+
     case OP_CVIF:
-      opStackFlt[0] = opStackFlt[0];
+      opStackFlt[0] = (float)opStack32[0];
       DISPATCH();
+
     case OP_CVFI:
       *opStack32 = Q_ftol(opStackFlt[0]);
       DISPATCH();
