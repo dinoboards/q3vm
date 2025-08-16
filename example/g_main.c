@@ -24,9 +24,9 @@ typedef short          int16_t;
 typedef unsigned long uint32_t;
 typedef long          int32_t;
 
-float f;
-float r;
-int   xx;
+float        f;
+float        r;
+unsigned int xx;
 
 float alpha(float x);
 

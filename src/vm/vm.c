@@ -628,6 +628,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_ARGF: {
       /* single byte offset from programStack */
 #ifdef DEBUG_VM
+      float    f = *((float *)&r0);
+      uint32_t i = *((uint32_t *)&r0);
+
       printf("  ARGF *[%06X + %02X (%06X)] = %f (%08X) (from: %06X)\n", programStack, r2_int8, programStack + r2_int8, f, i,
              (int)(opStack8 - _opStack));
 #endif
@@ -1059,6 +1062,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(uint32_t)to_stdint(to_int24(r2));
+      programCounter += INT32_INCREMENT;
+      DISPATCH2();
+    }
+
+    case OP_CONSTU3: {
+      opStack8 += 4;
+      r1 = r0;
+      r0 = *opStack32 = (vm_operand_t)(uint32_t)to_ustdint(to_uint24(r2));
       programCounter += INT32_INCREMENT;
       DISPATCH2();
     }
