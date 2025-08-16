@@ -139,3 +139,14 @@ ASMFn(BYTE) {
   }
 }
 #pragma GCC diagnostic pop
+
+// ret just leaves something on the op stack
+ASMFn(RET) {
+  const int v = 6 + currentLocals + currentArgs;
+  instructionCount++;
+
+  WriteInt16Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitInt16(&segment[CODESEG], v);
+}

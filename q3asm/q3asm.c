@@ -914,21 +914,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-// ret just leaves something on the op stack
-ASM(RET) {
-  if (!strncmp(token, "RET", 3)) {
-    STAT("RET");
-
-    WriteInt16Code(OP_LEAVE, 6 + currentLocals + currentArgs);
-
-    EmitByte(&segment[CODESEG], OP_LEAVE);
-    instructionCount++;
-    EmitInt16(&segment[CODESEG], 6 + currentLocals + currentArgs);
-    return 1;
-  }
-  return 0;
-}
-
 // pop is needed to discard the return value of
 // a function
 ASM(POP) {
@@ -1334,7 +1319,6 @@ static void AssembleLine(void) {
   ASM(LABEL)
   ASM(ADDRF)
   ASM(POP)
-  ASM(RET)
   ASM(ALIGN)
   ASM(EXPORT)
   ASM(PROC)
