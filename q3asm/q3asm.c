@@ -914,26 +914,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-// arg is converted to a reversed store
-ASM(ARG) {
-  if (!strncmp(token, "ARG", 3)) {
-    STAT("ARG");
-
-    WriteInt8Code(OP_ARG, 6 + currentArgOffset);
-
-    EmitByte(&segment[CODESEG], OP_ARG);
-    instructionCount++;
-    if (8 + currentArgOffset >= 256) {
-      CodeError("currentArgOffset >= 256");
-      return 1;
-    }
-    EmitByte(&segment[CODESEG], 6 + currentArgOffset);
-    currentArgOffset += 3;
-    return 1;
-  }
-  return 0;
-}
-
 // ret just leaves something on the op stack
 ASM(RET) {
   if (!strncmp(token, "RET", 3)) {
@@ -1394,7 +1374,6 @@ static void AssembleLine(void) {
   ASM(ADDRL)
   ASM(BYTE)
   ASM(LINE)
-  ASM(ARG)
   ASM(IMPORT)
   ASM(LABEL)
   ASM(ADDRF)
