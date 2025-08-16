@@ -1,5 +1,5 @@
 
-#define OP_NONE 0
+#define DIRECTIVE 0
 
 assemblers_t assemblers[] = {
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
@@ -10,7 +10,7 @@ assemblers_t assemblers[] = {
     {"ARGP",    OP_ARGF,       assfn(ARG)       },
     {"ARGU",    OP_ARGF,       assfn(ARG)       },
     {"ASGNB",   OP_BLOCK_COPY, assfn(CODE_24BIT)},
-    {"BYTE",    OP_NONE,       assfn(BYTE)      },
+    {"BYTE",    DIRECTIVE,     assfn(BYTE)      },
     {"CALL",    OP_CALL,       assfn(CALL)      },
     {"CNSTF4",  OP_CONSTF4,    assfn(CODE_FLOAT)},
     {"CNSTI1",  OP_CONSTI1,    assfn(CODE_8BIT) },
@@ -21,8 +21,9 @@ assemblers_t assemblers[] = {
     {"CNSTU1",  OP_CONSTU1,    assfn(CODE_8BIT) },
     {"CNSTU2",  OP_CONSTU2,    assfn(CODE_16BIT)},
     {"CNSTU4",  OP_CONSTU4,    assfn(CODE_32BIT)},
-    {"EXPORT",  OP_NONE,       assfn(COMMENT)   },
-    {"IMPORT",  OP_NONE,       assfn(COMMENT)   },
-    {"LINE",    OP_NONE,       assfn(COMMENT)   },
+    {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
+    {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
+    {"LABEL",   DIRECTIVE,     assfn(LABEL)     },
+    {"LINE",    DIRECTIVE,     assfn(COMMENT)   },
     {"RET",     OP_LEAVE,      assfn(RET)       },
 };

@@ -151,3 +151,13 @@ ASMFn(RET) {
 }
 
 DIRFn(COMMENT) { WriteComment(); }
+
+DIRFn(LABEL) {
+  Parse();
+
+  DefineSymbol(token, currentSegment->imageUsed);
+
+  WritePC();
+  WriteSymbol(token);
+  WriteComment();
+}

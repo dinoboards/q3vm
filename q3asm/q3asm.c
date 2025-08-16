@@ -1127,26 +1127,6 @@ ASM(SKIP) {
   return 0;
 }
 
-// code labels are emitted as instruction counts, not byte offsets,
-// because the physical size of the code will change with
-// different run time compilers and we want to minimize the
-// size of the required translation table
-ASM(LABEL) {
-  if (!strncmp(token, "LABEL", 5)) {
-    STAT("LABEL");
-    Parse();
-
-    DefineSymbol(token, currentSegment->imageUsed);
-
-    WritePC();
-    WriteSymbol(token);
-    WriteComment();
-
-    return 1;
-  }
-  return 0;
-}
-
 /*
 ==============
 AssembleLine
@@ -1287,7 +1267,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(LABEL)
   ASM(ADDRF)
   ASM(POP)
   ASM(ALIGN)
