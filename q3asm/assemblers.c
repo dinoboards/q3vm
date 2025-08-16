@@ -105,3 +105,37 @@ ASMFn(ARG) {
     return;
   }
 }
+
+// address of a local is converted to OP_LOCAL
+ASMFn(ADDRL) {
+  int v;
+  instructionCount++;
+  Parse();
+  v = ParseExpression();
+  v = 6 + currentArgs + v;
+
+  WriteInt16Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitInt16(&segment[CODESEG], v);
+}
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+ASMFn(BYTE) {
+  int       i;
+  const int v  = ParseValue();
+  int       v2 = ParseValue();
+
+  if (v == 2) {
+    /* and 16-bit (2-byte) values will cause q3asm to barf. */
+    CodeError("16 bit initialized data not supported");
+  }
+
+  for (i = 0; i < v; i++) {
+    WriteDirectiveD8(v2);
+    EmitByte(currentSegment, (v2 & 0xFF)); /* paranoid ANDing  -PH */
+    v2 >>= 8;
+  }
+}
+#pragma GCC diagnostic pop

@@ -963,25 +963,6 @@ ASM(ADDRF) {
   return 0;
 }
 
-// address of a local is converted to OP_LOCAL
-ASM(ADDRL) {
-  int v;
-  if (!strncmp(token, "ADDRL", 5)) {
-    STAT("OP_LOCAL");
-    instructionCount++;
-    Parse();
-    v = ParseExpression();
-    v = 6 + currentArgs + v;
-
-    WriteInt16Code(OP_LOCAL, v);
-
-    EmitByte(&segment[CODESEG], OP_LOCAL);
-    EmitInt16(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
 ASM(PROC) {
   char name[1024];
   if (!strcmp(token, "proc")) {
@@ -1188,29 +1169,6 @@ ASM(SKIP) {
   return 0;
 }
 
-ASM(BYTE) {
-  int i, v, v2;
-  if (!strcmp(token, "byte")) {
-    STAT("BYTE");
-    v  = ParseValue();
-    v2 = ParseValue();
-
-    if (v == 2) {
-      /* and 16-bit (2-byte) values will cause q3asm to barf. */
-      CodeError("16 bit initialized data not supported");
-    }
-
-    // emit little endien
-    for (i = 0; i < v; i++) {
-      WriteDirectiveD8(v2);
-      EmitByte(currentSegment, (v2 & 0xFF)); /* paranoid ANDing  -PH */
-      v2 >>= 8;
-    }
-    return 1;
-  }
-  return 0;
-}
-
 // code labels are emitted as instruction counts, not byte offsets,
 // because the physical size of the code will change with
 // different run time compilers and we want to minimize the
@@ -1253,7 +1211,7 @@ static void AssembleLine(void) {
   for (i = 0; i < (int)(sizeof(assemblers) / sizeof(assemblers_t)); i++) {
     const assemblers_t a = assemblers[i];
 
-    if (strncmp(a.prefix, token, strlen(a.prefix)) == 0) {
+    if (strncasecmp(a.prefix, token, strlen(a.prefix)) == 0) {
       a.emit(a);
       return;
     }
@@ -1371,8 +1329,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(ADDRL)
-  ASM(BYTE)
   ASM(LINE)
   ASM(IMPORT)
   ASM(LABEL)

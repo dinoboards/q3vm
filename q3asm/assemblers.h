@@ -1,12 +1,16 @@
 
+#define OP_NONE 0
+
 assemblers_t assemblers[] = {
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
     {"ADDRGP4", OP_CONSTGP4,   assfn(CODE_24BIT)}, /* why is this only 24bit?? */
+    {"ADDRL",   OP_LOCAL,      assfn(ADDRL)     },
     {"ARGF",    OP_ARGF,       assfn(ARGF)      },
     {"ARGI",    OP_ARGF,       assfn(ARG)       },
     {"ARGP",    OP_ARGF,       assfn(ARG)       },
     {"ARGU",    OP_ARGF,       assfn(ARG)       },
     {"ASGNB",   OP_BLOCK_COPY, assfn(CODE_24BIT)},
+    {"BYTE",    OP_NONE,       assfn(BYTE)      },
     {"CALL",    OP_CALL,       assfn(CALL)      },
     {"CNSTF4",  OP_CONSTF4,    assfn(CODE_FLOAT)},
     {"CNSTI1",  OP_CONSTI1,    assfn(CODE_8BIT) },
