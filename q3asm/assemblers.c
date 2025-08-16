@@ -161,3 +161,18 @@ DIRFn(LABEL) {
   WriteSymbol(token);
   WriteComment();
 }
+
+// address of a parameter is converted to OP_LOCAL
+ASMFn(ADDRF) {
+  int v;
+
+  instructionCount++;
+  Parse();
+  v = ParseExpression();
+  v = 12 + currentArgs + currentLocals + v;
+
+  WriteInt16Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitInt16(&segment[CODESEG], v);
+}

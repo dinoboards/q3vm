@@ -2,6 +2,7 @@
 #define DIRECTIVE 0
 
 assemblers_t assemblers[] = {
+    {"ADDRF",   OP_LOCAL,      assfn(ADDRF)     },
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
     {"ADDRGP4", OP_CONSTGP4,   assfn(CODE_24BIT)}, /* why is this only 24bit?? */
     {"ADDRL",   OP_LOCAL,      assfn(ADDRL)     },

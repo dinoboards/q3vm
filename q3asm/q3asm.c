@@ -928,26 +928,6 @@ ASM(POP) {
   return 0;
 }
 
-// address of a parameter is converted to OP_LOCAL
-ASM(ADDRF) {
-  int v;
-  if (!strncmp(token, "ADDRF", 5)) {
-    STAT("ADDRF");
-
-    instructionCount++;
-    Parse();
-    v = ParseExpression();
-    v = 12 + currentArgs + currentLocals + v;
-
-    WriteInt16Code(OP_LOCAL, v);
-
-    EmitByte(&segment[CODESEG], OP_LOCAL);
-    EmitInt16(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
 ASM(PROC) {
   char name[1024];
   if (!strcmp(token, "proc")) {
@@ -1267,7 +1247,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(ADDRF)
   ASM(POP)
   ASM(ALIGN)
   ASM(PROC)
