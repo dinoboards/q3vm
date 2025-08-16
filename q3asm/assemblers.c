@@ -183,3 +183,31 @@ ASMFn(CODE_OP) {
 
   EmitByte(&segment[CODESEG], assembler.opcode);
 }
+
+ASMFn(PROC) {
+  char name[1024];
+  instructionCount++;
+
+  Parse(); // function name
+  strcpy(name, token);
+
+  WritePC();
+  WriteSymbol(token);
+  WriteComment();
+
+  DefineSymbol(token, segment[CODESEG].imageUsed);
+
+  currentLocals    = ParseValue(); // locals
+  currentArgs      = ParseValue(); // arg marshalling
+  const uint16_t v = (uint16_t)(6 + currentLocals + currentArgs);
+
+  if (v >= 32767) {
+    CodeError("Locals > 32k in %s\n", name);
+    return;
+  }
+
+  WriteInt16Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitInt16(&segment[CODESEG], v);
+}

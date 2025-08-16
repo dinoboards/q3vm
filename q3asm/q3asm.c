@@ -914,38 +914,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-ASM(PROC) {
-  char name[1024];
-  if (!strcmp(token, "proc")) {
-    STAT("PROC");
-    Parse(); // function name
-    strcpy(name, token);
-
-    WritePC();
-    WriteSymbol(token);
-    WriteComment();
-
-    DefineSymbol(token, segment[CODESEG].imageUsed);
-
-    currentLocals = ParseValue(); // locals
-    currentArgs   = ParseValue(); // arg marshalling
-
-    if (6 + currentLocals + currentArgs >= 32767) {
-      CodeError("Locals > 32k in %s\n", name);
-    }
-
-    const uint16_t v = (uint16_t)(6 + currentLocals + currentArgs);
-    instructionCount++;
-
-    WriteInt16Code(OP_ENTER, v);
-
-    EmitByte(&segment[CODESEG], OP_ENTER);
-    EmitInt16(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
 ASM(ENDPROC) {
   if (!strcmp(token, "endproc")) {
     STAT("ENDPROC");
@@ -1234,7 +1202,6 @@ static void AssembleLine(void) {
     return;
 
   ASM(ALIGN)
-  ASM(PROC)
   ASM(ENDPROC)
   ASM(ADDRESS)
   ASM(SKIP)
