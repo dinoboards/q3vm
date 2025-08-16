@@ -10,7 +10,7 @@ typedef struct assemblers_s {
 
 #define ASMFn(O) void TryNewAssemble_##O(const assemblers_t assembler)
 
-#define DIRFn(O) void TryNewAssemble_##O(const assemblers_t assembler __attribute__((unused)))
+#define DIRFn(O) void TryNewAssemble_##O(const assemblers_t _unsued __attribute__((unused)))
 
 ASMFn(CODE_24BIT) {
   instructionCount++;
@@ -210,4 +210,14 @@ ASMFn(PROC) {
 
   EmitByte(&segment[CODESEG], assembler.opcode);
   EmitInt16(&segment[CODESEG], v);
+}
+
+DIRFn(ALIGN) {
+  const int v = ParseValue();
+
+  currentSegment->imageUsed = (currentSegment->imageUsed + v - 1) & ~(v - 1);
+  WritePC();
+  WriteDirective("ALIGN");
+  WriteNumber(v);
+  WriteComment();
 }

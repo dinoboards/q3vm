@@ -6,6 +6,7 @@ assemblers_t assemblers[] = {
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
     {"ADDRGP4", OP_CONSTGP4,   assfn(CODE_24BIT)}, /* why is this only 24bit?? */
     {"ADDRL",   OP_LOCAL,      assfn(ADDRL)     },
+    {"ALIGN",   DIRECTIVE,     assfn(ALIGN)     },
     {"ARGF",    OP_ARGF,       assfn(ARGF)      },
     {"ARGI",    OP_ARGF,       assfn(ARG)       },
     {"ARGP",    OP_ARGF,       assfn(ARG)       },

@@ -1028,22 +1028,6 @@ ASM(EQU) {
   return 0;
 }
 
-ASM(ALIGN) {
-  int v;
-  if (!strcmp(token, "align")) {
-    STAT("ALIGN");
-    v = ParseValue();
-
-    currentSegment->imageUsed = (currentSegment->imageUsed + v - 1) & ~(v - 1);
-    WritePC();
-    WriteDirective("ALIGN");
-    WriteNumber(v);
-    WriteComment();
-    return 1;
-  }
-  return 0;
-}
-
 ASM(SKIP) {
   int v;
   if (!strcmp(token, "skip")) {
@@ -1201,7 +1185,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(ALIGN)
   ASM(ENDPROC)
   ASM(ADDRESS)
   ASM(SKIP)
