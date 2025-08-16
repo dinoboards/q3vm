@@ -64,3 +64,12 @@ ASMFn(CODE_8BIT) {
   EmitByte(&segment[CODESEG], assembler.opcode);
   EmitByte(&segment[CODESEG], v);
 }
+
+// call instructions reset currentArgOffset
+ASMFn(CALL) {
+  instructionCount++;
+  WriteCode(assembler.opcode);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  currentArgOffset = 0;
+}

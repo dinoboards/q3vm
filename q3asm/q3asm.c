@@ -914,21 +914,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-// call instructions reset currentArgOffset
-ASM(CALL) {
-  if (!strncmp(token, "CALL", 4)) {
-    STAT("CALL");
-
-    WriteCode(OP_CALL);
-
-    EmitByte(&segment[CODESEG], OP_CALL);
-    instructionCount++;
-    currentArgOffset = 0;
-    return 1;
-  }
-  return 0;
-}
-
 // arg is converted to a reversed store
 ASM(ARG) {
   if (!strncmp(token, "ARGF", 4)) {
@@ -1429,7 +1414,6 @@ static void AssembleLine(void) {
   ASM(IMPORT)
   ASM(LABEL)
   ASM(ADDRF)
-  ASM(CALL)
   ASM(POP)
   ASM(RET)
   ASM(ALIGN)
