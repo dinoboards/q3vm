@@ -36,8 +36,8 @@ This must be the very first function compiled into the .qvm file
 ================
 */
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  volatile int            i;
-  volatile int            iloop = 20000000;
+  volatile long            i;
+  volatile long            iloop = 20000000;
   char                    str[] = "Hello %s\n";
   volatile float          f     = 0.0f;
   volatile float          df    = 0.0001f;
@@ -46,7 +46,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   volatile unsigned       xu2   = 3;
   volatile unsigned short us    = 1;
   volatile short          si    = 1;
-  volatile int            j;
+  volatile long            j;
   static unsigned char    mem1[8];
   static unsigned char    mem2[8]       = "Hello"; /* don't change this string */
   int                     doStupidStuff = 0;       /* misbehave and see if the interpreter deals correctly with that */
