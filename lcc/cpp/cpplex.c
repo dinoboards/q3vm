@@ -266,7 +266,8 @@ struct fsm {
     {CIRC1, {C_XX}, ACT(CIRC, S_SELFB)},
     {CIRC1, {'='}, ACT(ASCIRC, S_SELF)},
 
-    {-1}};
+    {-1}
+};
 
 /* first index is char, second is state */
 /* increase #states to power of 2 to encourage use of shift */

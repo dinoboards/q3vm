@@ -2,7 +2,7 @@
 extern Interface nullIR;
 extern Interface bytecodeIR;
 Binding          bindings[] = {
-    {"null", &nullIR},
+    {"null",     &nullIR    },
     {"bytecode", &bytecodeIR},
-    {NULL, NULL},
+    {NULL,       NULL       },
 };

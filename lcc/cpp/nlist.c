@@ -18,37 +18,41 @@ struct kwtab {
   char *kw;
   int   val;
   int   flag;
-} kwtab[] = {{"if", KIF, ISKW},
-             {"ifdef", KIFDEF, ISKW},
-             {"ifndef", KIFNDEF, ISKW},
-             {"elif", KELIF, ISKW},
-             {"else", KELSE, ISKW},
-             {"endif", KENDIF, ISKW},
-             {"include", KINCLUDE, ISKW},
-             {"define", KDEFINE, ISKW},
-             {"undef", KUNDEF, ISKW},
-             {"line", KLINE, ISKW},
-             {"warning", KWARNING, ISKW},
-             {"error", KERROR, ISKW},
-             {"pragma", KPRAGMA, ISKW},
-             {"eval", KEVAL, ISKW},
-             {"defined", KDEFINED, ISDEFINED + ISUNCHANGE},
-             {"__LINE__", KLINENO, ISMAC + ISUNCHANGE},
-             {"__FILE__", KFILE, ISMAC + ISUNCHANGE},
-             {"__DATE__", KDATE, ISMAC + ISUNCHANGE},
-             {"__TIME__", KTIME, ISMAC + ISUNCHANGE},
-             {"__STDC__", KSTDC, ISUNCHANGE},
-             {NULL}};
+} kwtab[] = {
+    {"if", KIF, ISKW},
+    {"ifdef", KIFDEF, ISKW},
+    {"ifndef", KIFNDEF, ISKW},
+    {"elif", KELIF, ISKW},
+    {"else", KELSE, ISKW},
+    {"endif", KENDIF, ISKW},
+    {"include", KINCLUDE, ISKW},
+    {"define", KDEFINE, ISKW},
+    {"undef", KUNDEF, ISKW},
+    {"line", KLINE, ISKW},
+    {"warning", KWARNING, ISKW},
+    {"error", KERROR, ISKW},
+    {"pragma", KPRAGMA, ISKW},
+    {"eval", KEVAL, ISKW},
+    {"defined", KDEFINED, ISDEFINED + ISUNCHANGE},
+    {"__LINE__", KLINENO, ISMAC + ISUNCHANGE},
+    {"__FILE__", KFILE, ISMAC + ISUNCHANGE},
+    {"__DATE__", KDATE, ISMAC + ISUNCHANGE},
+    {"__TIME__", KTIME, ISMAC + ISUNCHANGE},
+    {"__STDC__", KSTDC, ISUNCHANGE},
+    {NULL}
+};
 
 unsigned long namebit[077 + 1];
 Nlist        *np;
 
 void setup_kwtab(void) {
-  struct kwtab   *kp;
-  Nlist          *np;
-  Token           t;
-  static Token    deftoken[1] = {{NAME, 0, 0, 0, 7, (uchar *)"defined"}};
-  static Tokenrow deftr       = {deftoken, deftoken, deftoken + 1, 1};
+  struct kwtab *kp;
+  Nlist        *np;
+  Token         t;
+  static Token  deftoken[1] = {
+      {NAME, 0, 0, 0, 7, (uchar *)"defined"}
+  };
+  static Tokenrow deftr = {deftoken, deftoken, deftoken + 1, 1};
 
   for (kp = kwtab; kp->kw; kp++) {
     t.t      = (uchar *)kp->kw;

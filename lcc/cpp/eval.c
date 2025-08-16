@@ -28,31 +28,31 @@ struct pri {
   char arity;
   char ctype;
 } priority[] = {
-    {0, 0, 0},      /* END */
-    {0, 0, 0},      /* UNCLASS */
-    {0, 0, 0},      /* NAME */
-    {0, 0, 0},      /* NUMBER */
-    {0, 0, 0},      /* STRING */
-    {0, 0, 0},      /* CCON */
-    {0, 0, 0},      /* NL */
-    {0, 0, 0},      /* WS */
-    {0, 0, 0},      /* DSHARP */
+    {0,  0, 0    }, /* END */
+    {0,  0, 0    }, /* UNCLASS */
+    {0,  0, 0    }, /* NAME */
+    {0,  0, 0    }, /* NUMBER */
+    {0,  0, 0    }, /* STRING */
+    {0,  0, 0    }, /* CCON */
+    {0,  0, 0    }, /* NL */
+    {0,  0, 0    }, /* WS */
+    {0,  0, 0    }, /* DSHARP */
     {11, 2, RELAT}, /* EQ */
     {11, 2, RELAT}, /* NEQ */
     {12, 2, RELAT}, /* LEQ */
     {12, 2, RELAT}, /* GEQ */
     {13, 2, SHIFT}, /* LSH */
     {13, 2, SHIFT}, /* RSH */
-    {7, 2, LOGIC},  /* LAND */
-    {6, 2, LOGIC},  /* LOR */
-    {0, 0, 0},      /* PPLUS */
-    {0, 0, 0},      /* MMINUS */
-    {0, 0, 0},      /* ARROW */
-    {0, 0, 0},      /* SBRA */
-    {0, 0, 0},      /* SKET */
-    {3, 0, 0},      /* LP */
-    {3, 0, 0},      /* RP */
-    {0, 0, 0},      /* DOT */
+    {7,  2, LOGIC}, /* LAND */
+    {6,  2, LOGIC}, /* LOR */
+    {0,  0, 0    }, /* PPLUS */
+    {0,  0, 0    }, /* MMINUS */
+    {0,  0, 0    }, /* ARROW */
+    {0,  0, 0    }, /* SBRA */
+    {0,  0, 0    }, /* SKET */
+    {3,  0, 0    }, /* LP */
+    {3,  0, 0    }, /* RP */
+    {0,  0, 0    }, /* DOT */
     {10, 2, ARITH}, /* AND */
     {15, 2, ARITH}, /* STAR */
     {14, 2, ARITH}, /* PLUS */
@@ -63,29 +63,29 @@ struct pri {
     {15, 2, ARITH}, /* PCT */
     {12, 2, RELAT}, /* LT */
     {12, 2, RELAT}, /* GT */
-    {9, 2, ARITH},  /* CIRC */
-    {8, 2, ARITH},  /* OR */
-    {5, 2, SPCL},   /* QUEST */
-    {5, 2, SPCL},   /* COLON */
-    {0, 0, 0},      /* ASGN */
-    {4, 2, 0},      /* COMMA */
-    {0, 0, 0},      /* SHARP */
-    {0, 0, 0},      /* SEMIC */
-    {0, 0, 0},      /* CBRA */
-    {0, 0, 0},      /* CKET */
-    {0, 0, 0},      /* ASPLUS */
-    {0, 0, 0},      /* ASMINUS */
-    {0, 0, 0},      /* ASSTAR */
-    {0, 0, 0},      /* ASSLASH */
-    {0, 0, 0},      /* ASPCT */
-    {0, 0, 0},      /* ASCIRC */
-    {0, 0, 0},      /* ASLSH */
-    {0, 0, 0},      /* ASRSH */
-    {0, 0, 0},      /* ASOR */
-    {0, 0, 0},      /* ASAND */
-    {0, 0, 0},      /* ELLIPS */
-    {0, 0, 0},      /* DSHARP1 */
-    {0, 0, 0},      /* NAME1 */
+    {9,  2, ARITH}, /* CIRC */
+    {8,  2, ARITH}, /* OR */
+    {5,  2, SPCL }, /* QUEST */
+    {5,  2, SPCL }, /* COLON */
+    {0,  0, 0    }, /* ASGN */
+    {4,  2, 0    }, /* COMMA */
+    {0,  0, 0    }, /* SHARP */
+    {0,  0, 0    }, /* SEMIC */
+    {0,  0, 0    }, /* CBRA */
+    {0,  0, 0    }, /* CKET */
+    {0,  0, 0    }, /* ASPLUS */
+    {0,  0, 0    }, /* ASMINUS */
+    {0,  0, 0    }, /* ASSTAR */
+    {0,  0, 0    }, /* ASSLASH */
+    {0,  0, 0    }, /* ASPCT */
+    {0,  0, 0    }, /* ASCIRC */
+    {0,  0, 0    }, /* ASLSH */
+    {0,  0, 0    }, /* ASRSH */
+    {0,  0, 0    }, /* ASOR */
+    {0,  0, 0    }, /* ASAND */
+    {0,  0, 0    }, /* ELLIPS */
+    {0,  0, 0    }, /* DSHARP1 */
+    {0,  0, 0    }, /* NAME1 */
     {16, 1, UNARY}, /* DEFINED */
     {16, 0, UNARY}, /* UMINUS */
 };

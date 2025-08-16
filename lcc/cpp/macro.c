@@ -84,9 +84,11 @@ void dodefine(Tokenrow *trp) {
  * Definition received via -D or -U
  */
 void doadefine(Tokenrow *trp, int type) {
-  Nlist          *np;
-  static Token    onetoken[1] = {{NUMBER, 0, 0, 0, 1, (uchar *)"1"}};
-  static Tokenrow onetr       = {onetoken, onetoken, onetoken + 1, 1};
+  Nlist       *np;
+  static Token onetoken[1] = {
+      {NUMBER, 0, 0, 0, 1, (uchar *)"1"}
+  };
+  static Tokenrow onetr = {onetoken, onetoken, onetoken + 1, 1};
 
   trp->tp = trp->bp;
   if (type == 'U') {

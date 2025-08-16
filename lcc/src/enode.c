@@ -488,9 +488,33 @@ void typeerror(int op, Tree l, Tree r) {
   static struct {
     int   op;
     char *name;
-  } ops[] = {{ASGN, "="}, {INDIR, "*"}, {NEG, "-"},  {ADD, "+"}, {SUB, "-"}, {LSH, "<<"},  {MOD, "%"}, {RSH, ">>"}, {BAND, "&"},
-             {BCOM, "~"}, {BOR, "|"},   {BXOR, "^"}, {DIV, "/"}, {MUL, "*"}, {EQ, "=="},   {GE, ">="}, {GT, ">"},   {LE, "<="},
-             {LT, "<"},   {NE, "!="},   {AND, "&&"}, {NOT, "!"}, {OR, "||"}, {COND, "?:"}, {0, 0}};
+  } ops[] = {
+      {ASGN,  "=" },
+      {INDIR, "*" },
+      {NEG,   "-" },
+      {ADD,   "+" },
+      {SUB,   "-" },
+      {LSH,   "<<"},
+      {MOD,   "%" },
+      {RSH,   ">>"},
+      {BAND,  "&" },
+      {BCOM,  "~" },
+      {BOR,   "|" },
+      {BXOR,  "^" },
+      {DIV,   "/" },
+      {MUL,   "*" },
+      {EQ,    "=="},
+      {GE,    ">="},
+      {GT,    ">" },
+      {LE,    "<="},
+      {LT,    "<" },
+      {NE,    "!="},
+      {AND,   "&&"},
+      {NOT,   "!" },
+      {OR,    "||"},
+      {COND,  "?:"},
+      {0,     0   }
+  };
 
   op = generic(op);
   for (i = 0; ops[i].op; i++)
