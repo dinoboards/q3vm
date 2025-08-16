@@ -902,145 +902,17 @@ static int ParseExpression(void) {
   return v;
 }
 
+#define assfn(a) TryNewAssemble_##a
+
+#include "assemblers.c"
+
+#include "assemblers.h"
+
 // #define STAT(L) report(L "\n");
 #define STAT(L)
 #define ASM(O) int TryAssemble##O()
 
-/*
-  These clauses were moved out from AssembleLine() to allow reordering of if's.
-  An optimizing compiler should reconstruct these back into inline code.
- -PH
-*/
-ASM(ADDRGP3) {
-  if (!strncmp(token, "ADDRGP3", 7)) {
-    STAT("OP_CONSTGP3");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-
-    WriteInt24Code(OP_CONSTGP3, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTGP3);
-    EmitInt24(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(ADDRGP4) {
-  if (!strncmp(token, "ADDRGP4", 7)) {
-    STAT("ADDRGP4");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-
-    WriteInt24Code(OP_CONSTGP4, v); /* TODO: huh??? */
-
-    EmitByte(&segment[CODESEG], OP_CONSTGP4);
-    EmitInt24(&segment[CODESEG], v);
-
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTP3) {
-  if (!strncmp(token, "CNSTP3", 6)) {
-    STAT("CNSTP3");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-
-    WriteInt24Code(OP_CONSTP3, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTP3);
-    EmitInt24(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTP4) {
-  if (!strncmp(token, "CNSTP4", 6)) {
-    STAT("CNSTP4");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-
-    WriteInt24Code(OP_CONSTP4, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTP4);
-    EmitInt24(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTF4) {
-  if (!strncmp(token, "CNSTF4", 6)) {
-    STAT("CNSTF4");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-
-    WriteFloatCode(OP_CONSTF4, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTF4);
-    EmitInt32(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTI4) {
-  if (!strncmp(token, "CNSTI4", 6)) {
-    STAT("CNSTI4");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-
-    WriteInt32Code(OP_CONSTI4, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTI4);
-    EmitInt32(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTU4) {
-  if (!strncmp(token, "CNSTU4", 6)) {
-    STAT("CNSTU4");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-
-    WriteInt32Code(OP_CONSTU4, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTU4);
-    EmitInt32(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTI2) {
-  if (!strncmp(token, "CNSTI2", 6)) {
-    STAT("CNSTI2");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-    if (v > 32767 || v < -32768)
-      CodeError("OP_CONSTI2 with overflow value for int16_t\n");
-
-    WriteInt16Code(OP_CONSTI2, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTI2);
-    EmitInt16(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
+/* START OLD ASSEMBLY PATTERN */
 
 ASM(CNSTU2) {
   if (!strncmp(token, "CNSTU2", 6)) {
@@ -1191,24 +1063,6 @@ ASM(ADDRF) {
 
     EmitByte(&segment[CODESEG], OP_LOCAL);
     EmitInt16(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(ASGNB) {
-  if (!strncmp(token, "ASGNB", 5)) {
-    STAT("ASGNB");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-    if (v > 0xFFFFFF)
-      CodeError("memcpy size larger than 24 bit number");
-
-    WriteInt24Code(OP_BLOCK_COPY, v);
-
-    EmitByte(&segment[CODESEG], OP_BLOCK_COPY);
-    EmitInt24(&segment[CODESEG], v);
     return 1;
   }
   return 0;
@@ -1501,6 +1355,15 @@ static void AssembleLine(void) {
     return;
   }
 
+  for (i = 0; i < (int)(sizeof(assemblers) / sizeof(assemblers_t)); i++) {
+    const assemblers_t a = assemblers[i];
+
+    if (strncmp(a.prefix, token, strlen(a.prefix)) == 0) {
+      a.emit(a);
+      return;
+    }
+  }
+
   hash = HashString(token);
 
   /*
@@ -1613,18 +1476,9 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(ADDRGP3)
-  ASM(ADDRGP4)
-  ASM(CNSTP3)
-  ASM(CNSTP4)
-  ASM(CNSTF4)
-  ASM(CNSTI4)
-  ASM(CNSTU4)
-  ASM(CNSTI2)
   ASM(CNSTU2)
   ASM(CNSTU1)
   ASM(CNSTI1)
-  ASM(ASGNB)
   ASM(ADDRL)
   ASM(BYTE)
   ASM(LINE)

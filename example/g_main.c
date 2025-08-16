@@ -16,7 +16,7 @@ This must be the very first function compiled into the .qvm file
 */
 
 char d;
-int  nn = 0;
+int  nn;
 
 typedef unsigned char uint8_t;
 typedef char          int8_t;
@@ -27,11 +27,8 @@ typedef short          int16_t;
 typedef unsigned long uint32_t;
 typedef long          int32_t;
 
-uint8_t xyz = 0;
-
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
-
   char     str[] = "local string ref\n";
   uint8_t  ua;
   int8_t   a;
@@ -41,8 +38,6 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   int32_t  d;
 
   float f;
-
-  xyz = 34;
 
   a  = -123;
   ub = 45000;
@@ -54,7 +49,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 
   switch (command) {
   case 0:
-    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f:%f\r\n", ua, a, ub, b, ud, d, f);
+    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
     printf(str);
     printf("!!sizeof(int): %d\n", sizeof(int));
     printf("Hello World! - fib(5) = %i\n", fib(5));
