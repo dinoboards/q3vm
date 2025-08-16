@@ -2,6 +2,7 @@
 assemblers_t assemblers[] = {
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
     {"ADDRGP4", OP_CONSTGP4,   assfn(CODE_24BIT)}, /* why is this only 24bit?? */
+    {"ARGF",    OP_ARGF,       assfn(ARGF)      },
     {"ASGNB",   OP_BLOCK_COPY, assfn(CODE_24BIT)},
     {"CALL",    OP_CALL,       assfn(CALL)      },
     {"CNSTF4",  OP_CONSTF4,    assfn(CODE_FLOAT)},

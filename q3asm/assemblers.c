@@ -73,3 +73,17 @@ ASMFn(CALL) {
   EmitByte(&segment[CODESEG], assembler.opcode);
   currentArgOffset = 0;
 }
+
+ASMFn(ARGF) {
+  instructionCount++;
+  const int v = 6 + currentArgOffset;
+  WriteInt8Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  if (6 + currentArgOffset >= 256) {
+    CodeError("currentArgOffset >= 256");
+    return;
+  }
+  EmitByte(&segment[CODESEG], v);
+  currentArgOffset += 4;
+}
