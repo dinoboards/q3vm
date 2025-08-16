@@ -914,60 +914,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-ASM(CNSTU2) {
-  if (!strncmp(token, "CNSTU2", 6)) {
-    STAT("CNSTU2");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-    if (v > 65535 || v < 0)
-      CodeError("OP_CONSTU2 with overflow value for uint16_t\n");
-
-    WriteInt16Code(OP_CONSTU2, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTU2);
-    EmitInt16(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTI1) {
-  if (!strncmp(token, "CNSTI1", 6)) {
-    STAT("CNSTI1");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-    if (v > 127 || v < -128)
-      CodeError("OP_CONSTI1 with overflow value for int8_t\n");
-
-    WriteInt8Code(OP_CONSTI1, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTI1);
-    EmitByte(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
-ASM(CNSTU1) {
-  if (!strncmp(token, "CNSTU1", 6)) {
-    STAT("CNSTU1");
-    instructionCount++;
-    Parse();
-    const int v = ParseExpression();
-    if (v > 255 || v < 0)
-      CodeError("OP_CONSTU1 with overflow value for uint8_t\n");
-
-    WriteInt8Code(OP_CONSTU1, v);
-
-    EmitByte(&segment[CODESEG], OP_CONSTU1);
-    EmitByte(&segment[CODESEG], v);
-    return 1;
-  }
-  return 0;
-}
-
 // call instructions reset currentArgOffset
 ASM(CALL) {
   if (!strncmp(token, "CALL", 4)) {
@@ -1476,9 +1422,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(CNSTU2)
-  ASM(CNSTU1)
-  ASM(CNSTI1)
   ASM(ADDRL)
   ASM(BYTE)
   ASM(LINE)

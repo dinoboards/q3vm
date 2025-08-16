@@ -53,3 +53,14 @@ ASMFn(CODE_16BIT) {
   EmitByte(&segment[CODESEG], assembler.opcode);
   EmitInt16(&segment[CODESEG], v);
 }
+
+ASMFn(CODE_8BIT) {
+  instructionCount++;
+  Parse();
+  const int v = ParseExpression();
+
+  WriteInt8Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitByte(&segment[CODESEG], v);
+}

@@ -39,6 +39,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 
   float f;
 
+  ua = 130;
   a  = -123;
   ub = 45000;
   b  = -32000;

@@ -10,4 +10,7 @@ assemblers_t assemblers[] = {
     {"CNSTI4",  OP_CONSTI4,    assfn(CODE_32BIT)},
     {"CNSTU4",  OP_CONSTU4,    assfn(CODE_32BIT)},
     {"CNSTI2",  OP_CONSTI2,    assfn(CODE_16BIT)},
+    {"CNSTU2",  OP_CONSTU2,    assfn(CODE_16BIT)},
+    {"CNSTU1",  OP_CONSTU1,    assfn(CODE_8BIT) },
+    {"CNSTI1",  OP_CONSTI1,    assfn(CODE_8BIT) },
 };
