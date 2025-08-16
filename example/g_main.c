@@ -3,12 +3,8 @@
 void printf(const char *fmt, ...);
 int  fib(int n);
 
-int trap_Printf(char *c);
-
-#if 0
 static const char *const someimmutabledata;
 char                    *changingdata;
-#endif
 
 /*
 ================
@@ -19,71 +15,79 @@ This must be the very first function compiled into the .qvm file
 ================
 */
 
+char d;
+int  nn = 0;
+
 typedef unsigned char uint8_t;
 typedef char          int8_t;
 
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-typedef unsigned int uint24_t;
-typedef int          int24_t;
-
 typedef unsigned long uint32_t;
 typedef long          int32_t;
 
-void spike(short a, short b, short c);
-void spike_print(char *a, ...);
-void alpha(int a);
-void beta(int a);
-void gamma(int a);
+uint8_t xyz = 0;
 
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  alpha(1);
-  return 1;
+
+  char     str[] = "local string ref\n";
+  uint8_t  ua;
+  int8_t   a;
+  uint16_t ub;
+  int16_t  b;
+  uint32_t ud;
+  int32_t  d;
+
+  float f;
+
+  xyz = 34;
+
+  a  = -123;
+  ub = 45000;
+  b  = -32000;
+  ud = 0x12345678;
+  d  = 0x11223344;
+
+  f = 1.345;
+
+  switch (command) {
+  case 0:
+    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d\r\n", ua, a, ub, b, ud, d);
+    printf(str);
+    printf("!!sizeof(int): %d\n", sizeof(int));
+    printf("Hello World! - fib(5) = %i\n", fib(5));
+    printf("someimmutabledata at: %d\n", (int)&someimmutabledata);
+    printf("changingdata at: %d\n", (int)&changingdata);
+    printf("nn(%d) = %d\n", &nn, nn);
+    return 0;
+
+  case 1:
+    printf("Command 1\n");
+    return 0;
+
+  case 2:
+    d = *((int *)&vmMain);
+    return 0;
+
+  case 3:
+    d = someimmutabledata[1];
+    return 0;
+
+  case 4:
+    d = changingdata[1];
+    return 0;
+
+  default:
+    printf("Unknown command.\n");
+    return -1;
+  }
 }
-
-void alpha(int a) {
-  beta(a);
-  gamma(a);
-  return;
-}
-
-int p;
-
-void beta(int a) { printf("beta %d\n", a); }
-
-void gamma(int a) { printf("GAMMA %d\n", a); }
-
-void spike(short a, short b, short c) {
-  int aa = (int)&a;
-  int bb = (int)&b;
-  int cc = bb - aa;
-
-  if (cc == 3)
-    trap_Printf("diff 3\n");
-
-  printf("diff??? %d\n", cc);
-}
-
-void spike_print(char *a, ...) {
-  int p;
-
-  va_list argptr;
-  va_start(argptr, a);
-  p = va_arg(argptr, int);
-  if (p == 123)
-    trap_Printf("is 123");
-  else
-    trap_Printf("is not 123");
-  va_end(argptr);
-}
-
-#if 1
-char text[256];
 
 void printf(const char *fmt, ...) {
   va_list argptr;
+  char    text[256];
 
   va_start(argptr, fmt);
   vsprintf(text, fmt, argptr);
@@ -93,16 +97,12 @@ void printf(const char *fmt, ...) {
 }
 
 int fib(int n) {
+  nn = n;
   if (n <= 2)
     return 1;
   else
     return fib(n - 1) + fib(n - 2);
 }
 
-#endif
-
-#if 0
-
 static const char *const someimmutabledata = "AAAA";
 char                    *changingdata      = "bBBB";
-#endif

@@ -20,7 +20,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "../src/vm/opcodes.h"
 #include "../src/vm/vm.h"
+
 #include "cmdlib.h"
 #include "q_platform.h"
 #include <inttypes.h>
@@ -44,9 +46,12 @@ typedef enum {
 } segmentName_t;
 
 typedef struct {
-  byte image[VM_MAX_IMAGE_SIZE];
-  int  imageUsed;
-  int  segmentBase; // only valid on second pass
+  byte        image[VM_MAX_IMAGE_SIZE];
+  int         imageUsed;
+  int         segmentBase;   // only valid on second pass
+  int         segmentLength; // valid on 2nd pass
+  const char *name;
+  int         index;
 } segment_t;
 
 typedef struct symbol_s {
@@ -82,6 +87,7 @@ int errorCount;
 typedef struct options_s {
   qboolean verbose;
   qboolean writeMapFile;
+  qboolean writeListFile;
   qboolean vanillaQ3Compatibility;
 } options_t;
 
@@ -381,6 +387,217 @@ static void CodeError(char *fmt, ...) {
   va_start(argptr, fmt);
   vfprintf(stderr, fmt, argptr);
   va_end(argptr);
+}
+
+static int   dis_columnpos = 0;
+static FILE *fListFile;
+
+#define COLWIDTH_1 8                 /* PC */
+#define COLWIDTH_2 (COLWIDTH_1 + 9)  /* Label */
+#define COLWIDTH_3 (COLWIDTH_2 + 13) /* Opcode */
+#define COLWIDTH_4 (COLWIDTH_3 + 24) /* Value */
+
+static int WriteString(const char *str) {
+  if (passNumber == 1 && options.writeListFile) {
+    return fprintf(fListFile, "%s", str);
+  }
+
+  return 0;
+}
+
+static int WriteChar(const char ch) {
+  if (passNumber == 1 && options.writeListFile) {
+    return fprintf(fListFile, "%c", ch);
+  }
+
+  return 0;
+}
+static void WritePC() {
+  if (passNumber == 1 && options.writeListFile) {
+    int v = 0;
+    switch (currentSegment->index) {
+
+    case DATASEG:
+      v = currentSegment->imageUsed + segment[LITSEG].segmentLength;
+      break;
+
+    case BSSSEG:
+      v = currentSegment->imageUsed + segment[LITSEG].segmentLength + segment[DATASEG].segmentLength;
+      break;
+
+    default:
+      v = currentSegment->imageUsed;
+    }
+
+    dis_columnpos = fprintf(fListFile, "%06X", v);
+  }
+}
+
+static void WriteSymbol(const char *const token) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_1 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%s:", token);
+  }
+}
+
+static void WriteOpcode(const uint8_t v) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_2 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%s", opnames[v]);
+  }
+}
+
+static void WriteDirective(const char *directive) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_2 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%s", directive);
+  }
+}
+
+static void WriteValue(const char *str) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%s", str);
+  }
+}
+
+static void WriteInt8(const int v) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%%%02X", (uint32_t)v & 0xFF);
+  }
+}
+
+static void WriteInt16(const int v) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%%%04X", (uint32_t)v & 0xFFFF);
+  }
+}
+
+static void WriteInt24(const int v) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%%%06X", (uint32_t)v & 0xFFFFFF);
+  }
+}
+
+static void WriteInt32(const int v) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%%%08X", (uint32_t)v);
+  }
+}
+
+static void WriteNumber(const int v) {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%d", (uint32_t)v);
+  }
+}
+
+static void WriteFloat(int v) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+  const float as_float = *((float *)&v);
+#pragma GCC diagnostic pop
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
+    dis_columnpos += fprintf(fListFile, "%f", as_float);
+  }
+}
+
+static void WriteComment() {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_4 - dis_columnpos, "");
+    fprintf(fListFile, "; %s\n", lineBuffer);
+    dis_columnpos = 0;
+  }
+}
+
+static void WriteNewLine() {
+  if (passNumber == 1 && options.writeListFile) {
+    fprintf(fListFile, "\n");
+    dis_columnpos = 0;
+  }
+}
+
+static void WriteInt32Code(const uint8_t opcode, const uint32_t v) {
+  WritePC();
+  WriteOpcode(opcode);
+  WriteInt32(v);
+  WriteComment();
+}
+
+static void WriteInt24Code(const uint8_t opcode, const uint32_t v) {
+  WritePC();
+  WriteOpcode(opcode);
+  WriteInt24(v);
+  WriteComment();
+}
+
+static void WriteInt16Code(const uint8_t opcode, const uint32_t v) {
+  WritePC();
+  WriteOpcode(opcode);
+  WriteInt16(v);
+  WriteComment();
+}
+
+static void WriteInt8Code(const uint8_t opcode, const uint32_t v) {
+  WritePC();
+  WriteOpcode(opcode);
+  WriteInt8(v);
+  WriteComment();
+}
+
+static void WriteFloatCode(const uint8_t opcode, const uint32_t v) {
+  WritePC();
+  WriteOpcode(opcode);
+  WriteFloat(v);
+  WriteComment();
+}
+
+static void WriteCode(const uint8_t opcode) {
+  WritePC();
+  WriteOpcode(opcode);
+  WriteComment();
+}
+
+static void WriteDirectiveD8(const uint32_t v) {
+  WritePC();
+  WriteDirective("DATA8");
+  WriteInt8(v);
+
+  if (isprint(v)) {
+    dis_columnpos += WriteString(" ;'");
+    dis_columnpos += WriteChar(v);
+    dis_columnpos += WriteString("' ");
+  }
+
+  WriteComment();
+}
+
+static void WriteDirectiveD24(const uint32_t v) {
+  WritePC();
+  WriteDirective("DATA24");
+  WriteInt24(v);
+  WriteComment();
+}
+
+static void WriteDirectiveSegment(uint8_t segmentIndex) {
+  WriteString("\n");
+  WriteDirective("SEGMENT");
+  WriteValue(segment[segmentIndex].name);
+  WriteComment();
+  WriteString("\n");
+}
+
+static void WriteDirectiveEQU(const char *label, const uint32_t v) {
+  dis_columnpos = WriteString(label);
+  dis_columnpos += WriteString(":");
+  WriteDirective("SEGMENT");
+  WriteInt24(v);
+  WriteComment();
 }
 
 static void EmitByte(segment_t *seg, uint8_t v) {
@@ -700,6 +917,9 @@ ASM(ADDRGP3) {
     instructionCount++;
     Parse();
     const int v = ParseExpression();
+
+    WriteInt24Code(OP_CONSTGP3, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTGP3);
     EmitInt24(&segment[CODESEG], v);
     return 1;
@@ -713,8 +933,12 @@ ASM(ADDRGP4) {
     instructionCount++;
     Parse();
     const int v = ParseExpression();
+
+    WriteInt24Code(OP_CONSTGP4, v); /* TODO: huh??? */
+
     EmitByte(&segment[CODESEG], OP_CONSTGP4);
     EmitInt24(&segment[CODESEG], v);
+
     return 1;
   }
   return 0;
@@ -727,9 +951,10 @@ ASM(CNSTP3) {
     Parse();
     const int v = ParseExpression();
 
+    WriteInt24Code(OP_CONSTP3, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTP3);
     EmitInt24(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -742,9 +967,10 @@ ASM(CNSTP4) {
     Parse();
     const int v = ParseExpression();
 
+    WriteInt24Code(OP_CONSTP4, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTP4);
     EmitInt24(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -757,9 +983,10 @@ ASM(CNSTF4) {
     Parse();
     const int v = ParseExpression();
 
+    WriteFloatCode(OP_CONSTF4, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTF4);
     EmitInt32(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -772,9 +999,10 @@ ASM(CNSTI4) {
     Parse();
     const int v = ParseExpression();
 
+    WriteInt32Code(OP_CONSTI4, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTI4);
     EmitInt32(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -787,9 +1015,10 @@ ASM(CNSTU4) {
     Parse();
     const int v = ParseExpression();
 
+    WriteInt32Code(OP_CONSTU4, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTU4);
     EmitInt32(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -804,9 +1033,10 @@ ASM(CNSTI2) {
     if (v > 32767 || v < -32768)
       CodeError("OP_CONSTI2 with overflow value for int16_t\n");
 
+    WriteInt16Code(OP_CONSTI2, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTI2);
     EmitInt16(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -821,9 +1051,10 @@ ASM(CNSTU2) {
     if (v > 65535 || v < 0)
       CodeError("OP_CONSTU2 with overflow value for uint16_t\n");
 
+    WriteInt16Code(OP_CONSTU2, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTU2);
     EmitInt16(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -838,9 +1069,10 @@ ASM(CNSTI1) {
     if (v > 127 || v < -128)
       CodeError("OP_CONSTI1 with overflow value for int8_t\n");
 
+    WriteInt8Code(OP_CONSTI1, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTI1);
     EmitByte(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -855,9 +1087,10 @@ ASM(CNSTU1) {
     if (v > 255 || v < 0)
       CodeError("OP_CONSTU1 with overflow value for uint8_t\n");
 
+    WriteInt8Code(OP_CONSTU1, v);
+
     EmitByte(&segment[CODESEG], OP_CONSTU1);
     EmitByte(&segment[CODESEG], v);
-
     return 1;
   }
   return 0;
@@ -867,6 +1100,9 @@ ASM(CNSTU1) {
 ASM(CALL) {
   if (!strncmp(token, "CALL", 4)) {
     STAT("CALL");
+
+    WriteCode(OP_CALL);
+
     EmitByte(&segment[CODESEG], OP_CALL);
     instructionCount++;
     currentArgOffset = 0;
@@ -879,6 +1115,9 @@ ASM(CALL) {
 ASM(ARG) {
   if (!strncmp(token, "ARG", 3)) {
     STAT("ARG");
+
+    WriteInt8Code(OP_ARG, 6 + currentArgOffset);
+
     EmitByte(&segment[CODESEG], OP_ARG);
     instructionCount++;
     if (8 + currentArgOffset >= 256) {
@@ -896,6 +1135,9 @@ ASM(ARG) {
 ASM(RET) {
   if (!strncmp(token, "RET", 3)) {
     STAT("RET");
+
+    WriteInt16Code(OP_LEAVE, 6 + currentLocals + currentArgs);
+
     EmitByte(&segment[CODESEG], OP_LEAVE);
     instructionCount++;
     EmitInt16(&segment[CODESEG], 6 + currentLocals + currentArgs);
@@ -909,6 +1151,8 @@ ASM(RET) {
 ASM(POP) {
   if (!strncmp(token, "pop", 3)) {
     STAT("POP");
+    WriteCode(OP_POP);
+
     EmitByte(&segment[CODESEG], OP_POP);
     instructionCount++;
     return 1;
@@ -921,10 +1165,14 @@ ASM(ADDRF) {
   int v;
   if (!strncmp(token, "ADDRF", 5)) {
     STAT("ADDRF");
+
     instructionCount++;
     Parse();
     v = ParseExpression();
     v = 12 + currentArgs + currentLocals + v;
+
+    WriteInt16Code(OP_LOCAL, v);
+
     EmitByte(&segment[CODESEG], OP_LOCAL);
     EmitInt16(&segment[CODESEG], v);
     return 1;
@@ -940,6 +1188,8 @@ ASM(ASGNB) {
     const int v = ParseExpression();
     if (v > 0xFFFFFF)
       CodeError("memcpy size larger than 24 bit number");
+
+    WriteInt24Code(OP_BLOCK_COPY, v);
 
     EmitByte(&segment[CODESEG], OP_BLOCK_COPY);
     EmitInt24(&segment[CODESEG], v);
@@ -957,6 +1207,9 @@ ASM(ADDRL) {
     Parse();
     v = ParseExpression();
     v = 6 + currentArgs + v;
+
+    WriteInt16Code(OP_LOCAL, v);
+
     EmitByte(&segment[CODESEG], OP_LOCAL);
     EmitInt16(&segment[CODESEG], v);
     return 1;
@@ -971,6 +1224,10 @@ ASM(PROC) {
     Parse(); // function name
     strcpy(name, token);
 
+    WritePC();
+    WriteSymbol(token);
+    WriteComment();
+
     DefineSymbol(token, segment[CODESEG].imageUsed);
 
     currentLocals = ParseValue(); // locals
@@ -980,9 +1237,13 @@ ASM(PROC) {
       CodeError("Locals > 32k in %s\n", name);
     }
 
+    const uint16_t v = (uint16_t)(6 + currentLocals + currentArgs);
     instructionCount++;
+
+    WriteInt16Code(OP_ENTER, v);
+
     EmitByte(&segment[CODESEG], OP_ENTER);
-    EmitInt16(&segment[CODESEG], (uint16_t)(6 + currentLocals + currentArgs));
+    EmitInt16(&segment[CODESEG], v);
     return 1;
   }
   return 0;
@@ -997,9 +1258,16 @@ ASM(ENDPROC) {
 
     // all functions must leave something on the opstack
     instructionCount++;
+    WriteCode(OP_PUSH);
     EmitByte(&segment[CODESEG], OP_PUSH);
 
     instructionCount++;
+
+    WritePC();
+    WriteOpcode(OP_LEAVE);
+    WriteInt16(6 + currentLocals + currentArgs);
+    WriteNewLine();
+
     EmitByte(&segment[CODESEG], OP_LEAVE);
     EmitInt16(&segment[CODESEG], (uint16_t)(6 + currentLocals + currentArgs));
 
@@ -1015,6 +1283,8 @@ ASM(ADDRESS) {
     Parse();
     v = ParseExpression();
 
+    WriteDirectiveD24(v);
+
     EmitInt24(currentSegment, v);
     if (passNumber == 1 && token[0] == '$') // crude test for labels
       EmitInt32(&segment[JTRGSEG], v);
@@ -1026,6 +1296,7 @@ ASM(ADDRESS) {
 ASM(EXPORT) {
   if (!strcmp(token, "export")) {
     STAT("EXPORT");
+    WriteComment();
     return 1;
   }
   return 0;
@@ -1034,6 +1305,7 @@ ASM(EXPORT) {
 ASM(IMPORT) {
   if (!strcmp(token, "import")) {
     STAT("IMPORT");
+    WriteComment();
     return 1;
   }
   return 0;
@@ -1043,6 +1315,8 @@ ASM(CODE) {
   if (!strcmp(token, "code")) {
     STAT("CODE");
     currentSegment = &segment[CODESEG];
+
+    WriteDirectiveSegment(CODESEG);
     return 1;
   }
   return 0;
@@ -1052,6 +1326,8 @@ ASM(BSS) {
   if (!strcmp(token, "bss")) {
     STAT("BSS");
     currentSegment = &segment[BSSSEG];
+    WriteDirectiveSegment(BSSSEG);
+
     return 1;
   }
   return 0;
@@ -1061,6 +1337,8 @@ ASM(DATA) {
   if (!strcmp(token, "data")) {
     STAT("DATA");
     currentSegment = &segment[DATASEG];
+    WriteDirectiveSegment(DATASEG);
+
     return 1;
   }
   return 0;
@@ -1070,6 +1348,8 @@ ASM(LIT) {
   if (!strcmp(token, "lit")) {
     STAT("LIT");
     currentSegment = &segment[LITSEG];
+
+    WriteDirectiveSegment(LITSEG);
     return 1;
   }
   return 0;
@@ -1078,6 +1358,7 @@ ASM(LIT) {
 ASM(LINE) {
   if (!strcmp(token, "line")) {
     STAT("LINE");
+    WriteComment();
     return 1;
   }
   return 0;
@@ -1086,6 +1367,7 @@ ASM(LINE) {
 ASM(FILE) {
   if (!strcmp(token, "file")) {
     STAT("FILE");
+    WriteComment();
     return 1;
   }
   return 0;
@@ -1098,7 +1380,11 @@ ASM(EQU) {
     Parse();
     strcpy(name, token);
     Parse();
-    DefineSymbol(name, atoiNoCap(token));
+
+    const int v = atoiNoCap(token);
+    WriteDirectiveEQU(name, v);
+
+    DefineSymbol(name, v);
     return 1;
   }
   return 0;
@@ -1108,8 +1394,13 @@ ASM(ALIGN) {
   int v;
   if (!strcmp(token, "align")) {
     STAT("ALIGN");
-    v                         = ParseValue();
+    v = ParseValue();
+
     currentSegment->imageUsed = (currentSegment->imageUsed + v - 1) & ~(v - 1);
+    WritePC();
+    WriteDirective("ALIGN");
+    WriteNumber(v);
+    WriteComment();
     return 1;
   }
   return 0;
@@ -1120,7 +1411,13 @@ ASM(SKIP) {
   if (!strcmp(token, "skip")) {
     STAT("SKIP");
     v = ParseValue();
+    WritePC();
+    WriteDirective("SKIP");
+    WriteNumber(v);
+    WriteComment();
     currentSegment->imageUsed += v;
+    WritePC();
+    WriteNewLine();
     return 1;
   }
   return 0;
@@ -1140,6 +1437,7 @@ ASM(BYTE) {
 
     // emit little endien
     for (i = 0; i < v; i++) {
+      WriteDirectiveD8(v2);
       EmitByte(currentSegment, (v2 & 0xFF)); /* paranoid ANDing  -PH */
       v2 >>= 8;
     }
@@ -1158,6 +1456,10 @@ ASM(LABEL) {
     Parse();
 
     DefineSymbol(token, currentSegment->imageUsed);
+
+    WritePC();
+    WriteSymbol(token);
+    WriteComment();
 
     return 1;
   }
@@ -1179,6 +1481,7 @@ static void AssembleLine(void) {
 
   Parse();
   if (!token[0]) {
+    WriteComment();
     return;
   }
 
@@ -1203,6 +1506,7 @@ static void AssembleLine(void) {
       }
       if (op->opcode == OP_IGNORE) {
         STAT("IGNORE")
+        WriteComment();
         return; // we ignore most conversions
       }
 
@@ -1219,13 +1523,12 @@ static void AssembleLine(void) {
 
         } else if (token[0] == '3') {
           STAT("IGNORE");
-
-          // ignore
+          WriteComment();
           return;
 
         } else if (token[0] == '4') {
           STAT("IGNORE");
-          // ignore
+          WriteComment();
           return;
 
         } else {
@@ -1241,14 +1544,14 @@ static void AssembleLine(void) {
 
         expression = ParseExpression();
 
-        EmitByte(&segment[CODESEG], opcode);
+        WriteInt32Code(opcode, expression);
 
-        /* if ((op->name[strlen(op->name) - 1]) == '3') {
-          // EmitInt24(&segment[CODESEG], expression);
-        // } else {*/
+        EmitByte(&segment[CODESEG], opcode);
         EmitInt32(&segment[CODESEG], expression);
-        /*}*/
+
       } else {
+        WriteCode(opcode);
+
         EmitByte(&segment[CODESEG], opcode);
       }
 
@@ -1476,6 +1779,16 @@ static void Assemble(void) {
     LoadFile(filename, (void **)&asmFiles[i]);
   }
 
+  segment[CODESEG].name = "CODE";
+  segment[DATASEG].name = "DATA";
+  segment[BSSSEG].name  = "BSS";
+  segment[LITSEG].name  = "LIT";
+
+  segment[CODESEG].index = CODESEG;
+  segment[DATASEG].index = DATASEG;
+  segment[BSSSEG].index  = BSSSEG;
+  segment[LITSEG].index  = LITSEG;
+
   // assemble
   for (passNumber = 0; passNumber < 2; passNumber++) {
     segment[LITSEG].segmentBase  = 0;
@@ -1484,7 +1797,8 @@ static void Assemble(void) {
     segment[JTRGSEG].segmentBase = segment[BSSSEG].segmentBase + segment[BSSSEG].imageUsed;
 
     for (i = 0; i < NUM_SEGMENTS; i++) {
-      segment[i].imageUsed = 0;
+      segment[i].segmentLength = segment[i].imageUsed;
+      segment[i].imageUsed     = 0;
     }
     segment[LITSEG].imageUsed = 1; // skip the 0 byte, so NULL pointers are fixed up properly
     instructionCount          = 0;
@@ -1494,11 +1808,24 @@ static void Assemble(void) {
       currentFileName  = asmFileNames[i];
       currentFileLine  = 0;
       report("pass %i: %s\n", passNumber, currentFileName);
+
+      if (passNumber == 1 && options.writeListFile) {
+        strcpy(filename, currentFileName);
+        StripExtension(filename);
+        strcat(filename, ".lst");
+        fListFile = SafeOpenWrite(filename);
+      }
+
       fflush(NULL);
+
       ptr = asmFiles[i];
       while (ptr) {
         ptr = ExtractLine(ptr);
         AssembleLine();
+      }
+
+      if (passNumber == 1 && options.writeListFile) {
+        fclose(fListFile);
       }
     }
 
@@ -1561,6 +1888,7 @@ Assemble LCC bytecode assembly to Q3VM bytecode.\n\
   -f LISTFILE    Read options and list of files to assemble from LISTFILE.q3asm\n\
   -b BUCKETS     Set symbol hash table to BUCKETS buckets\n\
   -m             Generate a mapfile for each OUTPUT.qvm\n\
+  -l             Generate listing for each OUTPUT.qvm\n\
   -v             Verbose compilation report\n\
   -h --help -?   Show this help\n\
 ",
@@ -1641,6 +1969,11 @@ int main(int argc, char **argv) {
 
     if (!strcmp(argv[i], "-m")) {
       options.writeMapFile = qtrue;
+      continue;
+    }
+
+    if (!strcmp(argv[i], "-l")) {
+      options.writeListFile = qtrue;
       continue;
     }
 

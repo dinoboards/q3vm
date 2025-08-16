@@ -20,6 +20,7 @@
  * PROJECT INCLUDE FILES
  ******************************************************************************/
 
+#include "opcodes.h"
 #include "vm.h"
 
 /******************************************************************************
@@ -78,37 +79,16 @@
  * TYPEDEFS
  ******************************************************************************/
 
-/** Max. number of op codes in op codes table */
-#define OPCODE_TABLE_SIZE OP_MAX
-
 /******************************************************************************
  * LOCAL DATA DEFINITIONS
  ******************************************************************************/
 
 #ifdef DEBUG_VM
+
 static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes */
 
-/** Table to convert op codes to readable names */
-static const char *opnames[OPCODE_TABLE_SIZE] = {
-    "OP_UNDEF",    "OP_IGNORE",  "OP_BREAK",   "OP_ENTER",   "OP_LEAVE",      "OP_CALL",    "OP_PUSH",    "OP_POP",
-    "OP_CONSTGP4", "OP_LOCAL",   "OP_JUMP",    "OP_EQ",      "OP_NE",         "OP_LTI",     "OP_LEI",     "OP_GTI",
-    "OP_GEI",      "OP_LTU",     "OP_LEU",     "OP_GTU",     "OP_GEU",        "OP_EQF",     "OP_NEF",     "OP_LTF",
-    "OP_LEF",      "OP_GTF",     "OP_GEF",     "OP_LOAD1",   "OP_LOAD2",      "OP_LOAD4",   "OP_LOADF4",  "OP_STORE1",
-    "OP_STORE2",   "OP_STORE4",  "OP_STOREF4", "OP_ARG",     "OP_BLOCK_COPY", "OP_SEX8",    "OP_SEX16",   "OP_NEGI",
-    "OP_ADD",      "OP_SUB",     "OP_DIVI",    "OP_DIVU",    "OP_MODI",       "OP_MODU",    "OP_MULI",    "OP_MULU",
-    "OP_BAND",     "OP_BOR",     "OP_BXOR",    "OP_BCOM",    "OP_LSH",        "OP_RSHI",    "OP_RSHU",    "OP_NEGF",
-    "OP_ADDF",     "OP_SUBF",    "OP_DIVF",    "OP_MULF",    "OP_CVIF",       "OP_CVFI",    "OP_CONSTU1", "OP_CONSTI1",
-    "OP_CONSTU2",  "OP_CONSTI2", "OP_CONSTU4", "OP_CONSTI4", "OP_CONSTF4",    "OP_CONSTP4",
+#include "opcodes.c"
 
-    "OP_LOAD3",    "OP_ADD3",    "OP_BAND3",   "OP_BCOM3",   "OP_BOR3",       "OP_BXOR3",   "OP_CONSTI3", "OP_CONSTU3",
-    "OP_CVFI3",    "OP_CVIU3",   "OP_CVUI3",   "OP_DIVI3",   "OP_DIVU3",      "OP_EQ3",     "OP_GEI3",    "OP_GEU3",
-    "OP_GTI3",     "OP_GTU3",    "OP_LEI3",    "OP_LEU3",    "OP_LSH3",       "OP_LTI3",    "OP_LTU3",    "OP_MODI3",
-    "OP_MODU3",    "OP_MULI3",   "OP_MULU3",   "OP_NE3",     "OP_NEGI3",      "OP_RSHI3",   "OP_RSHU3",   "OP_SEX24",
-    "OP_SEX8_3",   "OP_STORE3",  "OP_SUB3",
-
-    "OP_CONSTGP3", "OP_CONSTP3",
-
-};
 #endif
 
 /******************************************************************************

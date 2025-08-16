@@ -338,3 +338,5 @@ ASALocalRun/
 .localhistory/
 
 .vscode
+
+*.lst
