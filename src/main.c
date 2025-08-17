@@ -23,7 +23,7 @@
  * @param[in,out] vm Pointer to virtual machine, prepared by VM_Create.
  * @param[in,out] args Array with arguments of function call.
  * @return Return value handed back to virtual machine. */
-intptr_t systemCalls(vm_t *vm, intptr_t *args);
+uint32_t systemCalls(vm_t *vm, uint8_t *args);
 
 /* Load an image from a file. Data is allocated with malloc.
    Call free() to unload image.
@@ -134,28 +134,26 @@ uint8_t *loadImage(const char *filepath, int *size) {
   return image;
 }
 
-intptr_t systemCalls(vm_t *vm, intptr_t *args) {
-  const int id = -1 - args[0];
+uint32_t systemCalls(vm_t *vm, uint8_t *args) {
+  const int id = -1 - VMA_UINT24(0);
 
   switch (id) {
   case -1: /* PRINTF */
-    return printf("%s", (const char *)VMA(1, vm));
+    return printf("%s", (const char *)VMA_PTR(3, vm));
 
   case -2: /* ERROR */
-    return fprintf(stderr, "%s", (const char *)VMA(1, vm));
+    return fprintf(stderr, "%s", (const char *)VMA_PTR(3, vm));
 
   case -3: /* MEMSET */
-    if (VM_MemoryRangeValid((size_t)args[1] /*addr*/, (size_t)args[3] /*len*/, vm) == 0) {
-      memset(VMA(1, vm), args[2], args[3]);
-    }
-    return args[1];
+    memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
+    return VMA_UINT24(3);
 
   case -4: /* MEMCPY */
-    if (VM_MemoryRangeValid((size_t)args[1] /*addr*/, (size_t)args[3] /*len*/, vm) == 0 &&
-        VM_MemoryRangeValid((size_t)args[2] /*addr*/, (size_t)args[3] /*len*/, vm) == 0) {
-      memcpy(VMA(1, vm), VMA(2, vm), (size_t)args[3]);
-    }
-    return args[1];
+    memcpy(VMA_PTR(3, vm), VMA_PTR(6, vm), VMA_UINT24(9));
+    return VMA_UINT24(3);
+
+  case -6: /* FLOATFF */
+    return VM_FloatToInt(VMA_F4(3) * 2.0f);
 
   default:
     fprintf(stderr, "Bad system call: %i\n", id);

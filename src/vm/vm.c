@@ -157,7 +157,7 @@ bool VM_Create(vm_t                *vm,
                const vm_size_t      length,
                uint8_t *const       workingRAM,
                const vm_size_t      workingRAMLength,
-               intptr_t (*systemCalls)(vm_t *, intptr_t *)) {
+               uint32_t (*systemCalls)(vm_t *, uint8_t *)) {
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Invalid vm pointer");
     return -1;
@@ -359,6 +359,7 @@ float VM_IntToFloat(int32_t x) {
     uint32_t ui; /**< unsigned int32 part */
   } fi;
   fi.i = x;
+
   return fi.f;
 }
 
@@ -369,6 +370,7 @@ int32_t VM_FloatToInt(float f) {
     uint32_t ui; /**< unsigned int32 part */
   } fi;
   fi.f = f;
+  printf("VM_FloatToInt: f: %f, i: %08X\n", fi.f, fi.i);
   return fi.i;
 }
 
@@ -679,16 +681,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         int stomped = to_stdint(*(int24_t *)&dataBase[programStack + 3]);
 #endif
         *(int24_t *)&dataBase[programStack + 3] = to_int24(-1 - programCounter); /*command*/
-        {
-          intptr_t  argarr[MAX_VMSYSCALL_ARGS];
-          int24_t  *imagePtr = (int24_t *)&dataBase[programStack];
-          ustdint_t i;
-
-          for (i = 0; i < (ustdint_t)ARRAY_LEN(argarr); ++i)
-            argarr[i] = to_stdint(*(++imagePtr));
-
-          r = vm->systemCall(vm, argarr);
-        }
+        r = vm->systemCall(vm, &dataBase[programStack + 3]);
 
 #ifdef DEBUG_VM
         /* this is just our stack frame pointer, only needed

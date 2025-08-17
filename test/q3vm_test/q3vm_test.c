@@ -15,7 +15,7 @@
 
 /* The compiled bytecode calls native functions,
    defined in this file. */
-intptr_t systemCalls(vm_t *vm, intptr_t *args);
+uint32_t systemCalls(vm_t *vm, uint8_t *args);
 
 /* Load an image from a file. Data is allocated with malloc.
    Call free() to unload image. */
@@ -188,34 +188,34 @@ uint8_t *loadImage(const char *filepath, int *size) {
 }
 
 /* Callback from the VM: system function call */
-intptr_t systemCalls(vm_t *vm, intptr_t *args) {
-  const int id = -1 - args[0];
+uint32_t systemCalls(vm_t *vm, uint8_t *args) {
+  const int id = -1 - VMA_UINT24(0);
 
   switch (id) {
   case -1: /* PRINTF */
-    return printf("%s", (const char *)VMA(1, vm));
+    return printf("%s", (const char *)VMA_PTR(3, vm));
 
   case -2: /* ERROR */
-    return fprintf(stderr, "%s", (const char *)VMA(1, vm));
+    return fprintf(stderr, "%s", (const char *)VMA_PTR(3, vm));
 
   case -3: /* MEMSET */
-    if (VM_MemoryRangeValid(args[1] /*addr*/, args[3] /*len*/, vm) == 0) {
-      memset(VMA(1, vm), args[2], args[3]);
+    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) == 0) {
+      memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
     }
-    return args[1];
+    return VMA_UINT24(3);
 
   case -4: /* MEMCPY */
-    if (VM_MemoryRangeValid(args[1] /*addr*/, args[3] /*len*/, vm) == 0 &&
-        VM_MemoryRangeValid(args[2] /*addr*/, args[3] /*len*/, vm) == 0) {
-      memcpy(VMA(1, vm), VMA(2, vm), args[3]);
+    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) == 0 &&
+        VM_MemoryRangeValid(VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/, vm) == 0) {
+      memcpy(VMA_PTR(3, vm), VMA_PTR(6, vm), VMA_UINT24(9));
     }
-    return args[1];
+    return VMA_UINT24(3);
 
   case -6: /* FLOATFF */
-    return VM_FloatToInt(VMF(1) * 2.0f);
+    return VM_FloatToInt(VMA_F4(3) * 2.0f);
 
   case -7: /* RECURSIVE */
-    return VM_Call(vm, 1, args[1]);
+    return VM_Call(vm, 1, VMA_UINT24(3));
 
   default:
     fprintf(stderr, "Bad system call: %ld\n", (long int)args[0]);

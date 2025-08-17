@@ -64,6 +64,5 @@ MAX_JOBS=16 # Set the maximum number of concurrent jobs
 # # Execute commands from the file in parallel, with a limit
 echo "$jobs" | xargs -P ${MAX_JOBS} -I{} bash -c '{}'
 
-# rm jobs.txt # Clean up the temporary file
-# echo "All jobs finished."
+echo "Verification Run Completed."
 
