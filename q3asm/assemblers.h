@@ -64,6 +64,8 @@ assemblers_t assemblers[] = {
     {"LABEL",   DIRECTIVE,     assfn(LABEL)     },
     {"LINE",    DIRECTIVE,     assfn(COMMENT)   },
     {"LIT",     DIRECTIVE,     assfn(LIT)       },
+    {"NEGF4",   OP_NEGF,       assfn(CODE_OP)   },
+    {"NEGI4",   OP_NEGI,       assfn(CODE_OP)   },
     {"POP",     OP_POP,        assfn(CODE_OP)   },
     {"PROC",    OP_ENTER,      assfn(PROC)      },
     {"RET",     OP_LEAVE,      assfn(RET)       },

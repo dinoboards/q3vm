@@ -124,6 +124,9 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     ua = d;
     ua = ud;
 
+    d  = -d;
+    ud = -d;
+
     printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
 
     printf(str);
