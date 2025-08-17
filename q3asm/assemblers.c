@@ -269,3 +269,21 @@ DIRFn(CODE) {
 
   WriteDirectiveSegment(CODESEG);
 }
+
+DIRFn(LIT) {
+  currentSegment = &segment[LITSEG];
+
+  WriteDirectiveSegment(LITSEG);
+}
+
+DIRFn(BSS) {
+  currentSegment = &segment[BSSSEG];
+
+  WriteDirectiveSegment(BSSSEG);
+}
+
+DIRFn(DATA) {
+  currentSegment = &segment[DATASEG];
+
+  WriteDirectiveSegment(DATASEG);
+}

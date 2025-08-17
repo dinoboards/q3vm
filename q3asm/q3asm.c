@@ -912,39 +912,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-ASM(BSS) {
-  if (!strcmp(token, "bss")) {
-    STAT("BSS");
-    currentSegment = &segment[BSSSEG];
-    WriteDirectiveSegment(BSSSEG);
-
-    return 1;
-  }
-  return 0;
-}
-
-ASM(DATA) {
-  if (!strcmp(token, "data")) {
-    STAT("DATA");
-    currentSegment = &segment[DATASEG];
-    WriteDirectiveSegment(DATASEG);
-
-    return 1;
-  }
-  return 0;
-}
-
-ASM(LIT) {
-  if (!strcmp(token, "lit")) {
-    STAT("LIT");
-    currentSegment = &segment[LITSEG];
-
-    WriteDirectiveSegment(LITSEG);
-    return 1;
-  }
-  return 0;
-}
-
 ASM(FILE) {
   if (!strcmp(token, "file")) {
     STAT("FILE");
@@ -1112,10 +1079,7 @@ static void AssembleLine(void) {
     return;
 
   ASM(EQU)
-  ASM(LIT)
   ASM(FILE)
-  ASM(BSS)
-  ASM(DATA)
 
   CodeError("Unknown token: %s\n", token);
 }
