@@ -625,6 +625,16 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       programCounter += 1;
       DISPATCH();
 
+    case OP_ARG4:
+      /* single byte offset from programStack */
+#ifdef DEBUG_VM
+      printf("  ARG *[%06X + %02X (%06X)] = %06X\n", programStack, r2_int8, programStack + r2_int8, r0);
+#endif
+      *(int32_t *)&dataBase[programStack + r2_int8] = r0;
+      opStack8 -= 4;
+      programCounter += 1;
+      DISPATCH();
+
     case OP_ARGF: {
       /* single byte offset from programStack */
 #ifdef DEBUG_VM

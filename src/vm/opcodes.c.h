@@ -14,4 +14,4 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "LSH3",     "LTI3",    "LTU3",    "MODI3",   "MODU3",   "MULI3",   "MULU3",      "NE3",     "NEGI3",    "RSHI3",
     "RSHU3",    "SEX24",   "SEX8_3",  "STORE3",  "SUB3",
 
-    "CONSTGP3", "CONSTP3", "ARGF"};
+    "CONSTGP3", "CONSTP3", "ARGF",    "ARG4"};
