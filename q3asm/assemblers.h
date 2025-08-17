@@ -42,6 +42,7 @@ assemblers_t assemblers[] = {
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"FILE",    DIRECTIVE,     assfn(COMMENT)   },
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
+    {"INDIRB",  OP_IGNORE,     assfn(COMMENT)   },
     {"LABEL",   DIRECTIVE,     assfn(LABEL)     },
     {"LINE",    DIRECTIVE,     assfn(COMMENT)   },
     {"LIT",     DIRECTIVE,     assfn(LIT)       },

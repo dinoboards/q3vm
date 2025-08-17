@@ -22,11 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // clang-format off
 
-    {"BREAK", OP_BREAK},
-
+    // {"BREAK", OP_BREAK},
     //{ "ARGB", OP_ARG },
 
-    {"INDIRB", OP_IGNORE},
     // block copy deals with this
     {"INDIRF4", OP_LOADF4},
     {"INDIRI4", OP_LOAD4},
