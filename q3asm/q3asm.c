@@ -1015,43 +1015,6 @@ static void AssembleLine(void) {
     }
   }
 
-  /* This falls through if an assembly opcode is not found.  -PH */
-
-  /* The following should be sorted in sequence of statistical frequency, most
-   * frequent first.  -PH */
-  /*
-  Empirical frequency statistics from FI 2001.01.23:
-   109892 STAT ADDRL
-    72188 STAT BYTE
-    51150 STAT LINE
-    50906 STAT ARG
-    43704 STAT IMPORT
-    34902 STAT LABEL
-    32066 STAT ADDRF
-    23704 STAT CALL
-     7720 STAT POP
-     7256 STAT RET
-     5198 STAT ALIGN
-     3292 STAT EXPORT
-     2878 STAT PROC
-     2878 STAT ENDPROC
-     2812 STAT ADDRESS
-      738 STAT SKIP
-      374 STAT EQU
-      280 STAT CODE
-      176 STAT LIT
-      102 STAT FILE
-      100 STAT BSS
-       68 STAT DATA
-
-   -PH
-  */
-
-#undef ASM
-#define ASM(O)                                                                                                                     \
-  if (TryAssemble##O())                                                                                                            \
-    return;
-
   CodeError("Unknown token: %s\n", token);
 }
 
