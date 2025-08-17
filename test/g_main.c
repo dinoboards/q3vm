@@ -35,6 +35,9 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
+
+typedef void (*fun_ptr_t)(int);
+
 int vmMain(int command, int arg0, int arg1, int arg2) {
   volatile long           i;
   volatile long           iloop = 20000000;
@@ -51,7 +54,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   static unsigned char    mem2[8]       = "Hello"; /* don't change this string */
   int                     doStupidStuff = 0;       /* misbehave and see if the interpreter deals correctly with that */
 
-  void (*fun_ptr)(int) = (void *)0xffffff;
+  fun_ptr_t *fun_ptr = (fun_ptr_t *)0xffffff;
 
   /*
   printf("cmd:   %i\n", command);
@@ -67,7 +70,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     printf("Invalid function pointer call...\n");
     (*fun_ptr)(10);
     printf("Invalid function pointer accepted.\n");
-    return 0x0badf00d;
+    return 0xadf00d; /* TODO: Compilier is treating number as long int! */
   }
 
   printf(str, "World");

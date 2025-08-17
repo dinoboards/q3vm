@@ -24,6 +24,9 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
+typedef unsigned int uint24_t;
+typedef int          int24_t;
+
 typedef unsigned long uint32_t;
 typedef long          int32_t;
 
@@ -34,6 +37,8 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   int8_t   a;
   uint16_t ub;
   int16_t  b;
+  uint24_t uc;
+  int24_t  c;
   uint32_t ud;
   int32_t  d;
 
@@ -43,6 +48,8 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   a  = -123;
   ub = 45000;
   b  = -32000;
+  uc = 0x80000;
+  c  = -0x20000;
   ud = 0x12345678;
   d  = 0x11223344;
 
@@ -50,13 +57,74 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 
   switch (command) {
   case 0:
-    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
+    printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
 
     d = (long)f;
-    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
+    printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
 
     f = (float)d;
-    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
+    printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
+
+    d  = a;
+    d  = ua;
+    d  = b;
+    d  = ub;
+    d  = c;
+    d  = uc;
+    d  = ud;
+    ud = a;
+    ud = ua;
+    ud = b;
+    ud = ub;
+    ud = c;
+    ud = uc;
+    ud = d;
+
+    c  = a;
+    c  = ua;
+    c  = b;
+    c  = ub;
+    c  = uc;
+    c  = d;
+    c  = ud;
+    uc = a;
+    uc = ua;
+    uc = b;
+    uc = ub;
+    uc = d;
+    uc = ud;
+
+    b  = a;
+    b  = ua;
+    b  = ub;
+    b  = c;
+    b  = uc;
+    b  = d;
+    b  = ud;
+    ub = a;
+    ub = ua;
+    ub = b;
+    ub = c;
+    ub = uc;
+    ub = d;
+    ub = ud;
+
+    a  = ua;
+    a  = b;
+    a  = ub;
+    a  = c;
+    a  = uc;
+    a  = d;
+    a  = ud;
+    ua = a;
+    ua = b;
+    ua = ub;
+    ua = c;
+    ua = uc;
+    ua = d;
+    ua = ud;
+
+    printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
 
     printf(str);
     printf("!!sizeof(int): %d\n", sizeof(int));

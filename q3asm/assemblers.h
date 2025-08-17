@@ -3,6 +3,7 @@
 #define OP_MULTIPLE -1
 
 assemblers_t assemblers[] = {
+
     {"ADDRESS", DIRECTIVE,     assfn(ADDRESS)   },
     {"ADDRF",   OP_LOCAL,      assfn(ADDRF)     },
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
@@ -37,7 +38,10 @@ assemblers_t assemblers[] = {
     {"CODE",    DIRECTIVE,     assfn(CODE)      },
     {"CVFI4",   OP_CVFI,       assfn(CODE_OP)   },
     {"CVIF4",   OP_CVIF,       assfn(CODE_OP)   },
+    {"CVII1",   OP_IGNORE,     assfn(COMMENT)   },
+    {"CVII2",   OP_IGNORE,     assfn(COMMENT)   },
     {"CVII4",   OP_MULTIPLE,   assfn(CODE_SEX)  },
+    {"CVIU4",   OP_IGNORE,     assfn(COMMENT)   },
     {"DATA",    DIRECTIVE,     assfn(DATA)      },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
     {"EQU4",    OP_EQ,         assfn(CODE_32BIT)},
