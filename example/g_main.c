@@ -70,6 +70,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   int24_t  c;
   uint32_t ud;
   int32_t  d;
+  uint8_t *pua;
 
   float f;
 
@@ -156,7 +157,14 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     d  = -d;
     ud = -d;
 
+    ud += 1;
+    d = d + 1;
+
+    pua = 0;
+    pua += 1;
+
     printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
+    printf("pua: %d\r\n", pua);
 
     printf(str);
     printf("!!sizeof(int): %d\n", sizeof(int));
