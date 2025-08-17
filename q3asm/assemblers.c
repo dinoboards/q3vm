@@ -252,3 +252,14 @@ DIRFn(ADDRESS) {
 
   EmitInt24(currentSegment, v);
 }
+
+DIRFn(SKIP) {
+  const int v = ParseValue();
+  WritePC();
+  WriteDirective("SKIP");
+  WriteNumber(v);
+  WriteComment();
+  currentSegment->imageUsed += v;
+  WritePC();
+  WriteNewLine();
+}

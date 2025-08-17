@@ -982,23 +982,6 @@ ASM(EQU) {
   return 0;
 }
 
-ASM(SKIP) {
-  int v;
-  if (!strcmp(token, "skip")) {
-    STAT("SKIP");
-    v = ParseValue();
-    WritePC();
-    WriteDirective("SKIP");
-    WriteNumber(v);
-    WriteComment();
-    currentSegment->imageUsed += v;
-    WritePC();
-    WriteNewLine();
-    return 1;
-  }
-  return 0;
-}
-
 /*
 ==============
 AssembleLine
@@ -1139,7 +1122,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(SKIP)
   ASM(EQU)
   ASM(CODE)
   ASM(LIT)
