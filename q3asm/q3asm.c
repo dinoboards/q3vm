@@ -41,7 +41,6 @@ typedef enum {
   DATASEG, // initialized 32 bit data, will be byte swapped
   LITSEG,  // strings
   BSSSEG,  // 0 filled
-  JTRGSEG, // pseudo-segment that contains only jump table targets
   NUM_SEGMENTS
 } segmentName_t;
 
@@ -88,7 +87,6 @@ typedef struct options_s {
   qboolean verbose;
   qboolean writeMapFile;
   qboolean writeListFile;
-  qboolean vanillaQ3Compatibility;
 } options_t;
 
 options_t options = {0};
@@ -924,8 +922,6 @@ ASM(ADDRESS) {
     WriteDirectiveD24(v);
 
     EmitInt24(currentSegment, v);
-    if (passNumber == 1 && token[0] == '$') // crude test for labels
-      EmitInt32(&segment[JTRGSEG], v);
     return 1;
   }
   return 0;
@@ -1246,7 +1242,6 @@ static void WriteVmFile(void) {
   report("code segment: %7i\n", segment[CODESEG].imageUsed);
   report("data segment: %7i\n", segment[DATASEG].imageUsed);
   report("lit  segment: %7i\n", segment[LITSEG].imageUsed);
-  report("jtr  segment: %7i\n", segment[JTRGSEG].imageUsed);
   report("bss  segment: %7i\n", segment[BSSSEG].imageUsed);
   report("instruction count: %i\n", instructionCount);
 
@@ -1289,10 +1284,6 @@ static void WriteVmFile(void) {
   SafeWrite(f, &segment[LITSEG].image, segment[LITSEG].imageUsed);
   SafeWrite(f, &segment[DATASEG].image, segment[DATASEG].imageUsed);
 
-  if (!options.vanillaQ3Compatibility) {
-    SafeWrite(f, &segment[JTRGSEG].image, segment[JTRGSEG].imageUsed);
-  }
-
   fclose(f);
 }
 
@@ -1329,7 +1320,6 @@ static void Assemble(void) {
     segment[LITSEG].segmentBase  = 0;
     segment[DATASEG].segmentBase = segment[LITSEG].imageUsed;
     segment[BSSSEG].segmentBase  = segment[DATASEG].segmentBase + segment[DATASEG].imageUsed;
-    segment[JTRGSEG].segmentBase = segment[BSSSEG].segmentBase + segment[BSSSEG].imageUsed;
 
     for (i = 0; i < NUM_SEGMENTS; i++) {
       segment[i].segmentLength = segment[i].imageUsed;
@@ -1451,9 +1441,6 @@ int main(int argc, char **argv) {
   strcpy(outputFilename, "q3asm");
   numAsmFiles = 0;
 
-  // Q3 compatible by default
-  options.vanillaQ3Compatibility = qtrue;
-
   for (i = 1; i < argc; i++) {
     if (argv[i][0] != '-') {
       break;
@@ -1509,11 +1496,6 @@ int main(int argc, char **argv) {
 
     if (!strcmp(argv[i], "-l")) {
       options.writeListFile = qtrue;
-      continue;
-    }
-
-    if (!strcmp(argv[i], "-vq3")) {
-      options.vanillaQ3Compatibility = qtrue;
       continue;
     }
 
