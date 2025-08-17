@@ -912,15 +912,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-ASM(FILE) {
-  if (!strcmp(token, "file")) {
-    STAT("FILE");
-    WriteComment();
-    return 1;
-  }
-  return 0;
-}
-
 /*
 ==============
 AssembleLine
@@ -1060,8 +1051,6 @@ static void AssembleLine(void) {
 #define ASM(O)                                                                                                                     \
   if (TryAssemble##O())                                                                                                            \
     return;
-
-  ASM(FILE)
 
   CodeError("Unknown token: %s\n", token);
 }

@@ -32,6 +32,7 @@ assemblers_t assemblers[] = {
     {"EQU4",    OP_EQ,         assfn(CODE_32BIT)},
     {"EQU",     DIRECTIVE,     assfn(EQU)       },
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
+    {"FILE",    DIRECTIVE,     assfn(COMMENT)   },
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"LABEL",   DIRECTIVE,     assfn(LABEL)     },
     {"LINE",    DIRECTIVE,     assfn(COMMENT)   },
