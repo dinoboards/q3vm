@@ -36,6 +36,7 @@ function skipped_function() {
   return 1 # Not found
 }
 
+jobs=""
 all_dirs=$(find -iname "chapter_*" | sort -V)
 
 for dir in $all_dirs; do
@@ -51,9 +52,18 @@ for dir in $all_dirs; do
     if  skipped_function $(basename $file); then
       printf "%-80s .... %-40s\n" ${dir}/${file}.c "Skipped"
     else
-      ./execute-test.sh ${dir}/$file
+      jobs+="\"./execute-test.sh ${dir}/$file\" "$'\n'
     fi
   done
 
 done
+
+MAX_JOBS=16 # Set the maximum number of concurrent jobs
+
+
+# # Execute commands from the file in parallel, with a limit
+echo "$jobs" | xargs -P ${MAX_JOBS} -I{} bash -c '{}'
+
+# rm jobs.txt # Clean up the temporary file
+# echo "All jobs finished."
 
