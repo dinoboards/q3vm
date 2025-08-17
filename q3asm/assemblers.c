@@ -186,6 +186,34 @@ ASMFn(CODE_OP) {
   EmitByte(&segment[CODESEG], assembler.opcode);
 }
 
+ASMMultipleFn(CODE_SEX) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '1':
+    opcode = OP_SEX8;
+    break;
+
+  case '2':
+    opcode = OP_SEX16;
+    break;
+
+  case '3':
+    WriteComment();
+    return;
+
+  default:
+    CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
 ASMFn(PROC) {
   char name[1024];
   instructionCount++;

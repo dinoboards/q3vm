@@ -37,6 +37,7 @@ assemblers_t assemblers[] = {
     {"CODE",    DIRECTIVE,     assfn(CODE)      },
     {"CVFI4",   OP_CVFI,       assfn(CODE_OP)   },
     {"CVIF4",   OP_CVIF,       assfn(CODE_OP)   },
+    {"CVII4",   OP_MULTIPLE,   assfn(CODE_SEX)  },
     {"DATA",    DIRECTIVE,     assfn(DATA)      },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
     {"EQU4",    OP_EQ,         assfn(CODE_32BIT)},
