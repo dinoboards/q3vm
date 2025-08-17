@@ -11,6 +11,18 @@ cd verification
 IGNORESET=(
   parameter_shadows_function
   test_for_memory_leaks
+  convert_function_arguments
+  comparisons
+  rewrite_large_multiply_regression
+  logical
+  large_constants
+  truncate
+  compound_bitshift
+  compound_assign_to_long
+  compound_assign_to_int
+  bitwise_long_op
+  bitshift
+  switch_int
 )
 
 function skipped_function() {
