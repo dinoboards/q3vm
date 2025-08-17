@@ -19,11 +19,12 @@ rm $fname.qvm $fname.asm
 
 
 if [[ ${result} == ${expected} ]]; then
-  printf "%-50s %-40s\n" ${full}..... "Passed"
+  printf "%-80s %-40s\n" ${full}..... "Passed"
 else
-  printf "%-50s %-40s\n" ${full}..... "Failed"
-  echo "Expected ${expected} but got ${result}"
+  printf "%-80s %-40s\n" ${full}..... "Failed"
+  echo "Expected ${expected} but got ${result} '${full}"
   echo "--------------"
   echo "${trace}"
+  # exit 1
 fi
 

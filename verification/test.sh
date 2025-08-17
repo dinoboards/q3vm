@@ -9,21 +9,18 @@ cd ..
 cd verification
 
 
-all_files=$(cd chapter_1 && find . -type f \( -name "*.c" \))
+all_dirs=$(find -iname "chapter_*" | sort)
 
-for file in $all_files; do
-  file="${file%.*}"
-  file="${file#./}"
-  ./execute-test.sh ./chapter_1/$file
+for dir in $all_dirs; do
+  dir="${dir#./}"
+
+  all_files=$(cd ${dir} && find . -type f \( -name "*.c" \))
+
+  for file in $all_files; do
+    file="${file%.*}"
+    file="${file#./}"
+    ./execute-test.sh ${dir}/$file
+  done
+
 done
-
-
-all_files=$(cd chapter_2 && find . -type f \( -name "*.c" \))
-
-for file in $all_files; do
-  file="${file%.*}"
-  file="${file#./}"
-  ./execute-test.sh ./chapter_2/$file
-done
-
 
