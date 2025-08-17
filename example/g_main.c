@@ -30,6 +30,35 @@ typedef int          int24_t;
 typedef unsigned long uint32_t;
 typedef long          int32_t;
 
+typedef void (*fun_ptr_t)(int);
+
+uint8_t fn_uint8(void);
+
+int8_t fn_int8(void);
+
+uint16_t fn_uint16(void);
+
+int16_t fn_int16(void);
+
+uint24_t fn_uint24(void);
+
+int24_t fn_int24(void);
+
+uint32_t fn_uint32(void);
+
+int32_t fn_int32(void);
+
+float fn_float(void);
+
+typedef struct a_struct_s {
+  int a;
+  int b;
+} a_struct_t;
+
+a_struct_t *fn_struct(void);
+
+fun_ptr_t fn_fn(void);
+
 // these are int32_t
 int vmMain(int command, int arg0, int arg1, int arg2) {
   char     str[] = "local string ref\n";
@@ -145,19 +174,56 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     d = *((int *)&vmMain);
     return 0;
 
-  case 3:
+  case 3: {
     d = someimmutabledata[1];
     return 0;
+  }
 
   case 4:
     d = changingdata[1];
     return 0;
+
+  case 5:
+    d = fn_uint8();
+    d = fn_int8();
+    d = fn_uint16();
+    d = fn_int16();
+    d = fn_uint24();
+    d = fn_int24();
+    d = fn_uint32();
+    d = fn_int32();
+    d = fn_float();
+    fn_struct();
+    fn_fn();
+    break;
 
   default:
     printf("Unknown command.\n");
     return -1;
   }
 }
+
+uint8_t fn_uint8(void) { return 1; }
+
+int8_t fn_int8(void) { return 1; }
+
+uint16_t fn_uint16(void) { return 1; }
+
+int16_t fn_int16(void) { return 1; }
+
+uint24_t fn_uint24(void) { return 1; }
+
+int24_t fn_int24(void) { return 1; }
+
+uint32_t fn_uint32(void) { return 1; }
+
+int32_t fn_int32(void) { return 1; }
+
+float fn_float(void) { return 1.1; }
+
+a_struct_t *fn_struct(void) { return 0; }
+
+fun_ptr_t fn_fn(void) { return 0; }
 
 void printf(const char *fmt, ...) {
   va_list argptr;
