@@ -25,6 +25,7 @@ assemblers_t assemblers[] = {
     {"ASGNU1",  OP_STORE1,     assfn(CODE_OP)   },
     {"ASGNU2",  OP_STORE2,     assfn(CODE_OP)   },
     {"ASGNU4",  OP_STORE4,     assfn(CODE_OP)   },
+    {"BCOMI3",  OP_BCOM,       assfn(CODE_OP)   },
     {"BSS",     DIRECTIVE,     assfn(BSS)       },
     {"BYTE",    DIRECTIVE,     assfn(BYTE)      },
     {"CALLF4",  OP_CALL,       assfn(CALL)      },
