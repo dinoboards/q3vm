@@ -51,6 +51,13 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   switch (command) {
   case 0:
     printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
+
+    d = (long)f;
+    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
+
+    f = (float)d;
+    printf("ua: %d, a: %d, ub: %d, b: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, ud, d, f);
+
     printf(str);
     printf("!!sizeof(int): %d\n", sizeof(int));
     printf("Hello World! - fib(5) = %i\n", fib(5));
