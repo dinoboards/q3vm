@@ -921,23 +921,6 @@ ASM(FILE) {
   return 0;
 }
 
-ASM(EQU) {
-  char name[1024];
-  if (!strcmp(token, "equ")) {
-    STAT("EQU");
-    Parse();
-    strcpy(name, token);
-    Parse();
-
-    const int v = atoiNoCap(token);
-    WriteDirectiveEQU(name, v);
-
-    DefineSymbol(name, v);
-    return 1;
-  }
-  return 0;
-}
-
 /*
 ==============
 AssembleLine
@@ -1078,7 +1061,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(EQU)
   ASM(FILE)
 
   CodeError("Unknown token: %s\n", token);

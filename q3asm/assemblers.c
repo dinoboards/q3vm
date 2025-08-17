@@ -287,3 +287,17 @@ DIRFn(DATA) {
 
   WriteDirectiveSegment(DATASEG);
 }
+
+DIRFn(EQU) {
+  char name[1024];
+  Parse();
+  strcpy(name, token);
+
+  Parse();
+  const int v = atoiNoCap(token);
+
+  WriteDirectiveEQU(name, v);
+  printf("???? %s, %d\n", name, v);
+
+  DefineSymbol(name, v);
+}

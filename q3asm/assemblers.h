@@ -29,6 +29,8 @@ assemblers_t assemblers[] = {
     {"CODE",    DIRECTIVE,     assfn(CODE)      },
     {"DATA",    DIRECTIVE,     assfn(DATA)      },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
+    {"EQU4",    OP_EQ,         assfn(CODE_32BIT)},
+    {"EQU",     DIRECTIVE,     assfn(EQU)       },
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"LABEL",   DIRECTIVE,     assfn(LABEL)     },
