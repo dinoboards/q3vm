@@ -243,3 +243,12 @@ DIRFn(ALIGN) {
   WriteNumber(v);
   WriteComment();
 }
+
+DIRFn(ADDRESS) {
+  Parse();
+  const int v = ParseExpression();
+
+  WriteDirectiveD24(v);
+
+  EmitInt24(currentSegment, v);
+}

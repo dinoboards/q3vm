@@ -3,6 +3,7 @@
 #define OP_MULTIPLE -1
 
 assemblers_t assemblers[] = {
+    {"ADDRESS", DIRECTIVE,     assfn(ADDRESS)   },
     {"ADDRF",   OP_LOCAL,      assfn(ADDRF)     },
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
     {"ADDRGP4", OP_CONSTGP4,   assfn(CODE_24BIT)}, /* why is this only 24bit?? */

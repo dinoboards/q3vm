@@ -912,21 +912,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-ASM(ADDRESS) {
-  int v;
-  if (!strcmp(token, "address")) {
-    STAT("ADDRESS");
-    Parse();
-    v = ParseExpression();
-
-    WriteDirectiveD24(v);
-
-    EmitInt24(currentSegment, v);
-    return 1;
-  }
-  return 0;
-}
-
 ASM(CODE) {
   if (!strcmp(token, "code")) {
     STAT("CODE");
@@ -1154,7 +1139,6 @@ static void AssembleLine(void) {
   if (TryAssemble##O())                                                                                                            \
     return;
 
-  ASM(ADDRESS)
   ASM(SKIP)
   ASM(EQU)
   ASM(CODE)
