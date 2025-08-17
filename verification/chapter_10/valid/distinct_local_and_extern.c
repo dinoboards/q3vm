@@ -9,23 +9,23 @@ int a = 5;
 int return_a(void);
 
 int main(void) {
-    /* automatic variable 'a', distinct from the global variable 'a' */
-    int a = 3;
-    {
-        /* this declaration refers to the global variable,
-         * shadowing the automatic variable declared above
-         */
-        extern int a;
-        if (a != 5)
-            return 1;
-        /* update global variable */
-        a = 4;
-    }
-    /* return the sum of the global and local 'a' variables */
-    return a + return_a();
+  /* automatic variable 'a', distinct from the global variable 'a' */
+  int a = 3;
+  {
+    /* this declaration refers to the global variable,
+     * shadowing the automatic variable declared above
+     */
+    extern int a;
+    if (a != 5)
+      return 1;
+    /* update global variable */
+    a = 4;
+  }
+  /* return the sum of the global and local 'a' variables */
+  return a + return_a();
 }
 
 int return_a(void) {
-    /* return the current value of the global variable */
-    return a;
+  /* return the current value of the global variable */
+  return a;
 }

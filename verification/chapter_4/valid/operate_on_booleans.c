@@ -4,6 +4,4 @@
 #endif
 #pragma GCC diagnostic ignored "-Wbool-operation"
 #endif
-int main(void) {
-    return ~(0 && 1) - -(4 || 3);
-}
+int main(void) { return ~(0 && 1) - -(4 || 3); }

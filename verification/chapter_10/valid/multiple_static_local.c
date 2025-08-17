@@ -1,9 +1,7 @@
 int foo(void);
 int bar(void);
 
-int main(void) {
-    return foo() + bar() + foo() + bar();
-}
+int main(void) { return foo() + bar() + foo() + bar(); }
 
 /* Multiple functions may declare static local variables
  * with the same name; these variables have no linkage,
@@ -11,21 +9,20 @@ int main(void) {
  */
 
 int foo(void) {
-    /* 'a' is a static local variable.
-     * its value doubles each time we call foo()
-     */
-    static int a = 3;
-    a = a * 2;
-    return a;
+  /* 'a' is a static local variable.
+   * its value doubles each time we call foo()
+   */
+  static int a = 3;
+  a            = a * 2;
+  return a;
 }
 
 int bar(void) {
-    /* 'a' is a static local variable, distinct from the
-     * 'a' variable declared in foo.
-     * its value increases by one each time we call bar()
-     */
-    static int a = 4;
-    a = a + 1;
-    return a;
+  /* 'a' is a static local variable, distinct from the
+   * 'a' variable declared in foo.
+   * its value increases by one each time we call bar()
+   */
+  static int a = 4;
+  a            = a + 1;
+  return a;
 }
-

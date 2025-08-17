@@ -4,5 +4,5 @@
 
 int main(void) {
 unused:
-    return 0;
+  return 0;
 }

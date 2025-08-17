@@ -5,8 +5,10 @@
 #endif
 
 int main(void) {
-    int i = 0x7FFFFA;
-    do ; while ((i = i - 5) >= 256);
+  int i = 0x7FFFFA;
+  do
+    ;
+  while ((i = i - 5) >= 256);
 
-    return i;
+  return i;
 }

@@ -5,9 +5,7 @@
 /* A tentative definition */
 static int foo;
 
-int main(void) {
-    return foo;
-}
+int main(void) { return foo; }
 
 /* A declaration */
 extern int foo;

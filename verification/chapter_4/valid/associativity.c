@@ -4,6 +4,4 @@
 #endif
 #endif
 
-int main(void) {
-    return 5 >= 0 > 1 <= 0;
-}
+int main(void) { return 5 >= 0 > 1 <= 0; }

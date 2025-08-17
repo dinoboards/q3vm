@@ -1,3 +1,1 @@
-int main(void) {
-    return (-12) / 5;
-}
+int main(void) { return (-12) / 5; }

@@ -12,10 +12,10 @@ int foo;
 int foo;
 
 int main(void) {
-    int i;
-    for (i = 0; i < 5; i = i + 1)
-        foo = foo + 1;
-    return foo;
+  int i;
+  for (i = 0; i < 5; i = i + 1)
+    foo = foo + 1;
+  return foo;
 }
 
 /* Yet another tentative definition of foo */

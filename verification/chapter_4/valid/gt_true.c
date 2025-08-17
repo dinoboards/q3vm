@@ -1,3 +1,1 @@
-int main(void) {
-    return 15 > 10;
-}
+int main(void) { return 15 > 10; }

@@ -1,4 +1,4 @@
 int main(void) {
-    int x = 3;
-    return x << 3;
+  int x = 3;
+  return x << 3;
 }

@@ -3,6 +3,4 @@
 #pragma GCC diagnostic ignored "-Wparentheses"
 #endif
 #endif
-int main(void) {
-    return 2 == 2 >= 0;
-}
+int main(void) { return 2 == 2 >= 0; }

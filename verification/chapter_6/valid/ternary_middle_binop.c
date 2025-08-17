@@ -1,4 +1,4 @@
 int main(void) {
-    int a = 1 ? 3 % 2 : 4;
-    return a;
+  int a = 1 ? 3 % 2 : 4;
+  return a;
 }

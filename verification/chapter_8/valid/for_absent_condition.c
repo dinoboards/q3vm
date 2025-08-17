@@ -1,6 +1,6 @@
 int main(void) {
-    int i;
-    for (i = 400; ; i = i - 100)
-        if (i == 100)
-            return 0;
+  int i;
+  for (i = 400;; i = i - 100)
+    if (i == 100)
+      return 0;
 }
