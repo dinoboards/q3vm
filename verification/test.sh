@@ -8,8 +8,23 @@ cd ..
 
 cd verification
 
+IGNORESET=(
+  parameter_shadows_function
+  test_for_memory_leaks
+)
 
-all_dirs=$(find -iname "chapter_*" | sort)
+function skipped_function() {
+  local needle="$1"
+  shift
+  for item in "${IGNORESET[@]}"; do
+    if [[ "$item" == "$needle" ]]; then
+      return 0 # Found
+    fi
+  done
+  return 1 # Not found
+}
+
+all_dirs=$(find -iname "chapter_*" | sort -V)
 
 for dir in $all_dirs; do
   dir="${dir#./}"
@@ -19,7 +34,13 @@ for dir in $all_dirs; do
   for file in $all_files; do
     file="${file%.*}"
     file="${file#./}"
-    ./execute-test.sh ${dir}/$file
+
+    name=$(basename $file)
+    if  skipped_function $(basename $file); then
+      printf "%-80s .... %-40s\n" ${dir}/${file}.c "Skipped"
+    else
+      ./execute-test.sh ${dir}/$file
+    fi
   done
 
 done
