@@ -263,3 +263,9 @@ DIRFn(SKIP) {
   WritePC();
   WriteNewLine();
 }
+
+DIRFn(CODE) {
+  currentSegment = &segment[CODESEG];
+
+  WriteDirectiveSegment(CODESEG);
+}

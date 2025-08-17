@@ -25,6 +25,7 @@ assemblers_t assemblers[] = {
     {"CNSTU1",  OP_CONSTU1,    assfn(CODE_8BIT) },
     {"CNSTU2",  OP_CONSTU2,    assfn(CODE_16BIT)},
     {"CNSTU4",  OP_CONSTU4,    assfn(CODE_32BIT)},
+    {"CODE",    DIRECTIVE,     assfn(CODE)      },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },

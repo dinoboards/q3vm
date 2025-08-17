@@ -912,17 +912,6 @@ static int ParseExpression(void) {
 
 /* START OLD ASSEMBLY PATTERN */
 
-ASM(CODE) {
-  if (!strcmp(token, "code")) {
-    STAT("CODE");
-    currentSegment = &segment[CODESEG];
-
-    WriteDirectiveSegment(CODESEG);
-    return 1;
-  }
-  return 0;
-}
-
 ASM(BSS) {
   if (!strcmp(token, "bss")) {
     STAT("BSS");
@@ -1123,7 +1112,6 @@ static void AssembleLine(void) {
     return;
 
   ASM(EQU)
-  ASM(CODE)
   ASM(LIT)
   ASM(FILE)
   ASM(BSS)
