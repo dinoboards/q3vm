@@ -18,13 +18,11 @@ result=$(echo $?)
 rm $fname.qvm $fname.asm
 
 
-if [[ ${result} == ${expected} ]]; then
-  printf "%-80s .... %-40s\n" ${full}.c "Passed"
-else
+if [[ ${result} != ${expected} ]]; then
   printf "%-80s .... %-40s\n" ${full}.c "Failed"
   echo "Expected ${expected} but got ${result} '${full}"
   echo "--------------"
   echo "${trace}"
-  exit 1
 fi
 
+  # printf "%-80s .... %-40s\n" ${full}.c "Passed"

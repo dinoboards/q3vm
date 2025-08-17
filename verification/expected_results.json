@@ -953,6 +953,9 @@
   "chapter_9/valid/arguments_in_registers/fibonacci.c": {
     "return_code": 8
   },
+  "chapter_9/valid/arguments_in_registers/fibonacci2.c": {
+    "return_code": 1
+  },
   "chapter_9/valid/arguments_in_registers/param_shadows_local_var.c": {
     "return_code": 20
   },
