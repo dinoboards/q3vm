@@ -36,6 +36,7 @@ assemblers_t assemblers[] = {
     {"CNSTU4",  OP_CONSTU4,    assfn(CODE_32BIT)},
     {"CODE",    DIRECTIVE,     assfn(CODE)      },
     {"CVFI4",   OP_CVFI,       assfn(CODE_OP)   },
+    {"CVIF4",   OP_CVIF,       assfn(CODE_OP)   },
     {"DATA",    DIRECTIVE,     assfn(DATA)      },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
     {"EQU4",    OP_EQ,         assfn(CODE_32BIT)},
