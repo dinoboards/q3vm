@@ -297,7 +297,6 @@ DIRFn(EQU) {
   const int v = atoiNoCap(token);
 
   WriteDirectiveEQU(name, v);
-  printf("???? %s, %d\n", name, v);
 
   DefineSymbol(name, v);
 }

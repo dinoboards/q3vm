@@ -730,7 +730,7 @@ static int LookupSymbol(char *sym) {
     }
   }
 
-  CodeError("error: symbol %s undefined\n", sym);
+  CodeError("error: symbol '%s' undefined\n", sym);
   passNumber = 0;
   DefineSymbol(sym, 0); // so more errors aren't printed
   passNumber = 1;
