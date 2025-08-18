@@ -681,12 +681,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         int stomped = to_stdint(*(int24_t *)&dataBase[programStack + 3]);
 #endif
         *(int24_t *)&dataBase[programStack + 3] = to_int24(-1 - programCounter); /*command*/
-        r = vm->systemCall(vm, &dataBase[programStack + 3]);
+        r                                       = vm->systemCall(vm, &dataBase[programStack + 3]);
 
 #ifdef DEBUG_VM
         /* this is just our stack frame pointer, only needed
            for debugging */
-        *(int24_t *)&codeBase[programStack + 3] = to_int24(stomped);
+        *(int24_t *)&dataBase[programStack + 3] = to_int24(stomped);
 #endif
 
         /* save return value */
