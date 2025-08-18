@@ -187,6 +187,8 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 
     ud = ud / (uint32_t)5L;
 
+    ud = ud * 5;
+
     printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
     printf("pua: %d\r\n", pua);
 

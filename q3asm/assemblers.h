@@ -103,4 +103,8 @@ assemblers_t assemblers[] = {
     {"DIVF4",   OP_DIVF,       assfn(CODE_OP)   },
     {"DIVI4",   OP_DIVI,       assfn(CODE_OP)   },
     {"DIVU4",   OP_DIVU,       assfn(CODE_OP)   },
+
+    {"MULF4",   OP_MULF,       assfn(CODE_OP)   },
+    {"MULI4",   OP_MULI,       assfn(CODE_OP)   },
+    {"MULU4",   OP_MULU,       assfn(CODE_OP)   },
 };
