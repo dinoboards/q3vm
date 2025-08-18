@@ -84,6 +84,8 @@ assemblers_t assemblers[] = {
     {"POP",     OP_POP,        assfn(CODE_OP)   },
     {"PROC",    OP_ENTER,      assfn(PROC)      },
     {"RET",     OP_LEAVE,      assfn(RET)       },
+    {"RSHI4",   OP_RSHI,       assfn(CODE_OP)   },
+    {"RSHU4",   OP_RSHU,       assfn(CODE_OP)   },
     {"SKIP",    DIRECTIVE,     assfn(SKIP)      },
     {"SUBF4",   OP_SUBF,       assfn(CODE_OP)   },
     {"SUBI4",   OP_SUB,        assfn(CODE_OP)   },
