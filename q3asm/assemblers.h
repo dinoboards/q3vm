@@ -99,4 +99,8 @@ assemblers_t assemblers[] = {
 
     {"BXORI4",  OP_BXOR,       assfn(CODE_OP)   },
     {"BXORU4",  OP_BXOR,       assfn(CODE_OP)   },
+
+    {"DIVF4",   OP_DIVF,       assfn(CODE_OP)   },
+    {"DIVI4",   OP_DIVI,       assfn(CODE_OP)   },
+    {"DIVU4",   OP_DIVU,       assfn(CODE_OP)   },
 };
