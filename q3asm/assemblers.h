@@ -82,4 +82,6 @@ assemblers_t assemblers[] = {
     {"RET",     OP_LEAVE,      assfn(RET)       },
     {"SKIP",    DIRECTIVE,     assfn(SKIP)      },
     {"SUBF4",   OP_SUBF,       assfn(CODE_OP)   },
+    {"SUBI4",   OP_SUB,        assfn(CODE_OP)   },
+    {"SUBU4",   OP_SUB,        assfn(CODE_OP)   },
 };
