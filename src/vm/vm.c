@@ -488,7 +488,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   *(int24_t *)&dataBase[programStack + 3] = to_int24(0);  /* return stack */
   *(int24_t *)&dataBase[programStack]     = to_int24(-1); /* will terminate the loop on return */
 
-  opStack32[0] = 0x0000BEEF;
+  opStack32[0]  = 0x0000BEEF;
   opStack32[-1] = 0x00000000;
 
   /* main interpreter loop, will exit when a LEAVE instruction

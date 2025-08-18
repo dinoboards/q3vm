@@ -70,7 +70,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     printf("Invalid function pointer call...\n");
     (*fun_ptr)(10);
     printf("Invalid function pointer accepted.\n");
-    return 0xadf00d; /* TODO: Compilier is treating number as long int! */
+    return 0x7df00d;
   }
 
   printf(str, "World");

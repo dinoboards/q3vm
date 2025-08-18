@@ -81,4 +81,5 @@ assemblers_t assemblers[] = {
     {"PROC",    OP_ENTER,      assfn(PROC)      },
     {"RET",     OP_LEAVE,      assfn(RET)       },
     {"SKIP",    DIRECTIVE,     assfn(SKIP)      },
+    {"SUBF4",   OP_SUBF,       assfn(CODE_OP)   },
 };
