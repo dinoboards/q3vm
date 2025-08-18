@@ -31,6 +31,8 @@ assemblers_t assemblers[] = {
     {"BCOMI3",  OP_BCOM,       assfn(CODE_OP)   },
     {"BCOMI4",  OP_BCOM,       assfn(CODE_OP)   },
     {"BCOMU4",  OP_BCOM,       assfn(CODE_OP)   },
+    {"BORI4",   OP_BOR,        assfn(CODE_OP)   },
+    {"BORU4",   OP_BOR,        assfn(CODE_OP)   },
     {"BSS",     DIRECTIVE,     assfn(BSS)       },
     {"BYTE",    DIRECTIVE,     assfn(BYTE)      },
     {"CALLF4",  OP_CALL,       assfn(CALL)      },
