@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 /** Enum for the virtual machine op codes */
-typedef enum : uint8_t {
+typedef enum {
   OP_UNDEF,      /* 00: Error: VM halt */
   OP_IGNORE,     /* 01: No operation */
   OP_BREAK,      /* 02: vm->breakCount++ */
