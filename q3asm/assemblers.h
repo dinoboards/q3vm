@@ -29,6 +29,8 @@ assemblers_t assemblers[] = {
     {"BANDI4",  OP_BAND,       assfn(CODE_OP)   },
     {"BANDU4",  OP_BAND,       assfn(CODE_OP)   },
     {"BCOMI3",  OP_BCOM,       assfn(CODE_OP)   },
+    {"BCOMI4",  OP_BCOM,       assfn(CODE_OP)   },
+    {"BCOMU4",  OP_BCOM,       assfn(CODE_OP)   },
     {"BSS",     DIRECTIVE,     assfn(BSS)       },
     {"BYTE",    DIRECTIVE,     assfn(BYTE)      },
     {"CALLF4",  OP_CALL,       assfn(CALL)      },

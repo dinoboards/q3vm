@@ -171,6 +171,10 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 
     d = d & 0xFFFFFF;
 
+    d = ~d;
+
+    ud = ~ud;
+
     printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
     printf("pua: %d\r\n", pua);
 
