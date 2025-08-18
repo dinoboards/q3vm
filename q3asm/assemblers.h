@@ -77,6 +77,8 @@ assemblers_t assemblers[] = {
     {"LIT",     DIRECTIVE,     assfn(LIT)       },
     {"LSHI4",   OP_LSH,        assfn(CODE_OP)   },
     {"LSHU4",   OP_LSH,        assfn(CODE_OP)   },
+    {"MODI4",   OP_MODI,       assfn(CODE_OP)   },
+    {"MODU4",   OP_MODU,       assfn(CODE_OP)   },
     {"NEGF4",   OP_NEGF,       assfn(CODE_OP)   },
     {"NEGI4",   OP_NEGI,       assfn(CODE_OP)   },
     {"POP",     OP_POP,        assfn(CODE_OP)   },
