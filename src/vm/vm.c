@@ -23,6 +23,20 @@
 #include "opcodes.h"
 #include "vm.h"
 
+#define FADE   "\033[2m"
+#define NORMAL "\033[0m"
+
+#ifdef DEBUG_VM
+
+#define log3(a, ...)                                                                                                               \
+  if (vm_debugLevel > 3)                                                                                                           \
+  printf(FADE "\t" a NORMAL, __VA_ARGS__)
+
+#else
+#define log3(a, ...)
+
+#endif
+
 /******************************************************************************
  * DEFINES
  ******************************************************************************/
@@ -483,7 +497,8 @@ locals from sp
 
 #define push_1_uint8(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
-  *opStack32 = a;
+  *opStack32 = (uint8_t)(a);                                                                                                       \
+  log3("%02X PUSHED\n", a);
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
@@ -597,10 +612,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = r2_uint16 + programStack;
-#ifdef DEBUG_VM
-      if (vm_debugLevel > 3)
-        printf(" LOCAL: R0 = %06X = *[%06X + %04X (%06X)]\n", r0, programStack, r2_uint16, programStack + r2_uint16);
-#endif
+      log3("&PS[%04X] (%08X) PUSHED\n", r2_uint16, programStack + r2_uint16);
+
       programCounter += INT16_INCREMENT;
       DISPATCH();
 
@@ -633,6 +646,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_LOAD1: {
       pop_1_uint24();
+      log3("R0: %08X", r0_uint24);
       push_1_uint8(*VM_RedirectLit(vm, (vm_operand_t)r0_uint24));
       DISPATCH();
     }
@@ -660,6 +674,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_STORE1:
       dataBase[r1] = r0;
       opStack8 -= 8;
+      log3("*(%06X) = %08X  MOVE (byte)\n", r1, r0);
       DISPATCH();
 
     case OP_ARG:
@@ -999,9 +1014,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       *opStack32 = r1 + r0;
       DISPATCH();
     case OP_SUB:
+      log3("%08X - %08X = %08X PUSHED\n", r1, r0, r1 - r0);
       opStack8 -= 4;
       *opStack32 = r1 - r0;
       DISPATCH();
+
     case OP_DIVI:
       opStack8 -= 4;
       *opStack32 = r1 / r0;
@@ -1091,6 +1108,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint8;
+      log3("%08X PUSHED (uint8_t)\n", r0);
       programCounter += INT8_INCREMENT;
       DISPATCH();
     }

@@ -10,17 +10,13 @@ This must be the very first function compiled into the .qvm file
 ================
 */
 
-// these are int32_t
+typedef unsigned char uint8_t;
+
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  unsigned int x = -1u;
+  uint8_t a = 128;
+  uint8_t b = 129;
 
-  long         y = x;
-  unsigned int z = y; // / -10l;
+  uint8_t c = b - a;
 
-  // printf("z: %d\n", z);
-
-  if (z != x)
-    return -1;
-
-  return 0;
+  return c == 1;
 }
