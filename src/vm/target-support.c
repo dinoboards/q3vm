@@ -1,5 +1,6 @@
 #include "target-support.h"
 
+/* UINT */
 ustdint_t to_ustdint(uint24_t x) {
   ustdint_t retVal = x.byt[2];
   retVal           = retVal << 8 | x.byt[1];
@@ -7,6 +8,7 @@ ustdint_t to_ustdint(uint24_t x) {
   return retVal;
 }
 
+/* INT */
 stdint_t to_stdint(int24_t x) {
   ustdint_t retVal = x.byt[2];
   retVal           = retVal << 8 | x.byt[1];
@@ -19,6 +21,7 @@ stdint_t to_stdint(int24_t x) {
   return (retVal ^ m) - m;
 }
 
+/* UINT24*/
 uint24_t to_uint24(ustdint_t x) {
   uint24_t retVal;
   retVal.byt[0] = x & 0xff;
@@ -27,6 +30,7 @@ uint24_t to_uint24(ustdint_t x) {
   return retVal;
 }
 
+/* INT24 */
 int24_t to_int24(ustdint_t x) {
   int24_t retVal;
   retVal.byt[0] = x & 0xff;
@@ -35,4 +39,4 @@ int24_t to_int24(ustdint_t x) {
   return retVal;
 }
 
-extern uint32_t as_uint24(const uint32_t x) { /* mask out the high byte */ return x & 0x00FFFFFF; }
+uint32_t as_uint24(const uint32_t x) { /* mask out the high byte */ return x & 0x00FFFFFF; }

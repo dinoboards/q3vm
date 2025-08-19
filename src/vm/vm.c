@@ -473,12 +473,12 @@ locals from sp
 #define VM_DataRead_uint8(vm, vaddr)  (*(uint8_t *)VM_RedirectLit(vm, vaddr))
 
 #define pop_2_uint24()                                                                                                             \
-  r0_uint24 = as_uint24(opStack32[0]);                                                                                             \
-  r1_uint24 = as_uint24(opStack32[-1]);                                                                                            \
+  r0_uint24 = *((uint24_t *)opStack8);                                                                                             \
+  r1_uint24 = *((uint24_t *)(opStack8 - 4));                                                                                       \
   opStack8 -= 8;
 
 #define pop_1_uint24()                                                                                                             \
-  r0_uint24 = as_uint24(opStack32[0]);                                                                                             \
+  r0_uint24 = *((uint24_t *)opStack8);                                                                                             \
   opStack8 -= 4;
 
 #define pop_1_int8()                                                                                                               \
@@ -534,8 +534,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   uint8_t        opcode;
   vm_operand_t   r0, r1;
 
-  uint32_t r0_uint24;
-  uint32_t r1_uint24;
+  uint24_t r0_uint24;
+  uint24_t r1_uint24;
   int8_t   r0_int8;
   uint8_t  r0_uint8;
 
@@ -655,8 +655,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_LOAD3: {
       pop_1_uint24();
-      log3("RO: %08X", r0_uint24);
-      push_1_uint24(*((uint24_t *)VM_RedirectLit(vm, (vm_operand_t)r0_uint24)));
+      log3("RO: %06X", to_ustdint(r0_uint24));
+      const uint24_t *p = (uint24_t *)VM_RedirectLit(vm, (vm_operand_t)to_ustdint(r0_uint24));
+      push_1_uint24(*p);
       DISPATCH();
     }
 
@@ -666,8 +667,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_LOAD1: {
       pop_1_uint24();
-      log3("R0: %08X", r0_uint24);
-      push_1_uint8(*VM_RedirectLit(vm, (vm_operand_t)r0_uint24));
+      log3("R0: %06X", to_ustdint(r0_uint24));
+      push_1_uint8(*VM_RedirectLit(vm, (vm_operand_t)to_ustdint(r0_uint24)));
       DISPATCH();
     }
 
@@ -694,8 +695,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_STORE1:
       pop_1_uint8();
-      pop_1_uint24() dataBase[r0_uint24] = r0_uint8;
-      log3("*(%06X) = %02X  MOVE\n", r0_uint24, r0_uint8);
+      pop_1_uint24();
+      dataBase[to_ustdint(r0_uint24)] = r0_uint8;
+      log3("*(%06X) = %02X  MOVE\n", to_ustdint(r0_uint24), r0_uint8);
       DISPATCH();
 
     case OP_ARG:
@@ -793,13 +795,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_POP:
       opStack8 -= 4;
       DISPATCH();
+
     case OP_ENTER: {
       const uint16_t localsAndArgsSize = r2_int16;
-      /* get size of stack frame */
       programCounter += INT16_INCREMENT;
       programStack -= localsAndArgsSize;
-
       log3("FRAME SIZE: %04X (from %06X to %06X)\n", localsAndArgsSize, programStack + localsAndArgsSize, programStack);
+
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter - 3);
       /* save old stack frame for debugging traces */
@@ -816,6 +818,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #endif
       DISPATCH();
     }
+
     case OP_LEAVE: {
       /* remove our stack frame */
       log3("FRAME SIZE: %06X (from %06X to %06X)\n", r2_int16, programStack, programStack + r2_int16);
@@ -866,7 +869,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_EQ3: {
       pop_2_uint24();
-      if (r1_uint24 == r0_uint24) {
+      if (to_ustdint(r1_uint24) == to_ustdint(r0_uint24)) {
         programCounter = r2_int24;
       } else {
         programCounter += INT24_INCREMENT;
@@ -887,9 +890,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_NE3: {
       pop_2_uint24();
-      log3("%08X == %08X\n", r1_uint24, r0_uint24);
+      log3("%06X == %06X\n", to_ustdint(r1_uint24), to_ustdint(r0_uint24));
 
-      if (r1_uint24 != r0_uint24) {
+      if (to_ustdint(r1_uint24) != to_ustdint(r0_uint24)) {
         programCounter = r2_int24;
       } else {
         programCounter += INT24_INCREMENT;
@@ -1053,6 +1056,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       *opStack32 = r1 - r0;
       DISPATCH();
+
+    case OP_SUB3: {
+      pop_2_uint24();
+      log3("%06X - %06X = %06X PUSHED\n", to_ustdint(r1_uint24), to_ustdint(r0_uint24),
+           to_ustdint(r1_uint24) - to_ustdint(r0_uint24));
+      push_1_uint24(to_uint24(to_ustdint(r1_uint24) - to_ustdint(r0_uint24)));
+      DISPATCH();
+    }
 
     case OP_DIVI:
       opStack8 -= 4;

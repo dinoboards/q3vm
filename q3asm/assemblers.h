@@ -115,4 +115,5 @@ assemblers_t assemblers[] = {
     {"SUBF4",   OP_SUBF,       assfn(CODE_OP)   },
     {"SUBI4",   OP_SUB,        assfn(CODE_OP)   },
     {"SUBU4",   OP_SUB,        assfn(CODE_OP)   },
+    {"SUBI3",   OP_SUB3,       assfn(CODE_OP)   },
 };
