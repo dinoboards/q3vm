@@ -449,6 +449,11 @@ locals from sp
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
 
+#define pop_2_uint24()                                                                                                             \
+  r0_uint24 = as_uint24(opStack32[0]);                                                                                             \
+  r1_uint24 = as_uint24(opStack32[-1]);                                                                                            \
+  opStack8 -= 8;
+
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   uint8_t        _opStack[OPSTACK_SIZE + 4]; /* 256 4 byte double words + 4 safety bytes */
@@ -461,6 +466,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   ustdint_t      arg;
   uint8_t        opcode;
   vm_operand_t   r0, r1;
+
+  uint32_t r0_uint24;
+  uint32_t r1_uint24;
 
 #ifdef DEBUG_VM
   vmSymbol_t *profileSymbol;
@@ -775,6 +783,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       opStack8 -= 4;
       DISPATCH();
+
     case OP_EQ:
       opStack8 -= 8;
       if (r1 == r0) {
@@ -784,6 +793,18 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
+
+    case OP_EQ3: {
+      pop_2_uint24();
+      if (r1_uint24 == r0_uint24) {
+        programCounter = to_stdint(r2_int24);
+        DISPATCH();
+      } else {
+        programCounter += INT24_INCREMENT;
+        DISPATCH();
+      }
+    }
+
     case OP_NE:
       opStack8 -= 8;
       if (r1 != r0) {

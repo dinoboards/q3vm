@@ -825,4 +825,15 @@ int sscanf(const char *buffer, const char *fmt, ...) {
   return count;
 }
 
+void printf(const char *fmt, ...) {
+  va_list argptr;
+  char    text[256];
+
+  va_start(argptr, fmt);
+  vsprintf(text, fmt, argptr);
+  va_end(argptr);
+
+  trap_Printf(text);
+}
+
 #endif

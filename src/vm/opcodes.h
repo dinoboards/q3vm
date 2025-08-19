@@ -115,6 +115,8 @@ typedef enum {
   OP_ARGF,
   OP_ARG4,
 
+  OP_EQU3,
+
   OP_MAX /* ??: Make this the last item */
 } opcode_t;
 

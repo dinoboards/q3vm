@@ -34,3 +34,5 @@ int24_t to_int24(ustdint_t x) {
   retVal.byt[2] = (x >> 16) & 0xff;
   return retVal;
 }
+
+extern uint32_t as_uint24(const uint32_t x) { /* mask out the high byte */ return x & 0x00FFFFFF; }

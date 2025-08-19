@@ -11,15 +11,16 @@ This must be the very first function compiled into the .qvm file
 */
 
 // these are int32_t
-int vmMain(int command, int arg0, int arg1, int arg2) { return -1; }
+int vmMain(int command, int arg0, int arg1, int arg2) {
+  unsigned int x = -1u;
 
-void printf(const char *fmt, ...) {
-  va_list argptr;
-  char    text[256];
+  long         y = x;
+  unsigned int z = y; // / -10l;
 
-  va_start(argptr, fmt);
-  vsprintf(text, fmt, argptr);
-  va_end(argptr);
+  // printf("z: %d\n", z);
 
-  trap_Printf(text);
+  if (z != x)
+    return -1;
+
+  return 0;
 }
