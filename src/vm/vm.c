@@ -868,16 +868,16 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       }
     }
 
-    case OP_NE:
+    case OP_NE: {
       opStack8 -= 8;
-      if (r1 != r0) {
+      log3("%08X == %08X\n", r1, r0);
+      if (r1 != r0)
         programCounter = r2;
-        DISPATCH();
-      } else {
+      else
         programCounter += INT_INCREMENT;
-        DISPATCH();
-      }
 
+      DISPATCH();
+    }
     case OP_LTI: {
       opStack8 -= 8;
       if (r1 < r0) {
@@ -1134,10 +1134,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_CONSTI1: {
-      log3("%08X PUSHED (int8)\n", (int32_t)r2_int8);
-      opStack8 += 4;
-      r1 = r0;
-      r0 = *opStack32 = (int32_t)r2_int8;
+      push_1_int8(r2_int8);
       programCounter += INT8_INCREMENT;
       DISPATCH();
     }
@@ -1159,9 +1156,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_CONSTI3: {
-      opStack8 += 4;
-      r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(uint32_t)to_stdint(to_int24(r2));
+      push_1_int24(r2_int24);
       programCounter += INT32_INCREMENT;
       DISPATCH();
     }
