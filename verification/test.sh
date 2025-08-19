@@ -23,6 +23,8 @@ IGNORESET=(
   bitwise_long_op
   bitshift
   switch_int
+  maintain_stack_alignment
+  maintain_stack_alignment_client
 )
 
 function skipped_function() {

@@ -9,16 +9,14 @@ int x;
  * and declared multiple times in a file
  */
 extern int x;
-int x;
+int        x;
 
 int update_x(int new_val) {
-    x = new_val;
-    return 0;
+  x = new_val;
+  return 0;
 }
 
-int read_x(void) {
-    return x;
-}
+int read_x(void) { return x; }
 
 /* the definition of x */
 int x = 3;

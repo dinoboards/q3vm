@@ -561,7 +561,7 @@ static void WriteCode(const uint8_t opcode) {
   WriteComment();
 }
 
-static void WriteDirectiveD8(const uint32_t v) {
+static void WriteDirectiveD8(const uint8_t v) {
   WritePC();
   WriteDirective("DATA8");
   WriteInt8(v);
