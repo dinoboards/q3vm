@@ -15,15 +15,15 @@ expected_stdout=$(cat ./expected_results.json | jq -r ".\"${lib}.c\".stdout // e
 
 trace=$(lcc ./${full}.c ${lib}.c 2>&1)
 q3asm -l -o $fname.qvm $fname.asm ${libname}.asm g_syscalls.asm
-trace=$(../q3vm $fname.qvm)
+actual_stdout=$(../q3vm $fname.qvm)
 result=$(echo $?)
 
 rm $fname.qvm $fname.asm ${libname}.asm
 
-if [[ (${result} != ${expected}) || "$trace" != "${expected_stdout}" ]]; then
+if [[ (${result} != ${expected}) || "$actual_stdout" != "${expected_stdout}" ]]; then
   printf "%-80s .... %-40s\n" ${full}.c "Failed"
   echo "Expected ${expected} but got ${result} '${full}"
-  echo "Expected stdout: ${expected_stdout} but got ${trace}"
+  echo "Expected stdout: ${expected_stdout} but got ${actual_stdout}"
   echo "--------------"
   echo "${trace}"
 # else
