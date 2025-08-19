@@ -428,13 +428,14 @@ locals from sp
 
 #define r2_int8  (*((int8_t *)&codeBase[programCounter]))
 #define r2_int16 (*((int16_t *)&codeBase[programCounter]))
-#define r2_int24 (*((int24_t *)&codeBase[programCounter]))
 #define r2_int32 (*((int32_t *)&codeBase[programCounter]))
 
 #define r2_uint8  (codeBase[programCounter])
 #define r2_uint16 (*((uint16_t *)&codeBase[programCounter]))
-#define r2_uint24 (*((uint24_t *)&codeBase[programCounter]))
 #define r2_uint32 (*((uint32_t *)&codeBase[programCounter]))
+
+#define r2_int24  to_stdint(*((int24_t *)&codeBase[programCounter]))
+#define r2_uint24 to_ustdint(*((uint24_t *)&codeBase[programCounter]))
 
 #define INT_INCREMENT       sizeof(uint32_t)
 #define INT8_INCREMENT      sizeof(uint8_t)
@@ -449,10 +450,40 @@ locals from sp
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
 
+#define VM_DataRead_uint24(vm, vaddr) to_ustdint(*(uint24_t *)VM_RedirectLit(vm, vaddr))
+#define VM_DataRead_float(vm, vaddr)  (*(float *)VM_RedirectLit(vm, vaddr))
+#define VM_DataRead_uint32(vm, vaddr) (*(uint32_t *)VM_RedirectLit(vm, vaddr))
+#define VM_DataRead_uint16(vm, vaddr) (*(uint16_t *)VM_RedirectLit(vm, vaddr))
+#define VM_DataRead_uint8(vm, vaddr)  (*(uint8_t *)VM_RedirectLit(vm, vaddr))
+
 #define pop_2_uint24()                                                                                                             \
   r0_uint24 = as_uint24(opStack32[0]);                                                                                             \
   r1_uint24 = as_uint24(opStack32[-1]);                                                                                            \
   opStack8 -= 8;
+
+#define pop_1_uint24()                                                                                                             \
+  r0_uint24 = as_uint24(opStack32[0]);                                                                                             \
+  opStack8 -= 4;
+
+#define push_1_float(a)                                                                                                            \
+  *opStack32 = a;                                                                                                                  \
+  opStack8 += 4;
+
+#define push_1_uint32(a)                                                                                                           \
+  *opStack32 = a;                                                                                                                  \
+  opStack8 += 4;
+
+#define push_1_uint24(a)                                                                                                           \
+  *opStack32 = a;                                                                                                                  \
+  opStack8 += 4;
+
+#define push_1_uint16(a)                                                                                                           \
+  *opStack32 = a;                                                                                                                  \
+  opStack8 += 4;
+
+#define push_1_uint8(a)                                                                                                            \
+  *opStack32 = a;                                                                                                                  \
+  opStack8 += 4;
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
@@ -551,14 +582,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CONSTGP3:
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = to_stdint(r2_int24);
+      r0 = *opStack32 = r2_int24;
       programCounter += INT24_INCREMENT;
       DISPATCH();
 
     case OP_CONSTGP4:
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = to_stdint(r2_int24);
+      r0 = *opStack32 = r2_int24;
       programCounter += INT24_INCREMENT;
       DISPATCH();
 
@@ -666,7 +697,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_BLOCK_COPY:
-      VM_BlockCopy(r1, r0, to_ustdint(r2_uint24), vm);
+      VM_BlockCopy(r1, r0, r2_uint24, vm);
       programCounter += INT24_INCREMENT;
       opStack8 -= 8;
       DISPATCH();
@@ -797,7 +828,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_EQ3: {
       pop_2_uint24();
       if (r1_uint24 == r0_uint24) {
-        programCounter = to_stdint(r2_int24);
+        programCounter = r2_int24;
         DISPATCH();
       } else {
         programCounter += INT24_INCREMENT;
@@ -1129,7 +1160,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CONSTP3: {
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(int32_t)to_ustdint(r2_uint24);
+      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24;
       programCounter += INT24_INCREMENT;
       DISPATCH();
     }
@@ -1137,7 +1168,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CONSTP4: {
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(int32_t)to_ustdint(r2_uint24);
+      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24;
       programCounter += INT24_INCREMENT;
       DISPATCH();
     }
