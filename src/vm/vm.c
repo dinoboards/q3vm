@@ -466,7 +466,9 @@ locals from sp
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
 
-#define VM_DataRead_uint24(vm, vaddr) UINT(*(uint24_t *)VM_RedirectLit(vm, vaddr))
+#define VM_DataRead_uint24(vm, vaddr)                                                                                              \
+  (*((uint24_t *)((UINT(vaddr) < vm->litLength) ? &vm->codeBase[vm->codeLength + UINT(vaddr)] : &vm->dataBase[UINT(vaddr)])))
+
 #define VM_DataRead_float(vm, vaddr)  (*(float *)VM_RedirectLit(vm, vaddr))
 #define VM_DataRead_uint32(vm, vaddr) (*(uint32_t *)VM_RedirectLit(vm, vaddr))
 #define VM_DataRead_uint16(vm, vaddr) (*(uint16_t *)VM_RedirectLit(vm, vaddr))
@@ -662,8 +664,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_LOAD3: {
       pop_1_uint24();
       log3("RO: %06X", UINT(r0_uint24));
-      const uint24_t *p = (uint24_t *)VM_RedirectLit(vm, (vm_operand_t)UINT(r0_uint24));
-      push_1_uint24(*p);
+      push_1_uint24(VM_DataRead_uint24(vm, r0_uint24));
       DISPATCH();
     }
 
