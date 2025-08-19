@@ -231,6 +231,36 @@ ASMMultipleFn(CODE_SEX) {
   EmitByte(&segment[CODESEG], opcode);
 }
 
+ASMMultipleFn(CODE_CIxI3) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '1':
+    opcode = OP_CI1I3;
+    break;
+
+    // case '2':
+    //   opcode = OP_SEX16;
+    //   break;
+
+    // case '3':
+    //   WriteComment();
+    //   return;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CIxI3\n");
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
 ASMFn(PROC) {
   char name[1024];
   instructionCount++;

@@ -479,6 +479,10 @@ locals from sp
   r0_uint24 = as_uint24(opStack32[0]);                                                                                             \
   opStack8 -= 4;
 
+#define pop_1_int8()                                                                                                               \
+  r0_int8 = *((int8_t *)opStack8);                                                                                                 \
+  opStack8 -= 4;
+
 #define push_1_float(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = a;
@@ -490,6 +494,11 @@ locals from sp
 #define push_1_uint24(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = a;
+
+#define push_1_int24(a)                                                                                                            \
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = (int32_t)((stdint_t)(a));                                                                                           \
+  log3("%06X PUSHED\n", a);
 
 #define push_1_uint16(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
@@ -520,6 +529,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
   uint32_t r0_uint24;
   uint32_t r1_uint24;
+  int8_t   r0_int8;
 
 #ifdef DEBUG_VM
   vmSymbol_t *profileSymbol;
@@ -1110,6 +1120,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       *opStack32 = (int16_t)*opStack32;
       DISPATCH();
 
+      /* extend sign Ix to I3*/
+    case OP_CI1I3: {
+      pop_1_int8();
+      push_1_int24(r0_int8);
+      DISPATCH();
+    }
+
     case OP_CONSTU1: {
       push_1_int8(r2_uint8);
       programCounter += INT8_INCREMENT;
@@ -1117,7 +1134,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_CONSTI1: {
-      log3("%08X PUSHED\n", (int32_t)r2_int8);
+      log3("%08X PUSHED (int8)\n", (int32_t)r2_int8);
       opStack8 += 4;
       r1 = r0;
       r0 = *opStack32 = (int32_t)r2_int8;

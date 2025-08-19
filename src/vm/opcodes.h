@@ -117,6 +117,8 @@ typedef enum {
 
   OP_EQU3,
 
+  OP_CI1I3,
+
   OP_MAX /* ??: Make this the last item */
 } opcode_t;
 

@@ -58,6 +58,7 @@ assemblers_t assemblers[] = {
     {"CVIF4",   OP_CVIF,       assfn(CODE_OP)   },
     {"CVII1",   OP_IGNORE,     assfn(COMMENT)   },
     {"CVII2",   OP_IGNORE,     assfn(COMMENT)   },
+    {"CVII3",   OP_MULTIPLE,   assfn(CODE_CIxI3)}, /* extend sign Ix to I3*/
     {"CVII4",   OP_MULTIPLE,   assfn(CODE_SEX)  },
     {"CVIU4",   OP_IGNORE,     assfn(COMMENT)   },
     {"CVUI4",   OP_IGNORE,     assfn(COMMENT)   },
@@ -76,7 +77,7 @@ assemblers_t assemblers[] = {
     {"EQU",     DIRECTIVE,     assfn(EQU)       },
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"FILE",    DIRECTIVE,     assfn(COMMENT)   },
-    {"GEF4",    OP_GEF,        assfn(CODE_32BIT)},\
+    {"GEF4",    OP_GEF,        assfn(CODE_32BIT)},
     {"GEI4",    OP_GEI,        assfn(CODE_32BIT)},
     {"GEU4",    OP_GEU,        assfn(CODE_32BIT)},
     {"GTF4",    OP_GTF,        assfn(CODE_32BIT)},
