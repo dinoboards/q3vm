@@ -76,7 +76,7 @@ assemblers_t assemblers[] = {
     {"EQU",     DIRECTIVE,     assfn(EQU)       },
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"FILE",    DIRECTIVE,     assfn(COMMENT)   },
-    {"GEF4",    OP_GEF,        assfn(CODE_32BIT)},
+    {"GEF4",    OP_GEF,        assfn(CODE_32BIT)},\
     {"GEI4",    OP_GEI,        assfn(CODE_32BIT)},
     {"GEU4",    OP_GEU,        assfn(CODE_32BIT)},
     {"GTF4",    OP_GTF,        assfn(CODE_32BIT)},

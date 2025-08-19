@@ -500,6 +500,11 @@ locals from sp
   *opStack32 = (uint8_t)(a);                                                                                                       \
   log3("%02X PUSHED\n", a);
 
+#define push_1_int8(a)                                                                                                             \
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = (int8_t)(a);                                                                                                        \
+  log3("%02X PUSHED\n", a);
+
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   uint8_t        _opStack[OPSTACK_SIZE + 4]; /* 256 4 byte double words + 4 safety bytes */
@@ -1013,6 +1018,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       *opStack32 = r1 + r0;
       DISPATCH();
+
     case OP_SUB:
       log3("%08X - %08X = %08X PUSHED\n", r1, r0, r1 - r0);
       opStack8 -= 4;
@@ -1105,18 +1111,16 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
 
     case OP_CONSTU1: {
-      opStack8 += 4;
-      r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint8;
-      log3("%08X PUSHED (uint8_t)\n", r0);
+      push_1_int8(r2_uint8);
       programCounter += INT8_INCREMENT;
       DISPATCH();
     }
 
     case OP_CONSTI1: {
+      log3("%08X PUSHED\n", (int32_t)r2_int8);
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)r2_int8;
+      r0 = *opStack32 = (int32_t)r2_int8;
       programCounter += INT8_INCREMENT;
       DISPATCH();
     }
