@@ -448,8 +448,10 @@ locals from sp
 #define r2_uint16 (*((uint16_t *)&codeBase[programCounter]))
 #define r2_uint32 (*((uint32_t *)&codeBase[programCounter]))
 
-#define r2_int24  to_stdint(*((int24_t *)&codeBase[programCounter]))
-#define r2_uint24 to_ustdint(*((uint24_t *)&codeBase[programCounter]))
+#define r2_int24      to_stdint(*((int24_t *)&codeBase[programCounter]))
+#define r2_uint24_old to_ustdint(*((uint24_t *)&codeBase[programCounter]))
+
+#define r2_uint24 (*((uint24_t *)&codeBase[programCounter]))
 
 #define INT_INCREMENT       sizeof(uint32_t)
 #define INT8_INCREMENT      sizeof(uint8_t)
@@ -493,13 +495,13 @@ locals from sp
 
 #define push_1_uint24(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
-  *opStack32 = a;                                                                                                                  \
-  log3("%06X PUSHED unsigned\n", a);
+  *opStack32 = (uint32_t)to_ustdint(((uint24_t)(a)));                                                                              \
+  log3("%06X PUSHED uint24\n", *opStack32);
 
 #define push_1_int24(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (int32_t)((stdint_t)(a));                                                                                           \
-  log3("%06X PUSHED signed\n", a);
+  log3("%06X PUSHED int24\n", a);
 
 #define push_1_uint16(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
@@ -508,12 +510,12 @@ locals from sp
 #define push_1_uint8(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (uint8_t)(a);                                                                                                       \
-  log3("%02X PUSHED unsigned\n", a);
+  log3("%02X PUSHED uint8\n", a);
 
 #define push_1_int8(a)                                                                                                             \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (int8_t)(a);                                                                                                        \
-  log3("%02X PUSHED signed\n", a);
+  log3("%02X PUSHED int8\n", a);
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
@@ -649,7 +651,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_LOAD3: {
       pop_1_uint24();
       log3("RO: %08X", r0_uint24);
-      push_1_uint24(to_ustdint(*((uint24_t *)VM_RedirectLit(vm, (vm_operand_t)r0_uint24))));
+      push_1_uint24(*((uint24_t *)VM_RedirectLit(vm, (vm_operand_t)r0_uint24)));
       DISPATCH();
     }
 
@@ -728,7 +730,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_BLOCK_COPY:
-      VM_BlockCopy(r1, r0, r2_uint24, vm);
+      VM_BlockCopy(r1, r0, r2_uint24_old, vm);
       programCounter += INT24_INCREMENT;
       opStack8 -= 8;
       DISPATCH();
@@ -792,6 +794,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       programCounter += INT16_INCREMENT;
       programStack -= localsAndArgsSize;
 
+      log3("FRAME SIZE: %04X (from %06X to %06X)\n", localsAndArgsSize, programStack + localsAndArgsSize, programStack);
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, programCounter - 3);
       /* save old stack frame for debugging traces */
@@ -810,6 +813,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
     case OP_LEAVE: {
       /* remove our stack frame */
+      log3("FRAME SIZE: %06X (from %06X to %06X)\n", r2_int16, programStack, programStack + r2_int16);
       programStack += r2_int16;
 
       /* grab the saved program counter */
@@ -1194,7 +1198,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CONSTP3: {
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24;
+      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24_old;
       programCounter += INT24_INCREMENT;
       DISPATCH();
     }
@@ -1202,7 +1206,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CONSTP4: {
       opStack8 += 4;
       r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24;
+      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24_old;
       programCounter += INT24_INCREMENT;
       DISPATCH();
     }
