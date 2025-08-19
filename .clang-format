@@ -12,3 +12,4 @@ SortIncludes: CaseInsensitive
 AllowShortFunctionsOnASingleLine: true
 BreakBeforeBraces: Attach
 AlignArrayOfStructures: Left
+InsertNewlineAtEOF: true

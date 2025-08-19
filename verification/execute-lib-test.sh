@@ -26,7 +26,7 @@ if [[ (${result} != ${expected}) || "$actual_stdout" != "${expected_stdout}" ]];
   echo "Expected stdout: ${expected_stdout} but got ${actual_stdout}"
   echo "--------------"
   echo "${trace}"
-# else
-#   printf "%-80s .... %-40s\n" ${full}.c "Passed"
+else
+  printf "%-80s .... %-40s\n" ${full}.c "Passed"
 fi
 
