@@ -35,4 +35,9 @@ extern int24_t  to_int24(ustdint_t x);
 
 extern uint32_t as_uint24(const uint32_t x); /* mask out the high byte */
 
+#define UINT   to_ustdint
+#define INT    to_stdint
+#define UINT24 to_uint24
+#define INT24  to_int24
+
 #endif
