@@ -466,24 +466,24 @@ locals from sp
   opStack8 -= 4;
 
 #define push_1_float(a)                                                                                                            \
-  *opStack32 = a;                                                                                                                  \
-  opStack8 += 4;
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = a;
 
 #define push_1_uint32(a)                                                                                                           \
-  *opStack32 = a;                                                                                                                  \
-  opStack8 += 4;
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = a;
 
 #define push_1_uint24(a)                                                                                                           \
-  *opStack32 = a;                                                                                                                  \
-  opStack8 += 4;
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = a;
 
 #define push_1_uint16(a)                                                                                                           \
-  *opStack32 = a;                                                                                                                  \
-  opStack8 += 4;
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = a;
 
 #define push_1_uint8(a)                                                                                                            \
-  *opStack32 = a;                                                                                                                  \
-  opStack8 += 4;
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = a;
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
@@ -631,9 +631,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       r0 = *opStack32 = *(unsigned short *)VM_RedirectLit(vm, r0);
       DISPATCH();
 
-    case OP_LOAD1:
-      r0 = *opStack32 = *VM_RedirectLit(vm, r0);
+    case OP_LOAD1: {
+      pop_1_uint24();
+      push_1_uint8(*VM_RedirectLit(vm, (vm_operand_t)r0_uint24));
       DISPATCH();
+    }
 
     case OP_STORE3:
       *(int24_t *)&dataBase[r1] = to_int24(r0);
