@@ -105,6 +105,7 @@ assemblers_t assemblers[] = {
     {"MULU4",   OP_MULU,       assfn(CODE_OP)   },
     {"NEGF4",   OP_NEGF,       assfn(CODE_OP)   },
     {"NEGI4",   OP_NEGI,       assfn(CODE_OP)   },
+    {"NEI3",    OP_NE3,        assfn(CODE_24BIT)},
     {"POP",     OP_POP,        assfn(CODE_OP)   },
     {"PROC",    OP_ENTER,      assfn(PROC)      },
     {"RET",     OP_LEAVE,      assfn(RET)       },

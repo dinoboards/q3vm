@@ -485,6 +485,10 @@ locals from sp
   r0_int8 = *((int8_t *)opStack8);                                                                                                 \
   opStack8 -= 4;
 
+#define pop_1_uint8()                                                                                                              \
+  r0_uint8 = *((uint8_t *)opStack8);                                                                                               \
+  opStack8 -= 4;
+
 #define push_1_float(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = a;
@@ -533,6 +537,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   uint32_t r0_uint24;
   uint32_t r1_uint24;
   int8_t   r0_int8;
+  uint8_t  r0_uint8;
 
 #ifdef DEBUG_VM
   vmSymbol_t *profileSymbol;
@@ -688,9 +693,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
 
     case OP_STORE1:
-      dataBase[r1] = r0;
-      opStack8 -= 8;
-      log3("*(%06X) = %08X  MOVE (byte)\n", r1, r0);
+      pop_1_uint8();
+      pop_1_uint24() dataBase[r0_uint24] = r0_uint8;
+      log3("*(%06X) = %02X  MOVE\n", r0_uint24, r0_uint8);
       DISPATCH();
 
     case OP_ARG:
@@ -863,11 +868,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       pop_2_uint24();
       if (r1_uint24 == r0_uint24) {
         programCounter = r2_int24;
-        DISPATCH();
       } else {
         programCounter += INT24_INCREMENT;
-        DISPATCH();
       }
+      DISPATCH();
     }
 
     case OP_NE: {
@@ -880,6 +884,19 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       DISPATCH();
     }
+
+    case OP_NE3: {
+      pop_2_uint24();
+      log3("%08X == %08X\n", r1_uint24, r0_uint24);
+
+      if (r1_uint24 != r0_uint24) {
+        programCounter = r2_int24;
+      } else {
+        programCounter += INT24_INCREMENT;
+      }
+      DISPATCH();
+    }
+
     case OP_LTI: {
       opStack8 -= 8;
       if (r1 < r0) {
