@@ -493,12 +493,13 @@ locals from sp
 
 #define push_1_uint24(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
-  *opStack32 = a;
+  *opStack32 = a;                                                                                                                  \
+  log3("%06X PUSHED unsigned\n", a);
 
 #define push_1_int24(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (int32_t)((stdint_t)(a));                                                                                           \
-  log3("%06X PUSHED\n", a);
+  log3("%06X PUSHED signed\n", a);
 
 #define push_1_uint16(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
@@ -507,12 +508,12 @@ locals from sp
 #define push_1_uint8(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (uint8_t)(a);                                                                                                       \
-  log3("%02X PUSHED\n", a);
+  log3("%02X PUSHED unsigned\n", a);
 
 #define push_1_int8(a)                                                                                                             \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (int8_t)(a);                                                                                                        \
-  log3("%02X PUSHED\n", a);
+  log3("%02X PUSHED signed\n", a);
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
@@ -610,9 +611,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
 
     case OP_CONSTGP3:
-      opStack8 += 4;
-      r1 = r0;
-      r0 = *opStack32 = r2_int24;
+      push_1_uint24(r2_uint24);
       programCounter += INT24_INCREMENT;
       DISPATCH();
 
@@ -648,10 +647,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
 
     case OP_LOAD3: {
-      if ((r0 < (vm_operand_t)vm->litLength))
-        r0 = *opStack32 = to_stdint(*((int24_t *)&vm->codeBase[vm->codeLength + r0]));
-      else
-        r0 = *opStack32 = to_stdint((*((int24_t *)&vm->dataBase[r0])));
+      pop_1_uint24();
+      log3("RO: %08X", r0_uint24);
+      push_1_uint24(to_ustdint(*((uint24_t *)VM_RedirectLit(vm, (vm_operand_t)r0_uint24))));
       DISPATCH();
     }
 
@@ -669,6 +667,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_STORE3:
       *(int24_t *)&dataBase[r1] = to_int24(r0);
       opStack8 -= 8;
+      log3("*(%06X) = %08X  MOVE (3 bytes)\n", r1, r0);
       DISPATCH();
 
     case OP_STORE4:
@@ -843,7 +842,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       }
 
       programCounter = r0;
-
       opStack8 -= 4;
       DISPATCH();
 
