@@ -193,6 +193,10 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
 
     a = (ud != (uint32_t)23L);
 
+    b = (ud < (uint32_t)23L);
+
+    b = (ud <= (uint32_t)23L);
+
     printf("ua: %d, a: %d, ub: %d, b: %d, uc: %d, c: %d, ud: %d, d:%d, f: %f\r\n", ua, a, ub, b, uc, c, ud, d, f);
     printf("pua: %d\r\n", pua);
 

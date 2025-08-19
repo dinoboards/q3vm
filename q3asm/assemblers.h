@@ -110,4 +110,12 @@ assemblers_t assemblers[] = {
 
     {"EQF4",    OP_EQF,        assfn(CODE_32BIT)},
     {"EQI4",    OP_EQ,         assfn(CODE_32BIT)},
+
+    {"GEF4",    OP_GEF,        assfn(CODE_32BIT)},
+    {"GEI4",    OP_GEI,        assfn(CODE_32BIT)},
+    {"GEU4",    OP_GEU,        assfn(CODE_32BIT)},
+
+    {"GTF4",    OP_GTF,        assfn(CODE_32BIT)},
+    {"GTI4",    OP_GTI,        assfn(CODE_32BIT)},
+    {"GTU4",    OP_GTU,        assfn(CODE_32BIT)},
 };
