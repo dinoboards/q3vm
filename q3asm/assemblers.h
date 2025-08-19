@@ -107,4 +107,7 @@ assemblers_t assemblers[] = {
     {"MULF4",   OP_MULF,       assfn(CODE_OP)   },
     {"MULI4",   OP_MULI,       assfn(CODE_OP)   },
     {"MULU4",   OP_MULU,       assfn(CODE_OP)   },
+
+    {"EQF4",    OP_EQF,        assfn(CODE_32BIT)},
+    {"EQI4",    OP_EQ,         assfn(CODE_32BIT)},
 };
