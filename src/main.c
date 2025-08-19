@@ -155,6 +155,9 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
   case -6: /* FLOATFF */
     return VM_FloatToInt(VMA_F4(3) * 2.0f);
 
+  case -254:
+    return putchar(VMA_UINT24(3));
+
   default:
     fprintf(stderr, "Bad system call: %i\n", id);
   }
