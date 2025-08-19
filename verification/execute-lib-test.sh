@@ -5,17 +5,19 @@ set +ex
 export PATH="../bin/linux":${PATH}
 
 full="${1#./}"
+lib="${2#./}"
 
 fname=$(basename $full)
+libname=$(basename $lib)
 
-expected=$(cat ./expected_results.json | jq -r ".\"${full}.c\".return_code")
+expected=$(cat ./expected_results.json | jq -r ".\"${lib}.c\".return_code")
 
-trace=$(lcc ./${full}.c 2>&1)
-q3asm -l -o $fname.qvm $fname.asm
+trace=$(lcc ./${full}.c ${lib}.c 2>&1)
+q3asm -l -o $fname.qvm $fname.asm ${libname}.asm
 ../q3vm $fname.qvm
 result=$(echo $?)
 
-rm $fname.qvm $fname.asm
+rm $fname.qvm $fname.asm ${libname}.asm
 
 
 if [[ ${result} != ${expected} ]]; then
