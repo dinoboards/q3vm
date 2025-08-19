@@ -14,7 +14,7 @@ assemblers_t assemblers[] = {
     {"ALIGN",   DIRECTIVE,     assfn(ALIGN)     },
     {"ARGF",    OP_ARGF,       assfn(ARGF)      },
     {"ARGI3",   OP_ARG,        assfn(ARG)       },
-    {"ARGI4",   OP_ARG4,       assfn(ARG)       },
+    {"ARGI4",   OP_ARG4,       assfn(ARG4)      },
     {"ARGP",    OP_ARG,        assfn(ARG)       },
     {"ARGU",    OP_ARG,        assfn(ARG)       },
     {"ASGNB",   OP_BLOCK_COPY, assfn(CODE_24BIT)},

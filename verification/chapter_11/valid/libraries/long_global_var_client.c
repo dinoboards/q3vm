@@ -11,18 +11,18 @@ int main(void) {
   if (return_l() != 33554432L)
     return 1;
 
-  // if (return_l_as_int() != 0)
-  //     return 2;
+  if (return_l_as_int() != 0)
+    return 2;
 
-  // /* Update l */
-  // l = l - 10l;
+  /* Update l */
+  l = l - 10l;
 
-  // /* Read back the value we just assigned to l */
-  // if (return_l() != 33554432L)
-  //     return 3;
+  /* Read back the value we just assigned to l */
+  if (return_l() != 33554422L)
+    return 3;
 
-  // if (return_l_as_int() != -10)
-  //     return 4;
+  if (return_l_as_int() != -10)
+    return 4;
 
   return 0;
 }

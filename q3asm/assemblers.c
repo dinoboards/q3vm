@@ -110,6 +110,23 @@ ASMFn(ARG) {
   }
 }
 
+ASMFn(ARG4) {
+  instructionCount++;
+  const int v = 6 + currentArgOffset;
+
+  WriteInt8Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+
+  EmitByte(&segment[CODESEG], v);
+  currentArgOffset += 4;
+
+  if (v >= 256) {
+    CodeError("currentArgOffset >= 256");
+    return;
+  }
+}
+
 // address of a local is converted to OP_LOCAL
 ASMFn(ADDRL) {
   int v;

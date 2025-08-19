@@ -572,6 +572,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_LOAD4:
       r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
+
+#ifdef DEBUG_VM
+      if (vm_debugLevel > 3)
+        printf(" OP_LOAD4: R0 = %06X = *[%06X + %04X (%06X)]\n", r0, programStack, r2_uint16, programStack + r2_uint16);
+#endif
+
       DISPATCH();
 
     case OP_LOAD3: {
@@ -628,7 +634,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_ARG4:
       /* single byte offset from programStack */
 #ifdef DEBUG_VM
-      printf("  ARG *[%06X + %02X (%06X)] = %06X\n", programStack, r2_int8, programStack + r2_int8, r0);
+      printf("  ARG4 *[%06X + %02X (%06X)] = %06X\n", programStack, r2_int8, programStack + r2_int8, r0);
 #endif
       *(int32_t *)&dataBase[programStack + r2_int8] = r0;
       opStack8 -= 4;
