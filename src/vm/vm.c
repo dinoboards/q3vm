@@ -469,9 +469,11 @@ locals from sp
 #define VM_DataRead_uint24(vm, vaddr)                                                                                              \
   (*((uint24_t *)((UINT(vaddr) < vm->litLength) ? &vm->codeBase[vm->codeLength + UINT(vaddr)] : &vm->dataBase[UINT(vaddr)])))
 
+#define VM_DataRead_uint16(vm, vaddr)                                                                                              \
+  (*((uint16_t *)((UINT(vaddr) < vm->litLength) ? &vm->codeBase[vm->codeLength + UINT(vaddr)] : &vm->dataBase[UINT(vaddr)])))
+
 #define VM_DataRead_float(vm, vaddr)  (*(float *)VM_RedirectLit(vm, vaddr))
 #define VM_DataRead_uint32(vm, vaddr) (*(uint32_t *)VM_RedirectLit(vm, vaddr))
-#define VM_DataRead_uint16(vm, vaddr) (*(uint16_t *)VM_RedirectLit(vm, vaddr))
 #define VM_DataRead_uint8(vm, vaddr)  (*(uint8_t *)VM_RedirectLit(vm, vaddr))
 
 #define pop_2_uint24()                                                                                                             \
@@ -486,6 +488,10 @@ locals from sp
 
 #define pop_1_uint24()                                                                                                             \
   r0_uint24 = *((uint24_t *)opStack8);                                                                                             \
+  opStack8 -= 4;
+
+#define pop_1_uint16()                                                                                                             \
+  r0_uint16 = *((uint16_t *)opStack8);                                                                                             \
   opStack8 -= 4;
 
 #define pop_1_int8()                                                                                                               \
@@ -516,17 +522,18 @@ locals from sp
 
 #define push_1_uint16(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
-  *opStack32 = a;
+  *opStack32 = (uint32_t)(uint16_t)a;                                                                                              \
+  log3("%08X PUSHED uint16\n", *opStack32);
 
 #define push_1_uint8(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (uint8_t)(a);                                                                                                       \
-  log3("%02X PUSHED uint8\n", a);
+  log3("%02X PUSHED uint8\n", *opStack32);
 
 #define push_1_int8(a)                                                                                                             \
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (int8_t)(a);                                                                                                        \
-  log3("%02X PUSHED int8\n", (int8_t)(a));
+  log3("%02X PUSHED int8\n", *opStack32);
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
@@ -546,6 +553,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
   uint24_t r0_uint24;
   uint24_t r1_uint24;
+  uint16_t r0_uint16;
   int8_t   r0_int8;
   uint8_t  r0_uint8;
 
@@ -669,7 +677,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_LOAD2:
-      r0 = *opStack32 = *(unsigned short *)VM_RedirectLit(vm, r0);
+      pop_1_uint24();
+      log3("R0: %06X", UINT(r0_uint24));
+      push_1_uint16(VM_DataRead_uint16(vm, r0_uint24));
       DISPATCH();
 
     case OP_LOAD1: {
@@ -696,8 +706,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
 
     case OP_STORE2:
-      *(short *)&dataBase[r1] = r0;
-      opStack8 -= 8;
+      pop_1_uint16();
+      pop_1_uint24();
+      *((uint16_t *)&dataBase[UINT(r0_uint24)]) = r0_uint16;
+      log3("*(%06X) = %04X  MOVE\n", UINT(r0_uint24), r0_uint16);
       DISPATCH();
 
     case OP_STORE1:
@@ -1171,9 +1183,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_CONSTU2: {
-      opStack8 += 4;
-      r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(uint32_t)r2_uint16;
+      push_1_uint16(r2_uint16);
       programCounter += INT16_INCREMENT;
       DISPATCH();
     }
@@ -1193,10 +1203,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_CONSTU3: {
-      opStack8 += 4;
-      r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(uint32_t)UINT(to_uint24(r2));
-      programCounter += INT32_INCREMENT;
+      push_1_uint24(r2_uint24);
+      programCounter += INT24_INCREMENT;
       DISPATCH();
     }
 

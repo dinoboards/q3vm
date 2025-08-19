@@ -13,11 +13,14 @@ This must be the very first function compiled into the .qvm file
 typedef unsigned char uint8_t;
 typedef char          int8_t;
 
+typedef unsigned short uint16_t;
+typedef short          int16_t;
+
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  int8_t a = '\x81';
-  int8_t b = '\x80';
+  uint16_t a = 33000;
+  uint16_t b = 40000;
 
-  int8_t c = b - a;
+  uint16_t c = b - a;
 
-  return c == -1;
+  return c == 7000;
 }
