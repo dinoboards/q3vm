@@ -112,6 +112,7 @@ assemblers_t assemblers[] = {
     {"MULI4",   OP_MULI,       assfn(CODE_OP)   },
     {"MULU4",   OP_MULU,       assfn(CODE_OP)   },
     {"NEGF4",   OP_NEGF,       assfn(CODE_OP)   },
+    {"NEGI3",   OP_NEGI3,      assfn(CODE_OP)   },
     {"NEGI4",   OP_NEGI,       assfn(CODE_OP)   },
     {"NEI3",    OP_NE3,        assfn(CODE_24BIT)},
     {"POP",     OP_POP,        assfn(CODE_OP)   },

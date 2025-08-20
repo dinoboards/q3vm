@@ -1142,6 +1142,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       push_1_int32(-r0);
       DISPATCH();
 
+    case OP_NEGI3:
+      pop_1_int24();
+      push_1_int24(INT24(-INT(r0_int24)));
+      DISPATCH();
+
     case OP_ADD3:
       opStack8 -= 4;
       *opStack32 = r1 + r0;
