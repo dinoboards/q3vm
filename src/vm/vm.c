@@ -815,11 +815,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CALL:
       /* save current program counter */
       *(int24_t *)&dataBase[programStack] = INT24(programCounter);
-
+      pop_1_int24();
       /* jump to the location on the stack */
-      programCounter = r0;
-      opStack8 -= 4;
-      if (programCounter < 0) /* system call */
+      programCounter = INT(r0_int24);
+
+      if ((programCounter) < 0) /* system call */
       {
         vm_operand_t r;
 #ifdef DEBUG_VM
@@ -853,6 +853,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 #endif
       } else if ((unsigned)programCounter >= MAX_PROGRAM_COUNTER) {
         vm->lastError = VM_PC_OUT_OF_RANGE;
+        Com_Printf("PC: %06X\n", programCounter);
         Com_Error(vm->lastError, "VM program counter out of range in OP_CALL");
         return -1;
       }
