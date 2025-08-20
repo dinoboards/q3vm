@@ -110,6 +110,7 @@ assemblers_t assemblers[] = {
     {"MODI4",   OP_MODI,       assfn(CODE_OP)   },
     {"MODU4",   OP_MODU,       assfn(CODE_OP)   },
     {"MULF4",   OP_MULF,       assfn(CODE_OP)   },
+    {"MULI3",   OP_MULI3,      assfn(CODE_OP)   },
     {"MULI4",   OP_MULI,       assfn(CODE_OP)   },
     {"MULU4",   OP_MULU,       assfn(CODE_OP)   },
     {"NEGF4",   OP_NEGF,       assfn(CODE_OP)   },

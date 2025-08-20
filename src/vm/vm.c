@@ -1194,6 +1194,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) / ((unsigned)r0);
       DISPATCH();
+
     case OP_MODI:
       opStack8 -= 4;
       *opStack32 = r1 % r0;
@@ -1210,10 +1211,21 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) % ((unsigned)r0);
       DISPATCH();
-    case OP_MULI:
-      opStack8 -= 4;
-      *opStack32 = r1 * r0;
+
+    case OP_MULI: {
+      pop_2_int32();
+      log3("%08X * %08X =", r1, r0);
+      push_1_int32(r1 * r0);
       DISPATCH();
+    }
+
+    case OP_MULI3: {
+      pop_2_int24();
+      log3("%08X * %08X = ", INT(r1_int24), INT(r0_int24));
+      push_1_int24(INT24(INT(r1_int24) * INT(r0_int24)));
+      DISPATCH();
+    }
+
     case OP_MULU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) * ((unsigned)r0);
