@@ -1213,6 +1213,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
+    case OP_CU2I3: {
+      pop_1_uint16();
+      push_1_int24(INT24(r0_uint16));
+      DISPATCH();
+    }
+
     case OP_CONSTU1: {
       push_1_int8(r2_uint8);
       programCounter += INT8_INCREMENT;
