@@ -62,7 +62,7 @@ assemblers_t assemblers[] = {
     {"CVII1",   OP_IGNORE,     assfn(CODE_CIxI1)},
     {"CVII2",   OP_MULTIPLE,   assfn(CODE_CIxI2)},
     {"CVII3",   OP_MULTIPLE,   assfn(CODE_CIxI3)}, /* extend sign Ix to I3*/
-    {"CVII4",   OP_MULTIPLE,   assfn(CODE_SEX)  },
+    {"CVII4",   OP_MULTIPLE,   assfn(CODE_CIxI4)},
     {"CVIU3",   OP_IGNORE,     assfn(CODE_CIxU3)},
     {"CVIU4",   OP_IGNORE,     assfn(COMMENT)   },
     {"CVUI3",   OP_MULTIPLE,   assfn(CODE_CUxI3)},

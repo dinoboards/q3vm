@@ -464,17 +464,24 @@ locals from sp
 #ifdef MEMORY_SAFE
 uint8_t bad_memory[16];
 
-const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
+const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
   if (vaddr < 0) {
     Com_Printf("Attempted to read at %06X\n", vaddr);
     vm->lastError = VM_RAM_ACCESS_ERROR;
     Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Error");
     return bad_memory;
   }
-  if (vaddr < (vm_operand_t)vm->litLength)
-    return &vm->codeBase[vm->codeLength + vaddr];
 
-  if ((vm_size_t)vaddr > vm->workingRAMLength + vm->litLength) {
+  if (vaddr < (vm_operand_t)vm->litLength) {
+    if (vaddr + size > (vm_operand_t)vm->litLength) {
+      vm->lastError = VM_RAM_ACCESS_ERROR;
+      Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Error");
+      return bad_memory;
+    }
+    return &vm->codeBase[vm->codeLength + vaddr];
+  }
+
+  if ((vm_size_t)vaddr + size > vm->workingRAMLength + vm->litLength) {
     Com_Printf("Attempted to read at %06X -- (%06X %06X)\n", vaddr, vm->workingRAMLength, vm->litLength);
     vm->lastError = VM_RAM_ACCESS_ERROR;
     Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Error");
@@ -484,11 +491,13 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
   return &vm->dataBase[vaddr];
 }
 #else
-#define VM_RedirectLit(vm, a) ((a < (vm_operand_t)vm->litLength) ? &vm->codeBase[vm->codeLength + a] : &vm->dataBase[a])
+#define VM_RedirectLit(vm, a, l) ((a < (vm_operand_t)vm->litLength) ? &vm->codeBase[vm->codeLength + a] : &vm->dataBase[a])
 #endif
 
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
+
+#define VM_DataRead_uint32(vm, vaddr) (*((uint32_t *)VM_RedirectLit(vm, UINT(vaddr), 4)))
 
 #define VM_DataRead_uint24(vm, vaddr)                                                                                              \
   (*((uint24_t *)((UINT(vaddr) < vm->litLength) ? &vm->codeBase[vm->codeLength + UINT(vaddr)] : &vm->dataBase[UINT(vaddr)])))
@@ -496,9 +505,8 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
 #define VM_DataRead_uint16(vm, vaddr)                                                                                              \
   (*((uint16_t *)((UINT(vaddr) < vm->litLength) ? &vm->codeBase[vm->codeLength + UINT(vaddr)] : &vm->dataBase[UINT(vaddr)])))
 
-#define VM_DataRead_float(vm, vaddr)  (*(float *)VM_RedirectLit(vm, vaddr))
-#define VM_DataRead_uint32(vm, vaddr) (*(uint32_t *)VM_RedirectLit(vm, vaddr))
-#define VM_DataRead_uint8(vm, vaddr)  (*(uint8_t *)VM_RedirectLit(vm, vaddr))
+#define VM_DataRead_float(vm, vaddr) (*(float *)VM_RedirectLit(vm, vaddr, 4))
+#define VM_DataRead_uint8(vm, vaddr) (*(uint8_t *)VM_RedirectLit(vm, vaddr, 1))
 
 #define pop_2_int32()                                                                                                              \
   r0 = *((int32_t *)opStack8);                                                                                                     \
@@ -564,13 +572,13 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
 
 #define push_1_int32(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
-  log3("%08X PUSHED int32\n", *opStack32);                                                                                         \
-  *opStack32 = a;
+  *opStack32 = a;                                                                                                                  \
+  log3("%08X PUSHED int32\n", *opStack32);
 
 #define push_1_uint32(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
-  log3("%08X PUSHED uint32\n", *opStack32);                                                                                        \
-  *opStack32 = a;
+  *opStack32 = a;                                                                                                                  \
+  log3("%08X PUSHED uint32\n", *opStack32);
 
 #define push_1_uint24(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
@@ -728,19 +736,15 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_LOADF4: {
-      r0 = *opStack32 = *((uint32_t *)VM_RedirectLit(vm, r0));
+      r0 = *opStack32 = *((uint32_t *)VM_RedirectLit(vm, r0, 4));
       DISPATCH();
     }
 
-    case OP_LOAD4:
-      r0 = *opStack32 = *(vm_operand_t *)VM_RedirectLit(vm, r0);
-
-#ifdef DEBUG_VM
-      if (vm_debugLevel > 3)
-        printf(" OP_LOAD4: R0 = %06X = *[%06X + %04X (%06X)]\n", r0, programStack, r2_uint16, programStack + r2_uint16);
-#endif
-
+    case OP_LOAD4: {
+      pop_1_uint24() log3("R0: %06X", UINT(r0_uint24));
+      push_1_uint32(VM_DataRead_uint32(vm, r0_uint24));
       DISPATCH();
+    }
 
     case OP_LOAD3: {
       pop_1_uint24();
@@ -758,7 +762,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_LOAD1: {
       pop_1_uint24();
       log3("R0: %06X", UINT(r0_uint24));
-      push_1_uint8(*VM_RedirectLit(vm, (vm_operand_t)UINT(r0_uint24)));
+      push_1_uint8(*VM_RedirectLit(vm, (vm_operand_t)UINT(r0_uint24), 1));
       DISPATCH();
     }
 
@@ -768,7 +772,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       log3("*(%06X) = %08X  MOVE (3 bytes)\n", UINT(r1_uint24), UINT(r0_uint24));
       DISPATCH();
 
-    case OP_STORE4:
+    case OP_STORE4: {
+      pop_1_uint32();
+      pop_1_uint24();
+      *((uint32_t *)&dataBase[UINT(r0_uint24)]) = r0;
+      log3("*(%06X) = %08X  MOVE\n", UINT(r0_uint24), r0);
+      DISPATCH();
+    }
+
       *(vm_operand_t *)&dataBase[r1] = r0;
       opStack8 -= 8;
       DISPATCH();
@@ -1303,12 +1314,20 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CVFI:
       *opStack32 = Q_ftol(opStackFlt[0]);
       DISPATCH();
-    case OP_SEX8:
+
+    case OP_CI1I4:
       *opStack32 = (int8_t)*opStack32;
       DISPATCH();
-    case OP_SEX16:
+
+    case OP_CI2I4:
       *opStack32 = (int16_t)*opStack32;
       DISPATCH();
+
+    case OP_CI3I4: {
+      pop_1_int24();
+      push_1_int32((int32_t)(INT(r0_int24)));
+      DISPATCH();
+    }
 
     /* convert I3 to I1*/
     case OP_CI3I1: {

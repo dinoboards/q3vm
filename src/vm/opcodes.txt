@@ -18,9 +18,12 @@ OP_BXOR                 Bitwise eXclusive-OR
 OP_BXOR3
 OP_CALL                 Call subroutine.
 OP_CI1I3
+OP_CI1I4                 Sign-Extend 8-bit
 OP_CI2I3
+OP_CI2I4                Sign-Extend 16-bit
 OP_CI3I1
 OP_CI3I2
+OP_CI3I4
 OP_CI4I3
 OP_CONSTF4
 OP_CONSTGP3
@@ -103,9 +106,7 @@ OP_RSHI                 Right-shift (algebraic; preserve sign)
 OP_RSHI3
 OP_RSHU                 Right-shift (bitwise; ignore sign)
 OP_RSHU3
-OP_SEX16                Sign-Extend 16-bit
 OP_SEX24
-OP_SEX8                 Sign-Extend 8-bit
 OP_SEX8_3
 OP_STORE1               Store 1-byte to memory
 OP_STORE2               Store 2-byte to memory

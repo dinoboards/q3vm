@@ -203,7 +203,7 @@ ASMFn(CODE_OP) {
   EmitByte(&segment[CODESEG], assembler.opcode);
 }
 
-ASMMultipleFn(CODE_SEX) {
+ASMMultipleFn(CODE_CIxI4) {
   instructionCount++;
 
   opcode_t opcode;
@@ -211,16 +211,16 @@ ASMMultipleFn(CODE_SEX) {
   Parse();
   switch (token[0]) {
   case '1':
-    opcode = OP_SEX8;
+    opcode = OP_CI1I4;
     break;
 
   case '2':
-    opcode = OP_SEX16;
+    opcode = OP_CI2I4;
     break;
 
   case '3':
-    WriteComment();
-    return;
+    opcode = OP_CI3I4;
+    break;
 
   default:
     CodeError("Bad sign extension: %s\n", token);

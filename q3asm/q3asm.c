@@ -967,6 +967,8 @@ static void AssembleLine(void) {
 
       // sign extensions need to check next parm
       opcode = op->opcode;
+
+#if 0
       if (opcode == OP_SEX8) {
         Parse();
         if (token[0] == '1') {
@@ -992,6 +994,7 @@ static void AssembleLine(void) {
           return;
         }
       }
+#endif
 
       // check for expression
       Parse();

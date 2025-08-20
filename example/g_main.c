@@ -18,14 +18,27 @@ typedef short          int16_t;
 
 typedef void (*fun_ptr_t)(int);
 
+long sign_extend(int i, long expected);
+
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  int a = 10;
-  int b = 20;
-  for (b = -20; b < 0; b = b + 1) {
-    a = a - 1;
-    if (a <= 0)
-      break;
+  long l;
+  /* Converting a positive or negative int to a long preserves its value */
+  if (!sign_extend(10, 10l)) {
+    return 1;
   }
 
-  return a == 0 && b == -11;
+  if (!sign_extend(-10, -10l)) {
+    return 2;
+  }
+
+  l = (long)100;
+  if (l != 100l) {
+    return 3;
+  }
+  return 0;
+}
+
+long sign_extend(int i, long expected) {
+  long extended = (long)i;
+  return (extended == expected);
 }
