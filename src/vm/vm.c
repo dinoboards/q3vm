@@ -1154,14 +1154,17 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
 
     case OP_ADD3:
-      opStack8 -= 4;
-      *opStack32 = r1 + r0;
+      pop_2_int24();
+      log3("%08X + %08X = ", INT(r1_int24), INT(r0_int24));
+      push_1_int24(INT24(INT(r1_int24) + INT(r0_int24)));
       DISPATCH();
 
-    case OP_ADD:
-      opStack8 -= 4;
-      *opStack32 = r1 + r0;
+    case OP_ADD: {
+      pop_2_int32();
+      log3("%08X + %08X =", r1, r0);
+      push_1_int32(r1 + r0);
       DISPATCH();
+    }
 
     case OP_SUB:
       log3("%08X - %08X = %08X PUSHED\n", r1, r0, r1 - r0);

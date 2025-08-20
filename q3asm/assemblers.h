@@ -4,6 +4,7 @@
 
 assemblers_t assemblers[] = {
     {"ADDF4",   OP_ADDF,       assfn(CODE_OP)   },
+    {"ADDI3",   OP_ADD3,       assfn(CODE_OP)   },
     {"ADDI4",   OP_ADD,        assfn(CODE_OP)   },
     {"ADDRESS", DIRECTIVE,     assfn(ADDRESS)   },
     {"ADDRF",   OP_LOCAL,      assfn(ADDRF)     },
