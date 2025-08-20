@@ -21,10 +21,11 @@ EOT
 count=0
 while IFS= read -r line; do
   opcode_name="${line%% *}"
+  name="${opcode_name:3}"
   description=$(echo "$line" | awk '{$1=""; print $0}')
   count=$((count + 1))
   printf "${opcode_name}, /* %3s ${description} */\n" ${count} >> opcodes.h
-  printf "\"${opcode_name}\", /* %3s ${description} */\n" ${count} >> opcodes.c.h
+  printf "\"${name}\", /* %3s ${description} */\n" ${count} >> opcodes.c.h
 
 done < opcodes.txt
 

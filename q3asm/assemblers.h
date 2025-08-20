@@ -122,6 +122,7 @@ assemblers_t assemblers[] = {
     {"NEGI3",   OP_NEGI3,      assfn(CODE_OP)   },
     {"NEGI4",   OP_NEGI,       assfn(CODE_OP)   },
     {"NEI3",    OP_NE3,        assfn(CODE_24BIT)},
+    {"NEI4",    OP_NE,         assfn(CODE_24BIT)},
     {"POP",     OP_POP,        assfn(CODE_OP)   },
     {"PROC",    OP_ENTER,      assfn(PROC)      },
     {"RET",     OP_LEAVE,      assfn(RET)       },
