@@ -511,6 +511,12 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
 #define pop_2_int32()                                                                                                              \
   r0 = *((int32_t *)opStack8);                                                                                                     \
   r1 = *((int32_t *)(opStack8 - 4));                                                                                               \
+  log3("%08X %08X POP int32\n", r0, r1);                                                                                           \
+  opStack8 -= 8;
+
+#define pop_2_uint32()                                                                                                             \
+  r0 = *((uint32_t *)opStack8);                                                                                                    \
+  r1 = *((uint32_t *)(opStack8 - 4));                                                                                              \
   log3("%08X %08X POP uint32\n", r0, r1);                                                                                          \
   opStack8 -= 8;
 
@@ -1268,10 +1274,21 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_BCOM:
       *opStack32 = ~((unsigned)r0);
       DISPATCH();
-    case OP_LSH:
-      opStack8 -= 4;
-      *opStack32 = r1 << r0;
+
+    case OP_LSH: {
+      pop_2_uint32();
+      log3("%08X << %08X =", r1, r0);
+      push_1_uint32(r1 << r0);
       DISPATCH();
+    }
+
+    case OP_LSH3: {
+      pop_2_uint24();
+      log3("%08X << %08X = ", UINT(r1_uint24), UINT(r0_uint24));
+      push_1_uint24(UINT24(UINT(r1_uint24) << UINT(r0_uint24)));
+      DISPATCH();
+    }
+
     case OP_RSHI:
       opStack8 -= 4;
       *opStack32 = r1 >> r0;
