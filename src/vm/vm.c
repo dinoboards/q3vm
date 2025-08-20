@@ -988,26 +988,29 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_LTI: {
-      opStack8 -= 8;
-      if (r1 < r0) {
-        programCounter = r2;
-        DISPATCH();
-      } else {
-        programCounter += INT_INCREMENT;
-        DISPATCH();
-      }
+      pop_2_int32();
+      log3("%08X < %08X\n", r1, r0);
+      programCounter = (r1 < r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_LTI3: {
+      pop_2_int24();
+      log3("%06X < %06X = %d\n", INT(r1_int24), INT(r0_int24), (INT(r1_int24) < INT(r0_int24)));
+      programCounter = (INT(r1_int24) < INT(r0_int24)) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
     }
 
     case OP_LEI: {
       pop_2_int32();
-      log3("%08X >= %08X\n", r1, r0);
+      log3("%08X <= %08X\n", r1, r0);
       programCounter = (r1 <= r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
       DISPATCH();
     }
 
     case OP_LEI3: {
       pop_2_int24();
-      log3("%06X >= %06X\n", INT(r1_int24), INT(r0_int24));
+      log3("%06X <= %06X\n", INT(r1_int24), INT(r0_int24));
       programCounter = (INT(r1_int24) <= INT(r0_int24)) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
       DISPATCH();
     }
