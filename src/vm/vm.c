@@ -998,7 +998,20 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       }
     }
 
-    case OP_LEI:
+    case OP_LEI: {
+      pop_2_int32();
+      log3("%08X >= %08X\n", r1, r0);
+      programCounter = (r1 <= r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_LEI3: {
+      pop_2_int24();
+      log3("%06X >= %06X\n", INT(r1_int24), INT(r0_int24));
+      programCounter = (INT(r1_int24) <= INT(r0_int24)) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
+    }
+
       opStack8 -= 8;
       if (r1 <= r0) {
         programCounter = r2;
@@ -1312,6 +1325,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CI2I3: {
       pop_1_int16();
       push_1_int24(INT24(r0_int16));
+      DISPATCH();
+    }
+
+    /* reduce I4 to I3 */
+    case OP_CI4I3: {
+      pop_1_int32();
+      push_1_int24(INT24(r0));
       DISPATCH();
     }
 

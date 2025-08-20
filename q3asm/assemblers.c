@@ -246,6 +246,10 @@ ASMMultipleFn(CODE_CIxI3) {
     opcode = OP_CI2I3;
     break;
 
+  case '4':
+    opcode = OP_CI4I3;
+    break;
+
   default:
     WriteComment();
     printf("TODO: CODE_CI%cI3\n", token[0]);
@@ -266,6 +270,10 @@ ASMMultipleFn(CODE_CUxI3) {
   switch (token[0]) {
   case '2':
     opcode = OP_CU2I3;
+    break;
+
+  case '3':
+    WriteComment();
     break;
 
   default:
