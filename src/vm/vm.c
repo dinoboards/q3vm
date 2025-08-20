@@ -1259,18 +1259,48 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) * ((unsigned)r0);
       DISPATCH();
-    case OP_BAND:
-      opStack8 -= 4;
-      *opStack32 = ((unsigned)r1) & ((unsigned)r0);
+
+    case OP_BAND: {
+      pop_2_uint32();
+      log3("%08X & %08X =", r1, r0);
+      push_1_uint32(r1 & r0);
       DISPATCH();
-    case OP_BOR:
-      opStack8 -= 4;
-      *opStack32 = ((unsigned)r1) | ((unsigned)r0);
+    }
+
+    case OP_BAND3: {
+      pop_2_uint24();
+      log3("%08X & %08X = ", UINT(r1_uint24), UINT(r0_uint24));
+      push_1_uint24(UINT24(UINT(r1_uint24) & UINT(r0_uint24)));
       DISPATCH();
-    case OP_BXOR:
-      opStack8 -= 4;
-      *opStack32 = ((unsigned)r1) ^ ((unsigned)r0);
+    }
+
+    case OP_BOR: {
+      pop_2_uint32();
+      log3("%08X | %08X =", r1, r0);
+      push_1_uint32(r1 | r0);
       DISPATCH();
+    }
+
+    case OP_BOR3: {
+      pop_2_uint24();
+      log3("%08X | %08X = ", UINT(r1_uint24), UINT(r0_uint24));
+      push_1_uint24(UINT24(UINT(r1_uint24) | UINT(r0_uint24)));
+      DISPATCH();
+    }
+
+    case OP_BXOR: {
+      pop_2_uint32();
+      log3("%08X ^ %08X =", r1, r0);
+      push_1_uint32(r1 ^ r0);
+      DISPATCH();
+    }
+
+    case OP_BXOR3: {
+      pop_2_uint24();
+      log3("%08X ^ %08X = ", UINT(r1_uint24), UINT(r0_uint24));
+      push_1_uint24(UINT24(UINT(r1_uint24) ^ UINT(r0_uint24)));
+      DISPATCH();
+    }
     case OP_BCOM:
       *opStack32 = ~((unsigned)r0);
       DISPATCH();
@@ -1289,10 +1319,20 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_RSHI:
-      opStack8 -= 4;
-      *opStack32 = r1 >> r0;
+    case OP_RSHI: {
+      pop_2_int32();
+      log3("%08X >> %08X =", r1, r0);
+      push_1_int32(r1 >> r0);
       DISPATCH();
+    }
+
+    case OP_RSHI3: {
+      pop_2_int24();
+      log3("%08X >> %08X = ", INT(r1_int24), INT(r0_int24));
+      push_1_int24(INT24(INT(r1_int24) >> INT(r0_int24)));
+      DISPATCH();
+    }
+
     case OP_RSHU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) >> r0;
