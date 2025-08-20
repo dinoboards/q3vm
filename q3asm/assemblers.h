@@ -71,6 +71,7 @@ assemblers_t assemblers[] = {
     {"CVUU4",   OP_IGNORE,     assfn(COMMENT)   },
     {"DATA",    DIRECTIVE,     assfn(DATA)      },
     {"DIVF4",   OP_DIVF,       assfn(CODE_OP)   },
+    {"DIVI3",   OP_DIVI3,      assfn(CODE_OP)   },
     {"DIVI4",   OP_DIVI,       assfn(CODE_OP)   },
     {"DIVU4",   OP_DIVU,       assfn(CODE_OP)   },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },

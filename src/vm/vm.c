@@ -500,6 +500,12 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
 #define VM_DataRead_uint32(vm, vaddr) (*(uint32_t *)VM_RedirectLit(vm, vaddr))
 #define VM_DataRead_uint8(vm, vaddr)  (*(uint8_t *)VM_RedirectLit(vm, vaddr))
 
+#define pop_2_int32()                                                                                                              \
+  r0 = *((int32_t *)opStack8);                                                                                                     \
+  r1 = *((int32_t *)(opStack8 - 4));                                                                                               \
+  log3("%08X %08X POP uint32\n", r0, r1);                                                                                          \
+  opStack8 -= 8;
+
 #define pop_1_uint32()                                                                                                             \
   r0 = *((uint32_t *)opStack8);                                                                                                    \
   log3("%08X POP uint32\n", r0);                                                                                                   \
@@ -1170,10 +1176,20 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_DIVI:
-      opStack8 -= 4;
-      *opStack32 = r1 / r0;
+    case OP_DIVI: {
+      pop_2_int32();
+      log3("%08X / %08X =", r1, r0);
+      push_1_int32(r1 / r0);
       DISPATCH();
+    }
+
+    case OP_DIVI3: {
+      pop_2_int24();
+      log3("%08X / %08X =", INT(r1_int24), INT(r0_int24));
+      push_1_int24(INT24(INT(r1_int24) / INT(r0_int24)));
+      DISPATCH();
+    }
+
     case OP_DIVU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) / ((unsigned)r0);
