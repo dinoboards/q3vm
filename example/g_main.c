@@ -21,12 +21,10 @@ typedef void (*fun_ptr_t)(int);
 volatile static int dataTest = -999; /* don't change, should be 999 */
 
 int vmMain(int command, int arg0, int arg1, int arg2) {
-
-  /* test data section: should be -999 */
-  // printf("dataTest: %i\n", dataTest);
-  if (dataTest != -999) {
-    return -1;
+  int a = -2593;
+  a     = a % 3;
+  {
+    int b = -a;
+    return b;
   }
-
-  return 0;
 }

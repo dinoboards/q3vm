@@ -500,6 +500,16 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
 #define VM_DataRead_uint32(vm, vaddr) (*(uint32_t *)VM_RedirectLit(vm, vaddr))
 #define VM_DataRead_uint8(vm, vaddr)  (*(uint8_t *)VM_RedirectLit(vm, vaddr))
 
+#define pop_1_uint32()                                                                                                             \
+  r0 = *((uint32_t *)opStack8);                                                                                                    \
+  log3("%08X POP uint32\n", r0);                                                                                                   \
+  opStack8 -= 4;
+
+#define pop_1_int32()                                                                                                              \
+  r0 = *((int32_t *)opStack8);                                                                                                     \
+  log3("%08X POP int32\n", r0);                                                                                                    \
+  opStack8 -= 4;
+
 #define pop_2_uint24()                                                                                                             \
   r0_uint24 = *((uint24_t *)opStack8);                                                                                             \
   r1_uint24 = *((uint24_t *)(opStack8 - 4));                                                                                       \
@@ -546,8 +556,14 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
   opStack8 += 4;                                                                                                                   \
   *opStack32 = a;
 
+#define push_1_int32(a)                                                                                                            \
+  opStack8 += 4;                                                                                                                   \
+  log3("%08X PUSHED int32\n", *opStack32);                                                                                         \
+  *opStack32 = a;
+
 #define push_1_uint32(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
+  log3("%08X PUSHED uint32\n", *opStack32);                                                                                        \
   *opStack32 = a;
 
 #define push_1_uint24(a)                                                                                                           \
@@ -1122,7 +1138,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       /*===================================================================*/
 
     case OP_NEGI:
-      *opStack32 = -r0;
+      pop_1_int32();
+      push_1_int32(-r0);
       DISPATCH();
 
     case OP_ADD3:
@@ -1160,6 +1177,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       *opStack32 = r1 % r0;
       DISPATCH();
+
+    case OP_MODI3: {
+      pop_2_int24();
+      log3("%08X %% %08X = ", INT(r1_int24), INT(r0_int24));
+      push_1_int24(INT24(INT(r1_int24) % INT(r0_int24)));
+      DISPATCH();
+    }
+
     case OP_MODU:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) % ((unsigned)r0);
