@@ -279,6 +279,28 @@ ASMMultipleFn(CODE_CUxI3) {
   EmitByte(&segment[CODESEG], opcode);
 }
 
+ASMMultipleFn(CODE_CIxI1) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '3':
+    opcode = OP_CI3I1; /* No sign change - but change 'number' size on stack */
+    break;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CI%cI1\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
 ASMMultipleFn(CODE_CIxI2) {
   instructionCount++;
 

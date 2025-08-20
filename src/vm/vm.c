@@ -1185,10 +1185,18 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       *opStack32 = (int16_t)*opStack32;
       DISPATCH();
 
-    /* convert I3 to I2*/
+    /* convert I3 to I1*/
+    case OP_CI3I1: {
+      pop_1_int24();
+      push_1_int8((int8_t)(INT(r0_int24)));
+      DISPATCH();
+    }
+
+      /* convert I3 to I2*/
     case OP_CI3I2: {
       pop_1_int24();
-      push_1_int16((int16_t)(INT(r0_int24))) DISPATCH();
+      push_1_int16((int16_t)(INT(r0_int24)));
+      DISPATCH();
     }
 
     /* extend sign I2 to I3*/
