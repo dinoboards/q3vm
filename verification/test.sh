@@ -21,8 +21,6 @@ IGNORESET=(
   compound_assign_to_long
   compound_assign_to_int
   bitwise_long_op
-  bitshift
-  switch_int
 )
 
 function skipped_function() {
