@@ -461,7 +461,31 @@ locals from sp
 #define MAX_PROGRAM_COUNTER ((unsigned)vm->codeLength)
 #define DISPATCH()          break;
 
+#ifdef MEMORY_SAFE
+uint8_t bad_memory[16];
+
+const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr) {
+  if (vaddr < 0) {
+    Com_Printf("Attempted to read at %06X\n", vaddr);
+    vm->lastError = VM_RAM_ACCESS_ERROR;
+    Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Error");
+    return bad_memory;
+  }
+  if (vaddr < (vm_operand_t)vm->litLength)
+    return &vm->codeBase[vm->codeLength + vaddr];
+
+  if ((vm_size_t)vaddr > vm->workingRAMLength + vm->litLength) {
+    Com_Printf("Attempted to read at %06X -- (%06X %06X)\n", vaddr, vm->workingRAMLength, vm->litLength);
+    vm->lastError = VM_RAM_ACCESS_ERROR;
+    Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Error");
+    return bad_memory;
+  }
+
+  return &vm->dataBase[vaddr];
+}
+#else
 #define VM_RedirectLit(vm, a) ((a < (vm_operand_t)vm->litLength) ? &vm->codeBase[vm->codeLength + a] : &vm->dataBase[a])
+#endif
 
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
@@ -612,6 +636,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
      grabs the -1 program counter */
 
   while (1) {
+    if (vm->lastError) {
+      vm->programStack = programStack = stackOnEntry;
+      opStack8                        = &_opStack[8];
+      goto done;
+    }
     r0 = opStack32[0];
     r1 = opStack32[-1];
 
@@ -1307,7 +1336,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
 done:
   if (opStack32[-1] != 0x0000BEEF) {
-    Com_Error(vm->lastError = VM_STACK_ERROR, "Interpreter stack error");
+    Com_Error(vm->lastError = VM_STACK_ERROR, "Operation stack error");
   }
 
   vm->programStack = stackOnEntry;

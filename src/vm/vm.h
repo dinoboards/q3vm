@@ -27,7 +27,9 @@
  * DEFINES
  ******************************************************************************/
 
-#if 1
+#define MEMORY_SAFE
+
+#if 0
 extern int snprintf(char *__restrict __s, size_t __maxlen, const char *__restrict __format, ...) __THROWNL
     __attribute__((__format__(__printf__, 3, 4)));
 
@@ -95,7 +97,9 @@ typedef enum {
   VM_NOT_LOADED                  = -15, /**< VM not loaded */
   VM_NOT_ENOUGH_RAM              = -16, /**< insufficient ram allocated for VM */
   VM_MALFORMED_HEADER            = -17,
-  VM_ILLEGAL_OPCODE              = -18
+  VM_ILLEGAL_OPCODE              = -18,
+  VM_LIT_ACCESS_ERROR            = -19,
+  VM_RAM_ACCESS_ERROR            = -20
 } vmErrorCode_t;
 
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of

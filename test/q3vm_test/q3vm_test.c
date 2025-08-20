@@ -43,6 +43,15 @@ int testInject(const char *filepath, int offset, int opcode) {
   return (retVal == -1) ? 0 : -1;
 }
 
+#ifdef DEBUG_VM
+static void COM_StripExtension(const char *in, char *out) {
+  while (*in && *in != '.') {
+    *out++ = *in++;
+  }
+  *out = 0;
+}
+#endif
+
 int testNominal(const char *filepath) {
   vm_t     vm;
   int      imageSize;
@@ -54,8 +63,23 @@ int testNominal(const char *filepath) {
     return retVal;
   }
 
-  VM_Debug(1);
+  VM_Debug(3);
   if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls) == 0) {
+
+#ifdef DEBUG_VM
+    void *pDebugInfo = malloc(0x10000);
+    int   mapFileImageSize;
+    char  mapFilepath[VM_MAX_QPATH - 4];
+    char  symbols[VM_MAX_QPATH];
+
+    COM_StripExtension(filepath, mapFilepath);
+    snprintf(symbols, sizeof(symbols), "%s.map", mapFilepath);
+    Com_Printf("Loading symbol file: %s...\n", symbols);
+
+    char *mapFileImage = (char *)loadImage(symbols, &mapFileImageSize);
+    VM_LoadDebugInfo(&vm, mapFileImage, pDebugInfo, 0x10000);
+#endif
+
     /* normal call, should give us 0 */
     retVal = VM_Call(&vm, 0);
     /* now do the proper call, this should give us 333 */
