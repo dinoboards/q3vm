@@ -16,9 +16,17 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
+typedef void (*fun_ptr_t)(int);
+
+volatile static int dataTest = -999; /* don't change, should be 999 */
+
 int vmMain(int command, int arg0, int arg1, int arg2) {
 
-  printf("BOB %s\n", "command");
+  /* test data section: should be -999 */
+  // printf("dataTest: %i\n", dataTest);
+  if (dataTest != -999) {
+    return -1;
+  }
 
   return 0;
 }

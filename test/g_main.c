@@ -54,14 +54,12 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   static unsigned char    mem2[8]       = "Hello"; /* don't change this string */
   int                     doStupidStuff = 0;       /* misbehave and see if the interpreter deals correctly with that */
 
-  fun_ptr_t *fun_ptr = (fun_ptr_t *)0xffffff;
+  void (*fun_ptr)(int) = (void *)0x7fffff;
 
-  /*
-  printf("cmd:   %i\n", command);
-  printf("arg0:  %i\n", arg0);
-  printf("arg1:  %i\n", arg1);
-  printf("arg2:  %i\n", arg2);
-  */
+  // printf("cmd:   %i\n", command);
+  // printf("arg0:  %i\n", arg0);
+  // printf("arg1:  %i\n", arg1);
+  // printf("arg2:  %i\n", arg2);
 
   if (command == 1) {
     return arg0; /* just return arg0, used for "recursive()" test */
