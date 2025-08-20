@@ -17,10 +17,8 @@ typedef unsigned short uint16_t;
 typedef short          int16_t;
 
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  uint16_t a = 33000;
-  uint16_t b = 40000;
+  int16_t  a = 0x9000;
+  uint16_t c = 0 - a;
 
-  uint16_t c = b - a;
-
-  return c == 7000;
+  return c == 28672;
 }

@@ -242,17 +242,101 @@ ASMMultipleFn(CODE_CIxI3) {
     opcode = OP_CI1I3;
     break;
 
-    // case '2':
-    //   opcode = OP_SEX16;
-    //   break;
-
-    // case '3':
-    //   WriteComment();
-    //   return;
+  case '2':
+    opcode = OP_CI2I3;
+    break;
 
   default:
     WriteComment();
-    printf("TODO: CODE_CIxI3\n");
+    printf("TODO: CODE_CI%cI3\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
+ASMMultipleFn(CODE_CUxI3) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '2':
+    opcode = OP_CU2I3;
+    break;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CU%cI3\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
+ASMMultipleFn(CODE_CIxI2) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '3':
+    opcode = OP_CI3I2; /* No sign change - but change 'number' size on stack */
+    break;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CI%cI2\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
+ASMMultipleFn(CODE_CIxU3) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '3':
+    WriteComment();
+    return;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CI%cU3\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
+ASMMultipleFn(CODE_CUxU2) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '3':
+    opcode = OP_CU3U2;
+    break;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CU%cU3\n", token[0]);
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }

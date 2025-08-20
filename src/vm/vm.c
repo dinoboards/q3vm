@@ -479,27 +479,43 @@ locals from sp
 #define pop_2_uint24()                                                                                                             \
   r0_uint24 = *((uint24_t *)opStack8);                                                                                             \
   r1_uint24 = *((uint24_t *)(opStack8 - 4));                                                                                       \
+  log3("%08X %08X POP uint24\n", UINT(r0_uint24), UINT(r1_uint24));                                                                \
   opStack8 -= 8;
 
 #define pop_2_int24()                                                                                                              \
   r0_int24 = *((int24_t *)opStack8);                                                                                               \
   r1_int24 = *((int24_t *)(opStack8 - 4));                                                                                         \
+  log3("%06X %06X POP int24\n", INT(r0_int24), INT(r1_int24));                                                                     \
   opStack8 -= 8;
 
 #define pop_1_uint24()                                                                                                             \
   r0_uint24 = *((uint24_t *)opStack8);                                                                                             \
+  log3("%06X POP uint24\n", UINT(r0_uint24));                                                                                      \
+  opStack8 -= 4;
+
+#define pop_1_int24()                                                                                                              \
+  r0_int24 = *((int24_t *)opStack8);                                                                                               \
+  log3("%06X POP int24\n", INT(r0_int24));                                                                                         \
   opStack8 -= 4;
 
 #define pop_1_uint16()                                                                                                             \
   r0_uint16 = *((uint16_t *)opStack8);                                                                                             \
+  log3("%04X POP uint16\n", r0_uint16);                                                                                            \
+  opStack8 -= 4;
+
+#define pop_1_int16()                                                                                                              \
+  r0_int16 = *((int16_t *)opStack8);                                                                                               \
+  log3("%04X POP int16\n", r0_int16);                                                                                              \
   opStack8 -= 4;
 
 #define pop_1_int8()                                                                                                               \
   r0_int8 = *((int8_t *)opStack8);                                                                                                 \
+  log3("%02X POP int8\n", r0_int8);                                                                                                \
   opStack8 -= 4;
 
 #define pop_1_uint8()                                                                                                              \
   r0_uint8 = *((uint8_t *)opStack8);                                                                                               \
+  log3("%02X POP uint8\n", r0_uint8);                                                                                              \
   opStack8 -= 4;
 
 #define push_1_float(a)                                                                                                            \
@@ -524,6 +540,11 @@ locals from sp
   opStack8 += 4;                                                                                                                   \
   *opStack32 = (uint32_t)(uint16_t)a;                                                                                              \
   log3("%08X PUSHED uint16\n", *opStack32);
+
+#define push_1_int16(a)                                                                                                            \
+  opStack8 += 4;                                                                                                                   \
+  *opStack32 = (int32_t)(int16_t)a;                                                                                                \
+  log3("%08X PUSHED int16\n", *opStack32);
 
 #define push_1_uint8(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
@@ -554,6 +575,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   uint24_t r0_uint24;
   uint24_t r1_uint24;
   uint16_t r0_uint16;
+  int16_t  r0_int16;
   int8_t   r0_int8;
   uint8_t  r0_uint8;
 
@@ -648,7 +670,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
 
     case OP_LOCAL: {
-      log3("&PS[%04X] (%06X)", r2_uint16, programStack + r2_uint16);
+      log3("&PS[%04X]", r2_uint16);
       push_1_uint24(UINT24(r2_uint16 + programStack));
       programCounter += INT16_INCREMENT;
       DISPATCH();
@@ -1073,7 +1095,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_SUB3: {
       pop_2_int24();
-      log3("%08X - %08X = %08X PUSHED\n", INT(r1_int24), INT(r0_int24), INT(r1_int24) - INT(r0_int24));
+      log3("%08X - %08X = ", INT(r1_int24), INT(r0_int24));
       push_1_int24(INT24(INT(r1_int24) - INT(r0_int24)));
       DISPATCH();
     }
@@ -1163,10 +1185,31 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       *opStack32 = (int16_t)*opStack32;
       DISPATCH();
 
-      /* extend sign Ix to I3*/
+    /* convert I3 to I2*/
+    case OP_CI3I2: {
+      pop_1_int24();
+      push_1_int16((int16_t)(INT(r0_int24))) DISPATCH();
+    }
+
+    /* extend sign I2 to I3*/
+    case OP_CI2I3: {
+      pop_1_int16();
+      push_1_int24(INT24(r0_int16));
+      DISPATCH();
+    }
+
+      /* extend sign I1 to I3*/
     case OP_CI1I3: {
       pop_1_int8();
       push_1_int24(INT24(r0_int8));
+      DISPATCH();
+    }
+
+    /* reduce store from U3 to U2 */
+    /*TODO: optimse by just remove the high byte stored on stack*/
+    case OP_CU3U2: {
+      pop_1_uint24();
+      push_1_uint16((uint16_t)UINT(r0_uint24));
       DISPATCH();
     }
 
@@ -1189,9 +1232,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     }
 
     case OP_CONSTI2: {
-      opStack8 += 4;
-      r1 = r0;
-      r0 = *opStack32 = (vm_operand_t)(int32_t)r2_int16;
+      push_1_int16(r2_int16);
       programCounter += INT16_INCREMENT;
       DISPATCH();
     }
