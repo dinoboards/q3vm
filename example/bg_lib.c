@@ -725,6 +725,7 @@ int vsprintf(char *buffer, const char *fmt, va_list argptr) {
   rflag:
     ch = *fmt++;
   reswitch:
+
     switch (ch) {
     case '-':
       flags |= LADJUST;

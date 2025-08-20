@@ -950,7 +950,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_NE: {
       opStack8 -= 8;
-      log3("%08X == %08X\n", r1, r0);
+      log3("%08X != %08X\n", r1, r0);
       if (r1 != r0)
         programCounter = r2;
       else
@@ -961,7 +961,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_NE3: {
       pop_2_uint24();
-      log3("%06X == %06X\n", UINT(r1_uint24), UINT(r0_uint24));
+      log3("%06X != %06X\n", UINT(r1_uint24), UINT(r0_uint24));
       programCounter = (UINT(r1_uint24) != UINT(r0_uint24)) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
       DISPATCH();
     }
@@ -986,8 +986,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
+
     case OP_GTI:
       opStack8 -= 8;
+      log3("%08X >= %08X\n", r1, r0);
       if (r1 > r0) {
         programCounter = r2;
         DISPATCH();
@@ -997,6 +999,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       }
     case OP_GEI:
       opStack8 -= 8;
+      log3("%08X > %08X\n", r1, r0);
+
       if (r1 >= r0) {
         programCounter = r2;
         DISPATCH();
@@ -1004,6 +1008,21 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
+
+    case OP_GEI3: {
+      pop_2_int24();
+      log3("%06X >= %06X\n", INT(r1_int24), INT(r0_int24));
+      programCounter = (INT(r1_int24) >= INT(r0_int24)) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_GTI3: {
+      pop_2_int24();
+      log3("%06X > %06X\n", INT(r1_int24), INT(r0_int24));
+      programCounter = (INT(r1_int24) > INT(r0_int24)) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
+    }
+
     case OP_LTU:
       opStack8 -= 8;
       if (((unsigned)r1) < ((unsigned)r0)) {

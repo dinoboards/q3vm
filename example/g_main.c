@@ -17,7 +17,8 @@ typedef unsigned short uint16_t;
 typedef short          int16_t;
 
 int vmMain(int command, int arg0, int arg1, int arg2) {
-  trap_Printf("BOB");
+
+  printf("BOB %s\n", "command");
 
   return 0;
 }
