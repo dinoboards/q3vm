@@ -15,7 +15,6 @@ IGNORESET=(
   convert_function_arguments
   comparisons
   rewrite_large_multiply_regression
-  logical
   large_constants
 )
 
