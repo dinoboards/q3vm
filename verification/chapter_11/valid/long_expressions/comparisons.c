@@ -19,7 +19,7 @@ int main(void) {
     return 2;
   }
 
-  l = -2147483646L; // LONG_MIN + 1
+  l = -8388607L; // LONG_MIN + 1
   if (l_geq_2_60()) {
     return 3;
   }
@@ -68,7 +68,7 @@ int l_geq_2_60(void) {
 
 int uint_max_leq_l(void) {
   /* The first operand to cmp is a variable and second is a constant (UINT_MAX as a long). */
-  return (4294967295L <= l);
+  return (16777215L <= l);
 }
 
 int l_eq_l2(void) {
