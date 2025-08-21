@@ -8,7 +8,7 @@ int foo(long a, int b, int c, int d, long e, int f, long g, int h);
 int main(void) {
   int      a = -1;
   long int b = 16777218L; // 2^24 + 2, becomes 2 when converted to an int
-  long     c = -16777215; // -2^24, becomes 0 when converted to int
+  long     c = -16777216; // -2^24, becomes 0 when converted to int
   long     d = 100663291; // 2^26 + 2^24 - 5, becomes -5 when converted to an int
   int      e = -101;
   long     f = -123;
