@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
     char  symbols[VM_MAX_QPATH];
 
     COM_StripExtension(filepath, filepath);
-    snprintf(symbols, sizeof(symbols), "%s.map", filepath);
+    sprintf(symbols, "%s.map", filepath);
     Com_Printf("Loading symbol file: %s...\n", symbols);
 
     char *mapFileImage = (char *)loadImage(symbols, &mapFileImageSize);

@@ -15,7 +15,8 @@ q3asm -l -o $fname.qvm $fname.asm g_syscalls.asm
 output=$(../q3vm $fname.qvm)
 result=$(echo $?)
 
-rm $fname.qvm $fname.asm
+rm $fname.asm
+mv $fname.qvm $(dirname $full)/
 
 if [[ ${result} != ${expected} ]]; then
   printf "%-80s .... %-40s\n" ${full}.c "Failed"

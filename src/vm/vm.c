@@ -651,6 +651,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
 #ifdef DEBUG_VM
   vmSymbol_t *profileSymbol;
+  int         stomped;
 #endif
 
   /* we might be called recursively, so this might not be the very top */
@@ -881,7 +882,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         vm->programStack = programStack - 3;
 
 #ifdef DEBUG_VM
-        int stomped = INT(*(int24_t *)&dataBase[programStack + 3]);
+        stomped = INT(*(int24_t *)&dataBase[programStack + 3]);
 #endif
         *(int24_t *)&dataBase[programStack + 3] = INT24(-1 - programCounter); /*command*/
         r                                       = vm->systemCall(vm, &dataBase[programStack + 3]);
@@ -1531,6 +1532,17 @@ done:
 
 #ifdef DEBUG_VM
 
+size_t strlcpy(char *dest, const char *src, size_t size) {
+  size_t ret = strlen(src);
+
+  if (size) {
+    size_t len = (ret >= size) ? size - 1 : ret;
+    memcpy(dest, src, len);
+    dest[len] = '\0';
+  }
+  return ret;
+}
+
 void VM_Debug(const uint8_t level) { vm_debugLevel = level; }
 
 static char *VM_Indent(vm_t *vm) {
@@ -1559,7 +1571,7 @@ static const char *VM_ValueToSymbol(vm_t *vm, int value) {
     return sym->symName;
   }
 
-  snprintf(text, sizeof(text), "%s+%i", sym->symName, value - sym->symValue);
+  sprintf(text, "%s+%i", sym->symName, value - sym->symValue);
 
   return text;
 }

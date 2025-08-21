@@ -73,7 +73,7 @@ int testNominal(const char *filepath) {
     char  symbols[VM_MAX_QPATH];
 
     COM_StripExtension(filepath, mapFilepath);
-    snprintf(symbols, sizeof(symbols), "%s.map", mapFilepath);
+    sprintf(symbols, "%s.map", mapFilepath);
     Com_Printf("Loading symbol file: %s...\n", symbols);
 
     char *mapFileImage = (char *)loadImage(symbols, &mapFileImageSize);

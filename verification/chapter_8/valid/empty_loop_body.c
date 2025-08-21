@@ -5,7 +5,7 @@
 #endif
 
 int main(void) {
-  int i = 0x7FFFFA;
+  int i = 0xFA;
   do
     ;
   while ((i = i - 5) >= 256);
