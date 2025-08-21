@@ -23,7 +23,7 @@ if [[ ${result} != ${expected} ]]; then
   echo "Expected ${expected} but got ${result} '${full}"
   echo "--------------"
   echo "${trace}"
-# else
-#   printf "%-80s .... %-40s\n" ${full}.c "Passed"
+else
+  printf "%-80s .... %-40s\n" ${full}.c "Passed"
 fi
 

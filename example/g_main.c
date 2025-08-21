@@ -16,26 +16,46 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-unsigned int ui = 16777120u; // 2^24 - 96
-
 int main(void) {
+  /* Converting a positive int to an unsigned long preserves its value */
+  if (!int_to_ulong(10, 10ul)) {
+    return 1;
+  }
 
-  /* In this case we
-   * 1. convert ui to a signed int by computing ui - 2^32, producing -96
-   * 2. signed-extend the result, which preserves the value of -96
-   * Note that if we cast ui directly to a signed long, its value wouldn't change
+  /* When you convert a negative int to an unsigned long,
+   * add 2^32 until it's positive
    */
-  // if ((long)(signed)ui != -96l)
-  //   return 1;
-
-  /* In this case we
-   * 1. convert ui to a signed int by computing ui - 2^32, producing -96
-   * 2. convert this signed int to an unsigned long by computing -96 + 2^32
-   * Note that if we converted ui directly to an unsigned long, its value
-   * wouldn't change
-   */
-  if ((unsigned long)(signed)ui != 4294967200ul)
+  if (!int_to_ulong(-10, 4294967286ul)) {
     return 2;
+  }
 
+  /* Extending an unsigned int to a signed long preserves its value */
+  if (!uint_to_long(16777120u, 16777120l)) {
+    return 3;
+  }
+
+  /* Extending an unsigned int to an unsigned long preserves its value */
+  if (!uint_to_ulong(16777120u, 16777120ul)) {
+    return 4;
+  }
+  /* Zero-extend constant 16777120
+   * from an unsigned int to an unsigned long
+   * to test the assembly rewrite rule for MovZeroExtend
+   */
+  if ((unsigned long)16777120u != 16777120ul) {
+    return 5;
+  }
   return 0;
 }
+
+int int_to_ulong(int i, unsigned long expected) {
+  unsigned long result = (unsigned long)i;
+  return result == expected;
+}
+
+int uint_to_long(unsigned int ui, long expected) {
+  long result = (long)ui;
+  return result == expected;
+}
+
+int uint_to_ulong(unsigned ui, unsigned long expected) { return (unsigned long)ui == expected; }
