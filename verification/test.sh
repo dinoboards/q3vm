@@ -10,7 +10,6 @@ fi
 
 
 IGNORESET=(
-  parameter_shadows_function
 )
 
 function skipped_function() {
