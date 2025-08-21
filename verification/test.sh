@@ -17,11 +17,6 @@ IGNORESET=(
   rewrite_large_multiply_regression
   logical
   large_constants
-  truncate
-  compound_bitshift
-  compound_assign_to_long
-  compound_assign_to_int
-  bitwise_long_op
 )
 
 function skipped_function() {

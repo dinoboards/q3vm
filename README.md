@@ -27,6 +27,8 @@ Fork Objective: Explore possibility to convert to run on ez80 cpu
 7. move VM_ArgPtr, VM_IntToFloat and VM_FloatToInt out of vm.c
 8. optimise VM_CallInterpreted - splat out vm_t, optmise locals, ptrs
 9. remove instructionCount - not needed now
+10. removed ignored verification tests
+11. add other verification tests
 
 ## Code Section translation
 

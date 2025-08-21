@@ -1,18 +1,5 @@
 /* Test long expressions in &&, ||, ! and controlling expressions */
 
-int not(long l) { return !l; }
-
-int if_cond(long l) {
-  if (l) {
-    return 1;
-  }
-  return 0;
-}
-
-int and(long l1, int l2) { return l1 && l2; }
-
-int or(int l1, long l2) { return l1 || l2; }
-
 int main(void) {
   // this would be equal to zero if we only considered lower 24 bits
   long l    = 1073741824l; // 2^30
@@ -40,3 +27,16 @@ int main(void) {
 
   return 0;
 }
+
+int not(long l) { return !l; }
+
+int if_cond(long l) {
+  if (l) {
+    return 1;
+  }
+  return 0;
+}
+
+int and(long l1, int l2) { return l1 && l2; }
+
+int or(int l1, long l2) { return l1 || l2; }
