@@ -93,7 +93,7 @@ assemblers_t assemblers[] = {
     {"GEU4",    OP_GEU,        assfn(CODE_32BIT)},
     {"GTF4",    OP_GTF,        assfn(CODE_32BIT)},
     {"GTI3",    OP_GTI3,       assfn(CODE_24BIT)},
-    {"GTI4",    OP_GTI,        assfn(CODE_32BIT)},
+    {"GTI4",    OP_GTI,        assfn(CODE_24BIT)},
     {"GTU4",    OP_GTU,        assfn(CODE_32BIT)},
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"INDIRB",  OP_IGNORE,     assfn(COMMENT)   },
