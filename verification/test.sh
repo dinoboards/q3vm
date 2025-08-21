@@ -11,7 +11,6 @@ fi
 
 IGNORESET=(
   parameter_shadows_function
-  test_for_memory_leaks
 )
 
 function skipped_function() {
