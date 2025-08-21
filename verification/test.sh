@@ -10,7 +10,6 @@ fi
 
 
 IGNORESET=(
-  rewrite_movz_regression
   round_trip_casts
   same_size_conversion
   truncate

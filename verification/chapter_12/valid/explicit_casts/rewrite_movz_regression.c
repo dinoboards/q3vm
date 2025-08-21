@@ -47,29 +47,31 @@ int main(void) {
   // create another clique of twelve pseudos that interfere with each other
   // and MovZeroExtend result, so MovZeroExtend result will have more
   // conflicts than other pseudoregisters
-  int thirteen     = glob - 4987u;
-  int fourteen     = thirteen + 1;
-  int fifteen      = 28 - thirteen;
-  int sixteen      = fourteen + 2;
-  int seventeen    = 4 + thirteen;
-  int eighteen     = 32 - fourteen;
-  int nineteen     = 35 - sixteen;
-  int twenty       = fifteen + 5;
-  int twenty_one   = thirteen * 2 - 5;
-  int twenty_two   = fifteen + 7;
-  int twenty_three = 6 + seventeen;
-  int twenty_four  = thirteen + 11;
+  {
+    int thirteen     = glob - 4987u;
+    int fourteen     = thirteen + 1;
+    int fifteen      = 28 - thirteen;
+    int sixteen      = fourteen + 2;
+    int seventeen    = 4 + thirteen;
+    int eighteen     = 32 - fourteen;
+    int nineteen     = 35 - sixteen;
+    int twenty       = fifteen + 5;
+    int twenty_one   = thirteen * 2 - 5;
+    int twenty_two   = fifteen + 7;
+    int twenty_three = 6 + seventeen;
+    int twenty_four  = thirteen + 11;
 
-  // validate thirteen through twenty-four
-  // (this makes them all live at this point)
-  check_12_ints(thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three,
-                twenty_four, 13);
-  // use MovZeroExtend result to make it interfere with other pseudos
-  // and validate that it wasn't clobbered
-  if (should_spill != 5000l) {
-    return -1;
+    // validate thirteen through twenty-four
+    // (this makes them all live at this point)
+    check_12_ints(thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twenty_one, twenty_two, twenty_three,
+                  twenty_four, 13);
+    // use MovZeroExtend result to make it interfere with other pseudos
+    // and validate that it wasn't clobbered
+    if (should_spill != 5000l) {
+      return -1;
+    }
+    return 0; // success
   }
-  return 0; // success
 }
 
 // validate that a == start, b == start + 1, ...l == start + 11
