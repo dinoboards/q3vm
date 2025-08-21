@@ -1,32 +1,33 @@
 #include "opcodes.h"
 
 const char *const opnames[OPCODE_TABLE_SIZE] = {
-    "UNDEF",      /*   1  Error: VM halt */
-    "IGNORE",     /*   2  No operation */
-    "BREAK",      /*   3  vm->breakCount++ */
-    "ADD",        /*   4  Add integers (two's complement). */
-    "ADD3",       /*   5  */
-    "ADDF",       /*   6  Add floats */
-    "ARG",        /*   7  Marshal argument */
-    "ARG4",       /*   8  */
-    "ARGF",       /*   9  */
-    "BAND",       /*  10  Bitwise AND */
-    "BAND3",      /*  11  */
-    "BCOM",       /*  12  Bitwise COMplement */
-    "BCOM3",      /*  13  */
-    "BLOCK_COPY", /*  14  memcpy */
-    "BOR",        /*  15  Bitwise OR */
-    "BOR3",       /*  16  */
-    "BXOR",       /*  17  Bitwise eXclusive-OR */
-    "BXOR3",      /*  18  */
-    "CALL",       /*  19  Call subroutine. */
-    "CI1I3",      /*  20  */
-    "CI1I4",      /*  21  Sign-Extend 8-bit */
-    "CI2I3",      /*  22  */
-    "CI2I4",      /*  23  Sign-Extend 16-bit */
-    "CI3I1",      /*  24  */
-    "CI3I2",      /*  25  */
-    "CI3I4",      /*  26  */
+    "UNDEF",      /*   0  Error: VM halt */
+    "IGNORE",     /*   1  No operation */
+    "BREAK",      /*   2  vm->breakCount++ */
+    "ADD",        /*   3  Add integers (two's complement). */
+    "ADD3",       /*   4  */
+    "ADDF",       /*   5  Add floats */
+    "ARG",        /*   6  Marshal argument */
+    "ARG4",       /*   7  */
+    "ARGF",       /*   8  */
+    "BAND",       /*   9  Bitwise AND */
+    "BAND3",      /*  10  */
+    "BCOM",       /*  11  Bitwise COMplement */
+    "BCOM3",      /*  12  */
+    "BLOCK_COPY", /*  13  memcpy */
+    "BOR",        /*  14  Bitwise OR */
+    "BOR3",       /*  15  */
+    "BXOR",       /*  16  Bitwise eXclusive-OR */
+    "BXOR3",      /*  17  */
+    "CALL",       /*  18  Call subroutine. */
+    "CI1I3",      /*  19  */
+    "CI1I4",      /*  20  Sign-Extend 8-bit */
+    "CI2I3",      /*  21  */
+    "CI2I4",      /*  22  Sign-Extend 16-bit */
+    "CI3I1",      /*  23  */
+    "CI3I2",      /*  24  */
+    "CI3I4",      /*  25  */
+    "CI3U4",      /*  26  */
     "CI4I3",      /*  27  */
     "CONSTF4",    /*  28  */
     "CONSTGP3",   /*  29  */

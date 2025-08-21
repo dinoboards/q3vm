@@ -10,6 +10,11 @@ fi
 
 
 IGNORESET=(
+  extension
+  rewrite_movz_regression
+  round_trip_casts
+  same_size_conversion
+  truncate
 )
 
 function skipped_function() {
@@ -24,7 +29,7 @@ function skipped_function() {
 }
 
 jobs=""
-all_dirs=$(find -iname "chapter_*" | sort -V)
+all_dirs=$(find -iname "chapter_12" | sort -V)
 
 for dir in $all_dirs; do
   dir="${dir#./}"

@@ -5,32 +5,33 @@
 
 /** Enum for the virtual machine op codes */
 typedef enum {
-  OP_UNDEF,      /*   1  Error: VM halt */
-  OP_IGNORE,     /*   2  No operation */
-  OP_BREAK,      /*   3  vm->breakCount++ */
-  OP_ADD,        /*   4  Add integers (two's complement). */
-  OP_ADD3,       /*   5  */
-  OP_ADDF,       /*   6  Add floats */
-  OP_ARG,        /*   7  Marshal argument */
-  OP_ARG4,       /*   8  */
-  OP_ARGF,       /*   9  */
-  OP_BAND,       /*  10  Bitwise AND */
-  OP_BAND3,      /*  11  */
-  OP_BCOM,       /*  12  Bitwise COMplement */
-  OP_BCOM3,      /*  13  */
-  OP_BLOCK_COPY, /*  14  memcpy */
-  OP_BOR,        /*  15  Bitwise OR */
-  OP_BOR3,       /*  16  */
-  OP_BXOR,       /*  17  Bitwise eXclusive-OR */
-  OP_BXOR3,      /*  18  */
-  OP_CALL,       /*  19  Call subroutine. */
-  OP_CI1I3,      /*  20  */
-  OP_CI1I4,      /*  21  Sign-Extend 8-bit */
-  OP_CI2I3,      /*  22  */
-  OP_CI2I4,      /*  23  Sign-Extend 16-bit */
-  OP_CI3I1,      /*  24  */
-  OP_CI3I2,      /*  25  */
-  OP_CI3I4,      /*  26  */
+  OP_UNDEF,      /*   0  Error: VM halt */
+  OP_IGNORE,     /*   1  No operation */
+  OP_BREAK,      /*   2  vm->breakCount++ */
+  OP_ADD,        /*   3  Add integers (two's complement). */
+  OP_ADD3,       /*   4  */
+  OP_ADDF,       /*   5  Add floats */
+  OP_ARG,        /*   6  Marshal argument */
+  OP_ARG4,       /*   7  */
+  OP_ARGF,       /*   8  */
+  OP_BAND,       /*   9  Bitwise AND */
+  OP_BAND3,      /*  10  */
+  OP_BCOM,       /*  11  Bitwise COMplement */
+  OP_BCOM3,      /*  12  */
+  OP_BLOCK_COPY, /*  13  memcpy */
+  OP_BOR,        /*  14  Bitwise OR */
+  OP_BOR3,       /*  15  */
+  OP_BXOR,       /*  16  Bitwise eXclusive-OR */
+  OP_BXOR3,      /*  17  */
+  OP_CALL,       /*  18  Call subroutine. */
+  OP_CI1I3,      /*  19  */
+  OP_CI1I4,      /*  20  Sign-Extend 8-bit */
+  OP_CI2I3,      /*  21  */
+  OP_CI2I4,      /*  22  Sign-Extend 16-bit */
+  OP_CI3I1,      /*  23  */
+  OP_CI3I2,      /*  24  */
+  OP_CI3I4,      /*  25  */
+  OP_CI3U4,      /*  26  */
   OP_CI4I3,      /*  27  */
   OP_CONSTF4,    /*  28  */
   OP_CONSTGP3,   /*  29  */

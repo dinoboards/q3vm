@@ -1,22 +1,7 @@
-#include "bg_lib.h"
+/* The order in which multiple casts are applied matters */
 
-void printf(const char *fmt, ...);
-/*
-================
-vmMain
-
-This is the only way control passes into the module.
-This must be the very first function compiled into the .qvm file
-================
-*/
-
-typedef unsigned char uint8_t;
-typedef char          int8_t;
-
-typedef unsigned short uint16_t;
-typedef short          int16_t;
-
-unsigned int ui = 16777120u; // 2^24 - 96
+// start with a global variable so we can't optimize away casts in Part III
+unsigned int ui = 4294967200u; // 2^32 - 96
 
 int main(void) {
 
@@ -25,8 +10,8 @@ int main(void) {
    * 2. signed-extend the result, which preserves the value of -96
    * Note that if we cast ui directly to a signed long, its value wouldn't change
    */
-  // if ((long)(signed)ui != -96l)
-  //   return 1;
+  if ((long)(signed)ui != -96l)
+    return 1;
 
   /* In this case we
    * 1. convert ui to a signed int by computing ui - 2^32, producing -96
