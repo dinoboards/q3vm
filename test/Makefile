@@ -32,7 +32,7 @@ LINK := q3asm
 LCCFLAGS = -DQ3_VM -S -Wf-target=bytecode -Wf-g
 
 # Native settings
-CFLAGS += -std=c99
+CFLAGS += -std=gnu89
 CFLAGS += -fdata-sections -ffunction-sections -fno-strict-aliasing
 CFLAGS += -fmessage-length=0 -MMD -fno-common -MP -MF"$(@:%.o=%.d)"
 CFLAGS += -Wall
