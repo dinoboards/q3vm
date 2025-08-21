@@ -301,9 +301,13 @@ ASMMultipleFn(CODE_CIxU4) {
     opcode = OP_CI3U4;
     break;
 
+  case '4':
+    WriteComment();
+    return;
+
   default:
     WriteComment();
-    printf("TODO: CODE_CU%cI3\n", token[0]);
+    printf("TODO: CODE_CI%cU4\n", token[0]);
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }

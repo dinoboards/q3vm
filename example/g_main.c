@@ -17,45 +17,15 @@ typedef unsigned short uint16_t;
 typedef short          int16_t;
 
 int main(void) {
-  /* Converting a positive int to an unsigned long preserves its value */
-  if (!int_to_ulong(10, 10ul)) {
-    return 1;
-  }
-
-  /* When you convert a negative int to an unsigned long,
-   * add 2^32 until it's positive
+  /* initializing a tests the rewrite rule for
+   * movq $large_const, memory_address
    */
-  if (!int_to_ulong(-10, 4294967286ul)) {
-    return 2;
-  }
-
-  /* Extending an unsigned int to a signed long preserves its value */
-  if (!uint_to_long(16777120u, 16777120l)) {
-    return 3;
-  }
-
-  /* Extending an unsigned int to an unsigned long preserves its value */
-  if (!uint_to_ulong(16777120u, 16777120ul)) {
-    return 4;
-  }
-  /* Zero-extend constant 16777120
-   * from an unsigned int to an unsigned long
-   * to test the assembly rewrite rule for MovZeroExtend
+  long a = 16777210L;
+  long b = 0l;
+  /* Assign the value of one long variable
+   * (which is too large for an int to represent)
+   * to another long variable
    */
-  if ((unsigned long)16777120u != 16777120ul) {
-    return 5;
-  }
-  return 0;
+  b = a;
+  return (b == 16777210L);
 }
-
-int int_to_ulong(int i, unsigned long expected) {
-  unsigned long result = (unsigned long)i;
-  return result == expected;
-}
-
-int uint_to_long(unsigned int ui, long expected) {
-  long result = (long)ui;
-  return result == expected;
-}
-
-int uint_to_ulong(unsigned ui, unsigned long expected) { return (unsigned long)ui == expected; }
