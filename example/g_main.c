@@ -16,47 +16,38 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-static int long a;
-int static long a;
-long static a;
+long x = 5l;
 
 int main(void) {
-  // this would be equal to zero if we only considered lower 24 bits
-  long l    = 1073741824l; // 2^30
-  long zero = 0l;
-  if (not(l)) {
+
+  if (!add_large()) {
     return 1;
   }
-  if (!not(zero)) {
+
+  if (!subtract_large()) {
     return 2;
   }
-  if (!if_cond(l)) {
+
+  if (!multiply_by_large()) {
     return 3;
   }
-  if (if_cond(zero)) {
-    return 4;
-  }
-
-  if (and(zero, 1)) {
-    return 5;
-  }
-
-  if (!or(1, l)) {
-    return 6;
-  }
 
   return 0;
 }
 
-int not(long l) { return !l; }
-
-int if_cond(long l) {
-  if (l) {
-    return 1;
-  }
-  return 0;
+int add_large(void) {
+  // x = 5l
+  x = x + 16777210l;       // this constant is 2^24 - 6
+  return (x == 16777215l); // 4294967295l); // -1
 }
 
-int and(long l1, int l2) { return l1 && l2; }
+int subtract_large(void) {
+  x = x - 16777210l;
+  return (x == 5l);
+}
 
-int or(int l1, long l2) { return l1 || l2; }
+int multiply_by_large(void) {
+  // x = 5
+  x = x * 429496729l;
+  return (x == 2147483645l);
+}
