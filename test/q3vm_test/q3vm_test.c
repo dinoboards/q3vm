@@ -37,7 +37,6 @@ int testInject(const char *filepath, int offset, int opcode) {
   fprintf(stderr, "Injecting wrong OP code %s at %i: %i\n", filepath, offset, opcode);
   memcpy(&image[offset], &opcode, sizeof(opcode)); /* INJECT */
   retVal = VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls);
-  VM_Free(&vm);
   free(image);
 
   return (retVal == -1) ? 0 : -1;
@@ -55,8 +54,9 @@ static void COM_StripExtension(const char *in, char *out) {
 int testNominal(const char *filepath) {
   vm_t     vm;
   int      imageSize;
-  uint8_t *image  = loadImage(filepath, &imageSize);
-  int      retVal = -1;
+  uint8_t *image       = loadImage(filepath, &imageSize);
+  int      retVal      = -1;
+  int      failedTests = 0;
 
   if (!image) {
     fprintf(stderr, "Failed to load bytecode image from %s\n", filepath);
@@ -82,18 +82,28 @@ int testNominal(const char *filepath) {
 
     /* normal call, should give us 0 */
     retVal = VM_Call(&vm, 0);
+    if (retVal != 0 || vm.lastError != 0) {
+      printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
+      failedTests++;
+    }
+
     /* now do the proper call, this should give us 333 */
-    retVal += VM_Call(&vm, 0, 0, 1, 2);
-    /* so now retVal should be 333 if everything is as expected */
-    printf("Result (should be 333): %i\n", retVal);
+    retVal = VM_Call(&vm, 0, 0, 1, 2);
+    if (retVal != 333 || vm.lastError != 0) {
+      printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
+      failedTests++;
+    }
     /* now do an invalid function call within the VM */
-    retVal += (VM_Call(&vm, 2) + 1); /* we expect a -1, so we add a +1 to cancel it out */
+    retVal = VM_Call(&vm, 2);
+    if (vm.lastError != VM_PC_OUT_OF_RANGE) {
+      printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
+      failedTests++;
+    }
   }
   VM_VmProfile_f(&vm);
-  VM_Free(&vm);
   free(image);
 
-  if (retVal == 333) {
+  if (failedTests == 0) {
     printf("All tests passed [x]\n");
     return 0;
   } else {
@@ -113,8 +123,11 @@ void testArguments(void) {
   VM_ArgPtr(1, NULL);
   VM_MemoryRangeValid(0, 0, NULL);
   loadImage(NULL, &imageSize);
+
   loadImage("invalidpathfoobar", &imageSize);
+
   VM_Create(NULL, NULL, 0, dataSegment, sizeof(dataSegment), NULL);
+  printf("3\r\n");
   VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL);
   VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls);
   VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls);
@@ -134,6 +147,9 @@ void testArguments(void) {
   vmHeader.dataLength       = to_uint24(2048);
   vmHeader.litLength        = to_uint24(0);
   vmHeader.bssLength        = to_uint24(256);
+
+  printf("8\r\n");
+
   VM_Create(&vm, (uint8_t *)&vmHeader,
             sizeof(vmHeader_t) + to_ustdint(vmHeader.codeLength) + to_ustdint(vmHeader.dataLength) +
                 to_ustdint(vmHeader.litLength) - 1,
@@ -141,10 +157,7 @@ void testArguments(void) {
 
   VM_Call(NULL, 0);
 
-  VM_Free(NULL);
-
   vm.callLevel = 1;
-  VM_Free(&vm);
 }
 
 int main(int argc, char **argv) {
@@ -167,7 +180,9 @@ int main(int argc, char **argv) {
   return testNominal(file);
 }
 
+#ifdef DEBUG_VM
 void Com_Error(vmErrorCode_t level, const char *error) { fprintf(stderr, "Err(%i): %s\n", level, error); }
+#endif
 
 uint8_t *loadImage(const char *filepath, int *size) {
   FILE    *f;            /* bytecode input file */

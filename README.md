@@ -16,6 +16,18 @@ Fork Objective: Explore possibility to convert to run on ez80 cpu
 9.  computed gotos not supported in ZDS - and in ez80-clang produces poorer code than a switch statement
 
 
+## TODOs
+
+1. change opstack from using fixed 4 byte wide values to variable values (1 byte for int, 3 for int24 etc)
+2. complete migration of assembly lookup from opstrings.h to assembly.h
+3. complete refactor of all vm case statements to use pop/push pattern
+4. change programCounter and programStack to be pointers not array indexes
+5. extend vm interface to include error callback function - maybe
+6. optimise use of r0.. and r1.. variables - avoid need of many local vars
+7. move VM_ArgPtr, VM_IntToFloat and VM_FloatToInt out of vm.c
+8. optimise VM_CallInterpreted - splat out vm_t, optmise locals, ptrs
+9. remove instructionCount - not needed now
+
 ## Code Section translation
 
 Inside `VM_PrepareInterpreter` the bytecode image is extracted and loaded into separate int arrays
@@ -115,7 +127,6 @@ the bytecode in your application:
 
     VM_Create(&vm, pointerToByteCodeBuffer, sysCall);
     result = VM_Call(&vm, 12345);
-    VM_Free(&vm);
 ```
 
 The `pointerToByteCodeBuffer` is some memory location where the bytecode is

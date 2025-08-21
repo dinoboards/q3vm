@@ -89,7 +89,7 @@ assemblers_t assemblers[] = {
     {"FILE",    DIRECTIVE,     assfn(COMMENT)   },
     {"GEF4",    OP_GEF,        assfn(CODE_32BIT)},
     {"GEI3",    OP_GEI3,       assfn(CODE_24BIT)},
-    {"GEI4",    OP_GEI,        assfn(CODE_32BIT)},
+    {"GEI4",    OP_GEI,        assfn(CODE_24BIT)},
     {"GEU4",    OP_GEU,        assfn(CODE_32BIT)},
     {"GTF4",    OP_GTF,        assfn(CODE_32BIT)},
     {"GTI3",    OP_GTI3,       assfn(CODE_24BIT)},

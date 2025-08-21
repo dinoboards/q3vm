@@ -80,22 +80,24 @@ int main(int argc, char **argv) {
 #endif
     /* call virtual machine vmMain() with integer argument (here 0) */
     retVal = VM_Call(&vm, 0);
+
+    if (vm.lastError) {
+      printf("VM Aborted with error code: %d\n", vm.lastError);
+    }
   }
   /* output profile information in DEBUG_VM build: */
   VM_VmProfile_f(&vm);
-  VM_Free(&vm);
   free(image); /* we can release the memory now */
 
   return retVal;
 }
 
+#ifdef DEBUG_VM
 /* Callback from the VM that something went wrong
  * @param[in] level Error id, see vmErrorCode_t definition.
  * @param[in] error Human readable error text. */
-void Com_Error(vmErrorCode_t level, const char *error) {
-  fprintf(stderr, "Err (%i): %s\n", level, error);
-  exit(level);
-}
+void Com_Error(vmErrorCode_t level, const char *error) { fprintf(stderr, "Err (%i): %s\n", level, error); }
+#endif
 
 uint8_t *loadImage(const char *filepath, int *size) {
   FILE    *f;            /* bytecode input file */

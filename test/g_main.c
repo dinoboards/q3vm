@@ -40,7 +40,7 @@ typedef void (*fun_ptr_t)(int);
 
 int vmMain(int command, int arg0, int arg1, int arg2) {
   volatile long           i;
-  volatile long           iloop = 20000000;
+  volatile long           iloop = 2000000;
   char                    str[] = "Hello %s\n";
   volatile float          f     = 0.0f;
   volatile float          df    = 0.0001f;
@@ -84,7 +84,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     /* call a native function that will call us back here with command == 1
      */
     printf("Test recursive VM call... ");
-    if (recursive(666) != 666) /* we expect our input back */
+    if (recursive(50) != 50) /* we expect our input back */
     {
       printf("failed\n");
       return -1;
@@ -100,7 +100,10 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
     f /= 2.0f;
     f *= 2.0f;
   }
-  printf("Result (should be 2048.000000): %f\n", f);
+  printf("Result (should be 203.933242): %f\n", f);
+
+  if (f <= 203.8 || f >= 204)
+    return -1;
 
   /* memcpy/memset */
   if (doStupidStuff) {

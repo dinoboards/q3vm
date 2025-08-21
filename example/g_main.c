@@ -23,47 +23,143 @@ long static a;
 int my_function(long a, long int b, int long c);
 
 int main(void) {
-  /* Several different ways to declare local long variables */
-  long     x = 1l;
-  long int y = 2l;
-  int long z = 3l;
+  volatile long           i;
+  volatile long           iloop = 20000000;
+  char                    str[] = "Hello %s\n";
+  volatile float          f     = 0.0f;
+  volatile float          df    = 0.0001f;
+  volatile int            xi    = 128;
+  volatile unsigned       xu    = 128;
+  volatile unsigned       xu2   = 3;
+  volatile unsigned short us    = 1;
+  volatile short          si    = 1;
+  volatile long           j;
+  static unsigned char    mem1[8];
+  static unsigned char    mem2[8]       = "Hello"; /* don't change this string */
+  int                     doStupidStuff = 0;       /* misbehave and see if the interpreter deals correctly with that */
 
-  /* This links to the file-scope declarations of 'a' above */
-  extern long a;
-  a = 4;
+  /* integer stuff */
+  for (j = 0; j < 32; j++) {
+    xi = us;
+    xi = si;
+    xi = j;
+    xi = xi << 3;
+    xi = xi >> 2;
+    xi = xi * 3;
+    xi = xi / 3;
+    xi = xi % 2;
+    xi = xi & 3;
+    xi = xi | 4;
+    xi = xi ^ 4;
+    xu = xu * 3;
+    xu = xu / 3;
+    xu = xu + 2;
+    xu = xu - 2;
+    xu = xu % 2;
+    xu = xu << xu2;
+    xu = xu >> xu2;
+    xu = xu / xu2;
+    xu = xu % xu2;
+    xu = xu * xu2;
+    us += 2;
+    us = us << 3;
+    xi = us + 3;
 
-  /* make sure we can use long type specifier in for loop initializer
-   * i is 2^30 so this loop should have 31 iterations
-   */
-  {
-    int  sum = 0;
-    long i;
-    for (i = 1073741824L; i > 0; i = i / 2) {
-      sum = sum + 1;
+    xu = ~xu;
+    xi = (short)xi;
+    f  = j * j;
+
+    if (j > 0) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
     }
-
-    /* Make sure everything has the expected value */
-    if (x != 1) {
-      return 1;
+    if (j >= 0) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
     }
-
-    if (y != 2) {
-      return 2;
+    if (j < 5) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
     }
-
-    if (a != 4) {
-      return 3;
+    if (j <= 5) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
     }
-
-    if (my_function(x, y, z) != 6) {
-      return 4;
+    xu = j;
+    if (xu > 5U) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
     }
-
-    if (sum != 31) {
-      return 5;
+    if (xu >= 5U) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
     }
-    return 0;
+    if (xu < 5U) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
+    }
+    if (xu <= 5U) {
+      xi = -xi;
+    } else {
+      xi = 2 * xi;
+    }
+    if (f > 0) {
+      f = -f;
+    } else {
+      f = 2 * f;
+    }
+    if (f >= 0) {
+      f = -f;
+    } else {
+      f = 2 * f;
+    }
+    if (f < 1) {
+      f = -f;
+    } else {
+      f = 2 * f;
+    }
+    if (f <= 1) {
+      f = -f;
+    } else {
+      f = 2 * f;
+    }
+    f = 0.1f;
+    if (f != df) {
+      f = 128 * f;
+    }
+    f *= 0.1f;
+    f = df;
+    if (f != df) {
+      f = 128 * f;
+    }
+    f *= 0.1f;
+    if (f == 0.0f) {
+      f = -f;
+    } else {
+      f = 0.0f;
+    }
+    df = f + 0.1f;
+    if (df == f) {
+      df = 1.2f * df;
+    }
+    df = f;
+    if (df == f) {
+      df = 1.2f * df;
+    }
+    df = 0.95f * df;
+    if (f == df) {
+      f = -f;
+    } else {
+      f = 2 * f;
+    }
   }
-}
 
-int my_function(long int x, int long y, long z) { return x + y + z; }
+  return 0;
+}
