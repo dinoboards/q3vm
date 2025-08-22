@@ -61,8 +61,8 @@ assemblers_t assemblers[] = {
     {"CNSTU4",  OP_CONSTU4,    assfn(CODE_32BIT)},
     {"CODE",    DIRECTIVE,     assfn(CODE)      },
     {"CONSTU2", OP_CONSTU2,    assfn(CODE_16BIT)},
-    {"CVFI4",   OP_CVFI,       assfn(CODE_OP)   },
-    {"CVIF4",   OP_CVIF,       assfn(CODE_OP)   },
+    {"CVFI4",   OP_CF4I4,      assfn(CODE_OP)   },
+    {"CVIF4",   OP_CI4F4,      assfn(CODE_OP)   },
     {"CVII1",   OP_IGNORE,     assfn(CODE_CIxI1)},
     {"CVII2",   OP_MULTIPLE,   assfn(CODE_CIxI2)},
     {"CVII3",   OP_MULTIPLE,   assfn(CODE_CIxI3)}, /* extend sign Ix to I3*/

@@ -24,37 +24,37 @@ typedef enum {
   OP_BXOR3,      /*  16  */
   OP_BXOR4,      /*  17  Bitwise eXclusive-OR */
   OP_CALL,       /*  18  Call subroutine. */
-  OP_CI1I3,      /*  19  */
-  OP_CI1I4,      /*  20  Sign-Extend 8-bit */
-  OP_CI2I3,      /*  21  */
-  OP_CI2I4,      /*  22  Sign-Extend 16-bit */
-  OP_CI3I1,      /*  23  */
-  OP_CI3I2,      /*  24  */
-  OP_CI3I4,      /*  25  */
-  OP_CI3U4,      /*  26  */
-  OP_CI4I3,      /*  27  */
-  OP_CI4U3,      /*  28  */
-  OP_CONSTF4,    /*  29  */
-  OP_CONSTGP3,   /*  30  */
-  OP_CONSTGP4,   /*  31  Load constant to stack. */
-  OP_CONSTI1,    /*  32  */
-  OP_CONSTI2,    /*  33  */
-  OP_CONSTI3,    /*  34  */
-  OP_CONSTI4,    /*  35  */
-  OP_CONSTP3,    /*  36  */
-  OP_CONSTP4,    /*  37  */
-  OP_CONSTU1,    /*  38  */
-  OP_CONSTU2,    /*  39  */
-  OP_CONSTU3,    /*  40  */
-  OP_CONSTU4,    /*  41  */
-  OP_CU2I3,      /*  42  */
-  OP_CU3U2,      /*  43  */
-  OP_CU3U4,      /*  44  */
-  OP_CU4I3,      /*  45  */
-  OP_CU4U3,      /*  46  */
-  OP_CVFI,       /*  47  Convert to float from integer */
-  OP_CVFI3,      /*  48  */
-  OP_CVIF,       /*  49  Convert to integer from float */
+  OP_CF4I4,      /*  19  Convert to float from integer */
+  OP_CI1I3,      /*  20  */
+  OP_CI1I4,      /*  21  Sign-Extend 8-bit */
+  OP_CI2I3,      /*  22  */
+  OP_CI2I4,      /*  23  Sign-Extend 16-bit */
+  OP_CI3I1,      /*  24  */
+  OP_CI3I2,      /*  25  */
+  OP_CI3I4,      /*  26  */
+  OP_CI3U4,      /*  27  */
+  OP_CI4F4,      /*  28  Convert to integer from float */
+  OP_CI4I3,      /*  29  */
+  OP_CI4U3,      /*  30  */
+  OP_CONSTF4,    /*  31  */
+  OP_CONSTGP3,   /*  32  */
+  OP_CONSTGP4,   /*  33  Load constant to stack. */
+  OP_CONSTI1,    /*  34  */
+  OP_CONSTI2,    /*  35  */
+  OP_CONSTI3,    /*  36  */
+  OP_CONSTI4,    /*  37  */
+  OP_CONSTP3,    /*  38  */
+  OP_CONSTP4,    /*  39  */
+  OP_CONSTU1,    /*  40  */
+  OP_CONSTU2,    /*  41  */
+  OP_CONSTU3,    /*  42  */
+  OP_CONSTU4,    /*  43  */
+  OP_CU2I3,      /*  44  */
+  OP_CU3U2,      /*  45  */
+  OP_CU3U4,      /*  46  */
+  OP_CU4I3,      /*  47  */
+  OP_CU4U3,      /*  48  */
+  OP_CVFI3,      /*  49  */
   OP_CVIU3,      /*  50  */
   OP_CVUI3,      /*  51  */
   OP_DIVF4,      /*  52  Divide floats */

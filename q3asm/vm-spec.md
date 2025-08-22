@@ -89,8 +89,8 @@
 | OP_SUBF           | SUBF4                     | `OS--; *OS = (float)R1 - (float)R0`                           |
 | OP_DIVF4           | DIVF4                     | `OS--; *OS = (float)R1 / (float)R0`                           |
 | OP_MULF           | OP_MULF                   | `OS--; *OS = (float)R1 * (float)R0`                           |
-| OP_CVIF           | CVIF4                     | `*OS = convertToInt((float)*OS)`                              |
-| OP_CVFI           | CVFI4                     | `*OS = convertToFloat(*OS)`                                   |
+| OP_CI4F4           | CVIF4                     | `*OS = convertToInt((float)*OS)`                              |
+| OP_CF4I4           | CVFI4                     | `*OS = convertToFloat(*OS)`                                   |
 
 > int to float does not perform numerical conversion - assumes the int is actually a float representation
 

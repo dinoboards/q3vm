@@ -20,40 +20,40 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "BXOR3",      /*  16  */
     "BXOR4",      /*  17  Bitwise eXclusive-OR */
     "CALL",       /*  18  Call subroutine. */
-    "CI1I3",      /*  19  */
-    "CI1I4",      /*  20  Sign-Extend 8-bit */
-    "CI2I3",      /*  21  */
-    "CI2I4",      /*  22  Sign-Extend 16-bit */
-    "CI3I1",      /*  23  */
-    "CI3I2",      /*  24  */
-    "CI3I4",      /*  25  */
-    "CI3U4",      /*  26  */
-    "CI4I3",      /*  27  */
-    "CI4U3",      /*  28  */
-    "CONSTF4",    /*  29  */
-    "CONSTGP3",   /*  30  */
-    "CONSTGP4",   /*  31  Load constant to stack. */
-    "CONSTI1",    /*  32  */
-    "CONSTI2",    /*  33  */
-    "CONSTI3",    /*  34  */
-    "CONSTI4",    /*  35  */
-    "CONSTP3",    /*  36  */
-    "CONSTP4",    /*  37  */
-    "CONSTU1",    /*  38  */
-    "CONSTU2",    /*  39  */
-    "CONSTU3",    /*  40  */
-    "CONSTU4",    /*  41  */
-    "CU2I3",      /*  42  */
-    "CU3U2",      /*  43  */
-    "CU3U4",      /*  44  */
-    "CU4I3",      /*  45  */
-    "CU4U3",      /*  46  */
-    "CVFI",       /*  47  Convert to float from integer */
-    "CVFI3",      /*  48  */
-    "CVIF",       /*  49  Convert to integer from float */
+    "CF4I4",      /*  19  Convert to float from integer */
+    "CI1I3",      /*  20  */
+    "CI1I4",      /*  21  Sign-Extend 8-bit */
+    "CI2I3",      /*  22  */
+    "CI2I4",      /*  23  Sign-Extend 16-bit */
+    "CI3I1",      /*  24  */
+    "CI3I2",      /*  25  */
+    "CI3I4",      /*  26  */
+    "CI3U4",      /*  27  */
+    "CI4F4",      /*  28  Convert to integer from float */
+    "CI4I3",      /*  29  */
+    "CI4U3",      /*  30  */
+    "CONSTF4",    /*  31  */
+    "CONSTGP3",   /*  32  */
+    "CONSTGP4",   /*  33  Load constant to stack. */
+    "CONSTI1",    /*  34  */
+    "CONSTI2",    /*  35  */
+    "CONSTI3",    /*  36  */
+    "CONSTI4",    /*  37  */
+    "CONSTP3",    /*  38  */
+    "CONSTP4",    /*  39  */
+    "CONSTU1",    /*  40  */
+    "CONSTU2",    /*  41  */
+    "CONSTU3",    /*  42  */
+    "CONSTU4",    /*  43  */
+    "CU2I3",      /*  44  */
+    "CU3U2",      /*  45  */
+    "CU3U4",      /*  46  */
+    "CU4I3",      /*  47  */
+    "CU4U3",      /*  48  */
+    "CVFI3",      /*  49  */
     "CVIU3",      /*  50  */
     "CVUI3",      /*  51  */
-    "DIVF",       /*  52  Divide floats */
+    "DIVF4",      /*  52  Divide floats */
     "DIVI",       /*  53  Divide signed integers. */
     "DIVI3",      /*  54  */
     "DIVU",       /*  55  Divide unsigned integers. */

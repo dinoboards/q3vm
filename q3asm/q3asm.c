@@ -998,7 +998,7 @@ static void AssembleLine(void) {
 
       // check for expression
       Parse();
-      if (token[0] && op->opcode != OP_CVIF && op->opcode != OP_CVFI) {
+      if (token[0] && op->opcode != OP_CI4F4 && op->opcode != OP_CF4I4) {
 
         expression = ParseExpression();
 
