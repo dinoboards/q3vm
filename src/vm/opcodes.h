@@ -8,12 +8,12 @@ typedef enum {
   OP_UNDEF,      /*   0  Error: VM halt */
   OP_IGNORE,     /*   1  No operation */
   OP_BREAK,      /*   2  vm->breakCount++ */
-  OP_ADD,        /*   3  Add integers (two's complement). */
-  OP_ADD3,       /*   4  */
-  OP_ADDF,       /*   5  Add floats */
+  OP_ADD3,       /*   3  */
+  OP_ADD4,       /*   4  Add integers (two's complement). */
+  OP_ADDF4,      /*   5  Add floats */
   OP_ARG3,       /*   6  Marshal argument */
   OP_ARG4,       /*   7  */
-  OP_ARGF,       /*   8  */
+  OP_ARGF4,      /*   8  */
   OP_BAND,       /*   9  Bitwise AND */
   OP_BAND3,      /*  10  */
   OP_BCOM,       /*  11  Bitwise COMplement */

@@ -1,12 +1,12 @@
 OP_UNDEF                Error: VM halt
 OP_IGNORE               No operation
 OP_BREAK                vm->breakCount++
-OP_ADD                  Add integers (two's complement).
 OP_ADD3
-OP_ADDF                 Add floats
-OP_ARG3                  Marshal argument
+OP_ADD4                 Add integers (two's complement).
+OP_ADDF4                Add floats
+OP_ARG3                 Marshal argument
 OP_ARG4
-OP_ARGF
+OP_ARGF4
 OP_BAND                 Bitwise AND
 OP_BAND3
 OP_BCOM                 Bitwise COMplement
@@ -18,7 +18,7 @@ OP_BXOR                 Bitwise eXclusive-OR
 OP_BXOR3
 OP_CALL                 Call subroutine.
 OP_CI1I3
-OP_CI1I4                 Sign-Extend 8-bit
+OP_CI1I4                Sign-Extend 8-bit
 OP_CI2I3
 OP_CI2I4                Sign-Extend 16-bit
 OP_CI3I1

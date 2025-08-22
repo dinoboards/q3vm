@@ -4,12 +4,12 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "UNDEF",      /*   0  Error: VM halt */
     "IGNORE",     /*   1  No operation */
     "BREAK",      /*   2  vm->breakCount++ */
-    "ADD",        /*   3  Add integers (two's complement). */
-    "ADD3",       /*   4  */
-    "ADDF",       /*   5  Add floats */
+    "ADD3",       /*   3  */
+    "ADD4",       /*   4  Add integers (two's complement). */
+    "ADDF4",      /*   5  Add floats */
     "ARG3",       /*   6  Marshal argument */
     "ARG4",       /*   7  */
-    "ARGF",       /*   8  */
+    "ARGF4",      /*   8  */
     "BAND",       /*   9  Bitwise AND */
     "BAND3",      /*  10  */
     "BCOM",       /*  11  Bitwise COMplement */

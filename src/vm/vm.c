@@ -815,7 +815,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       programCounter += 1;
       DISPATCH();
 
-    case OP_ARGF: {
+    case OP_ARGF4: {
       /* single byte offset from programStack */
 #ifdef DEBUG_VM
       float    f = *((float *)&r0);
@@ -1151,7 +1151,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       push_1_int24(INT24(INT(r1_int24) + INT(r0_int24)));
       DISPATCH();
 
-    case OP_ADD: {
+    case OP_ADD4: {
       pop_2_int32();
       log3_3("%08X + %08X =", r1, r0);
       push_1_int32(r1 + r0);
@@ -1306,7 +1306,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_NEGF:
       opStackFlt[0] = -opStackFlt[0];
       DISPATCH();
-    case OP_ADDF:
+    case OP_ADDF4:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] + opStackFlt[1];
       DISPATCH();

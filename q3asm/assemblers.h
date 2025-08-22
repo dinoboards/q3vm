@@ -3,17 +3,17 @@
 #define OP_MULTIPLE -1
 
 assemblers_t assemblers[] = {
-    {"ADDF4",   OP_ADDF,       assfn(CODE_OP)   },
+    {"ADDF4",   OP_ADDF4,      assfn(CODE_OP)   },
     {"ADDI3",   OP_ADD3,       assfn(CODE_OP)   },
-    {"ADDI4",   OP_ADD,        assfn(CODE_OP)   },
+    {"ADDI4",   OP_ADD4,       assfn(CODE_OP)   },
     {"ADDRESS", DIRECTIVE,     assfn(ADDRESS)   },
     {"ADDRF",   OP_LOCAL,      assfn(ADDRF)     },
     {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
     {"ADDRGP4", OP_CONSTGP4,   assfn(CODE_24BIT)}, /* why is this only 24bit?? */
     {"ADDRL",   OP_LOCAL,      assfn(ADDRL)     },
-    {"ADDU4",   OP_ADD,        assfn(CODE_OP)   },
+    {"ADDU4",   OP_ADD4,       assfn(CODE_OP)   },
     {"ALIGN",   DIRECTIVE,     assfn(ALIGN)     },
-    {"ARGF",    OP_ARGF,       assfn(ARGF)      },
+    {"ARGF",    OP_ARG4,       assfn(ARG4)      },
     {"ARGI3",   OP_ARG3,       assfn(ARG3)      },
     {"ARGI4",   OP_ARG4,       assfn(ARG4)      },
     {"ARGP",    OP_ARG3,       assfn(ARG3)      },

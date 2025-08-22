@@ -70,7 +70,7 @@
 | OP_CI1I4           | CVII4 1                   | `*OS = (int32_t)(int8_t)*OS`                                  |
 | OP_CI2I4          | CVII4 2                   | `*OS = (int32_t)(int16_t)*OS`                                 |
 | OP_NEGI           | NEGI4                     | `*OS = -R0`                                                   |
-| OP_ADD            | ADDP, ADDI4, ADDP4, ADDU4 | `OS--; *OS = R1 + R0`                                         |
+| OP_ADD4            | ADDP, ADDI4, ADDP4, ADDU4 | `OS--; *OS = R1 + R0`                                         |
 | OP_SUB            | SUBI4, SUBP4, SUBU4       | `OS--; *OS = R1 - R0`                                         |
 | OP_DIVI           | DIVI4                     | `OS--; *OS = R1 / R0`                                         |
 | OP_DIVU           | DIVU4                     | `OS--; *OS = (uint32_t)R1) / (uint32_t)R0`                    |
@@ -86,7 +86,7 @@
 | OP_RSHI           | RSHI4                     | `OS--; *OS = R1 >> R0`                                        |
 | OP_RSHU           | RSHU4                     | `OS--; *OS = (uint32_t)R1 >> R0`                              |
 | OP_NEGF           | NEGF4                     | `*OS = -(float)R0`                                            |
-| OP_ADDF           | ADDF4                     | `OS--; *OS = (float)R1 + (float)R0`                           |
+| OP_ADDF4           | ADDF4                     | `OS--; *OS = (float)R1 + (float)R0`                           |
 | OP_SUBF           | SUBF4                     | `OS--; *OS = (float)R1 - (float)R0`                           |
 | OP_DIVF           | DIVF4                     | `OS--; *OS = (float)R1 / (float)R0`                           |
 | OP_MULF           | OP_MULF                   | `OS--; *OS = (float)R1 * (float)R0`                           |
