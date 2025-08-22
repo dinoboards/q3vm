@@ -1,3 +1,4 @@
+
 int truncate(long l, int expected);
 
 int main(void) {
@@ -15,7 +16,7 @@ int main(void) {
   /* If a long is outside the range of int,
    * subtract 2^32 until it's in range
    */
-  if (!truncate(17179869189l, // 2^34 + 5
+  if (!truncate(67108869l, // 2^26 + 5
                 5)) {
     return 3;
   }
@@ -23,7 +24,7 @@ int main(void) {
   /* If a negative long is outside the range of int,
    * add 2^32 until it's in range
    */
-  if (!truncate(-17179869179l, // (-2^34) + 5
+  if (!truncate(-67108859l, // (-2^26) + 5
                 5l)) {
     return 4;
   }
@@ -31,11 +32,13 @@ int main(void) {
   /* truncate long constant that can't
    * be expressed in 32 bits, to test rewrite rule
    */
-  int i = (int)17179869189l; // 2^34 + 5
-  if (i != 5)
-    return 5;
+  {
+    int i = (int)67108869l; // 2^26 + 5
+    if (i != 5)
+      return 5;
 
-  return 0;
+    return 0;
+  }
 }
 
 int truncate(long l, int expected) {
