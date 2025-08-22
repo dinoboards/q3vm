@@ -53,11 +53,11 @@ if [[ (${result} != ${expected}) || "$actual_stdout" != "${expected_stdout}" ]];
 else
   if [[ ${trace} != "" ]]; then
     printf "%-80s .... %-40s\n" ${full}.c "Passed (with warnings)"
-    echo -e ${FADE}
-    echo "${trace}" | sed 's/^/  /'
-    echo -e ${NORMAL}
-    echo "  --------------"
-    echo
+    # echo -e ${FADE}
+    # echo "${trace}" | sed 's/^/  /'
+    # echo -e ${NORMAL}
+    # echo "  --------------"
+    # echo
   fi
 
   # printf "%-80s .... %-40s\n" ${full}.c "Passed"
