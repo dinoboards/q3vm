@@ -14,8 +14,8 @@ OP_BCOM4                 Bitwise COMplement
 OP_BLOCK_COPY           memcpy
 OP_BOR3
 OP_BOR4                  Bitwise OR
-OP_BXOR                 Bitwise eXclusive-OR
 OP_BXOR3
+OP_BXOR4                 Bitwise eXclusive-OR
 OP_CALL                 Call subroutine.
 OP_CI1I3
 OP_CI1I4                Sign-Extend 8-bit

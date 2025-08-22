@@ -21,8 +21,8 @@ typedef enum {
   OP_BLOCK_COPY, /*  13  memcpy */
   OP_BOR3,       /*  14  */
   OP_BOR4,       /*  15  Bitwise OR */
-  OP_BXOR,       /*  16  Bitwise eXclusive-OR */
-  OP_BXOR3,      /*  17  */
+  OP_BXOR3,      /*  16  */
+  OP_BXOR4,      /*  17  Bitwise eXclusive-OR */
   OP_CALL,       /*  18  Call subroutine. */
   OP_CI1I3,      /*  19  */
   OP_CI1I4,      /*  20  Sign-Extend 8-bit */

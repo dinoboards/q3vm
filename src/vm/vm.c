@@ -1242,7 +1242,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_BXOR: {
+    case OP_BXOR4: {
       pop_2_uint32();
       log3_3("%08X ^ %08X =", r1, r0);
       push_1_uint32(r1 ^ r0);

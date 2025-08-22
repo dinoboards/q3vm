@@ -17,8 +17,8 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "BLOCK_COPY", /*  13  memcpy */
     "BOR3",       /*  14  */
     "BOR4",       /*  15  Bitwise OR */
-    "BXOR",       /*  16  Bitwise eXclusive-OR */
-    "BXOR3",      /*  17  */
+    "BXOR3",      /*  16  */
+    "BXOR4",      /*  17  Bitwise eXclusive-OR */
     "CALL",       /*  18  Call subroutine. */
     "CI1I3",      /*  19  */
     "CI1I4",      /*  20  Sign-Extend 8-bit */
