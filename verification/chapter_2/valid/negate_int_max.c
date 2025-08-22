@@ -1,4 +1,4 @@
-int main(void) {
+long main(void) {
   // 2147483647 is the largest possible value of type int
-  return -16777216;
+  return -4294967296l;
 }
