@@ -57,7 +57,7 @@ typedef enum {
   OP_CVIF,       /*  49  Convert to integer from float */
   OP_CVIU3,      /*  50  */
   OP_CVUI3,      /*  51  */
-  OP_DIVF,       /*  52  Divide floats */
+  OP_DIVF4,      /*  52  Divide floats */
   OP_DIVI,       /*  53  Divide signed integers. */
   OP_DIVI3,      /*  54  */
   OP_DIVU,       /*  55  Divide unsigned integers. */

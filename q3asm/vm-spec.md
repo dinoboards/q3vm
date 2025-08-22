@@ -87,7 +87,7 @@
 | OP_NEGF           | NEGF4                     | `*OS = -(float)R0`                                            |
 | OP_ADDF4           | ADDF4                     | `OS--; *OS = (float)R1 + (float)R0`                           |
 | OP_SUBF           | SUBF4                     | `OS--; *OS = (float)R1 - (float)R0`                           |
-| OP_DIVF           | DIVF4                     | `OS--; *OS = (float)R1 / (float)R0`                           |
+| OP_DIVF4           | DIVF4                     | `OS--; *OS = (float)R1 / (float)R0`                           |
 | OP_MULF           | OP_MULF                   | `OS--; *OS = (float)R1 * (float)R0`                           |
 | OP_CVIF           | CVIF4                     | `*OS = convertToInt((float)*OS)`                              |
 | OP_CVFI           | CVFI4                     | `*OS = convertToFloat(*OS)`                                   |

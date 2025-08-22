@@ -1310,7 +1310,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] - opStackFlt[1];
       DISPATCH();
-    case OP_DIVF:
+    case OP_DIVF4:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] / opStackFlt[1];
       DISPATCH();
