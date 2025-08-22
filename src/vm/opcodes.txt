@@ -9,7 +9,7 @@ OP_ARG4
 OP_ARGF4
 OP_BAND3
 OP_BAND4                 Bitwise AND
-OP_BCOM                 Bitwise COMplement
+OP_BCOM4                 Bitwise COMplement
 OP_BCOM3
 OP_BLOCK_COPY           memcpy
 OP_BOR                  Bitwise OR

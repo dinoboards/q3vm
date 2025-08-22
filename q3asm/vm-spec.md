@@ -80,7 +80,7 @@
 | OP_BAND4           | BANDI4, BANDU4            | `OS--; *OS = (uint32_t)R1 & (uint32_t)R0`                     |
 | OP_BOR            | BORI4, BORU4              | `OS--; *OS = (uint32_t)R1 \| (uint32_t)R0`                    |
 | OP_BXOR           | BXORI4,BXORU4             | `OS--; *OS = (uint32_t)R1 ^ (uint32_t)R0`                     |
-| OP_BCOM           | BCOMI4, BCOMU4            | `OS--; *OS = ~(uint32_t)R0`                                   |
+| OP_BCOM4           | BCOMI4, BCOMU4            | `OS--; *OS = ~(uint32_t)R0`                                   |
 | OP_LSH            | LSHI4, LSHU4              | `OS--; *OS = R1 << R0`                                        |
 | OP_RSHI           | RSHI4                     | `OS--; *OS = R1 >> R0`                                        |
 | OP_RSHU           | RSHU4                     | `OS--; *OS = (uint32_t)R1 >> R0`                              |

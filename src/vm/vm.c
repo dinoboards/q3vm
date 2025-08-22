@@ -1258,7 +1258,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       push_1_uint24(UINT24(UINT(r1_uint24) ^ UINT(r0_uint24)));
       DISPATCH();
     }
-    case OP_BCOM:
+    case OP_BCOM4:
       *opStack32 = ~((unsigned)r0);
       DISPATCH();
 

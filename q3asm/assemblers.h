@@ -31,9 +31,9 @@ assemblers_t assemblers[] = {
     {"BANDI3",  OP_BAND3,      assfn(CODE_OP)   },
     {"BANDI4",  OP_BAND4,      assfn(CODE_OP)   },
     {"BANDU4",  OP_BAND4,      assfn(CODE_OP)   },
-    {"BCOMI3",  OP_BCOM,       assfn(CODE_OP)   },
-    {"BCOMI4",  OP_BCOM,       assfn(CODE_OP)   },
-    {"BCOMU4",  OP_BCOM,       assfn(CODE_OP)   },
+    {"BCOMI3",  OP_BCOM3,      assfn(CODE_OP)   }, /* TODO: OP_BCOM3 */
+    {"BCOMI4",  OP_BCOM4,      assfn(CODE_OP)   },
+    {"BCOMU4",  OP_BCOM4,      assfn(CODE_OP)   },
     {"BORI3",   OP_BOR3,       assfn(CODE_OP)   },
     {"BORI4",   OP_BOR,        assfn(CODE_OP)   },
     {"BORU4",   OP_BOR,        assfn(CODE_OP)   },

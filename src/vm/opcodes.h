@@ -16,7 +16,7 @@ typedef enum {
   OP_ARGF4,      /*   8  */
   OP_BAND3,      /*   9  */
   OP_BAND4,      /*  10  Bitwise AND */
-  OP_BCOM,       /*  11  Bitwise COMplement */
+  OP_BCOM4,      /*  11  Bitwise COMplement */
   OP_BCOM3,      /*  12  */
   OP_BLOCK_COPY, /*  13  memcpy */
   OP_BOR,        /*  14  Bitwise OR */
