@@ -169,7 +169,7 @@ extern const uint8_t
 
 extern const uint8_t chapter_3_valid_extra_credit_bitwise_xor[CHAPTER_3_VALID_EXTRA_CREDIT_BITWISE_XOR_SIZE];
 
-#define CHAPTER_3_VALID_EXTRA_CREDIT_BITWISE_SHIFTR_NEGATIVE_SIZE 41
+#define CHAPTER_3_VALID_EXTRA_CREDIT_BITWISE_SHIFTR_NEGATIVE_SIZE 44
 
 extern const uint8_t
     chapter_3_valid_extra_credit_bitwise_shiftr_negative[CHAPTER_3_VALID_EXTRA_CREDIT_BITWISE_SHIFTR_NEGATIVE_SIZE];
@@ -984,6 +984,11 @@ extern const uint8_t chapter_8_valid_extra_credit_loop_in_switch[CHAPTER_8_VALID
 
 extern const uint8_t chapter_8_valid_for_nested_shadow[CHAPTER_8_VALID_FOR_NESTED_SHADOW_SIZE];
 
+#define CHAPTER_9_VALID_STACK_ARGUMENTS_TEST_FOR_MEMORY_LEAKS_SIZE 255
+
+extern const uint8_t
+    chapter_9_valid_stack_arguments_test_for_memory_leaks[CHAPTER_9_VALID_STACK_ARGUMENTS_TEST_FOR_MEMORY_LEAKS_SIZE];
+
 #define CHAPTER_9_VALID_STACK_ARGUMENTS_LOTS_OF_ARGUMENTS_SIZE 240
 
 extern const uint8_t chapter_9_valid_stack_arguments_lots_of_arguments[CHAPTER_9_VALID_STACK_ARGUMENTS_LOTS_OF_ARGUMENTS_SIZE];
@@ -1055,6 +1060,11 @@ extern const uint8_t chapter_9_valid_arguments_in_registers_parameter_shadows_ow
 
 extern const uint8_t chapter_9_valid_arguments_in_registers_parameters_are_preserved
     [CHAPTER_9_VALID_ARGUMENTS_IN_REGISTERS_PARAMETERS_ARE_PRESERVED_SIZE];
+
+#define CHAPTER_9_VALID_ARGUMENTS_IN_REGISTERS_PARAMETER_SHADOWS_FUNCTION_SIZE 93
+
+extern const uint8_t chapter_9_valid_arguments_in_registers_parameter_shadows_function
+    [CHAPTER_9_VALID_ARGUMENTS_IN_REGISTERS_PARAMETER_SHADOWS_FUNCTION_SIZE];
 
 #define CHAPTER_9_VALID_ARGUMENTS_IN_REGISTERS_EXPRESSION_ARGS_SIZE 84
 
@@ -1153,11 +1163,16 @@ extern const uint8_t
 extern const uint8_t
     chapter_10_valid_extra_credit_switch_skip_static_initializer[CHAPTER_10_VALID_EXTRA_CREDIT_SWITCH_SKIP_STATIC_INITIALIZER_SIZE];
 
-#define CHAPTER_11_VALID_IMPLICIT_CASTS_COMMON_TYPE_SIZE 492
+#define CHAPTER_11_VALID_IMPLICIT_CASTS_COMMON_TYPE_SIZE 490
 
 extern const uint8_t chapter_11_valid_implicit_casts_common_type[CHAPTER_11_VALID_IMPLICIT_CASTS_COMMON_TYPE_SIZE];
 
-#define CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_STATIC_INITIALIZER_SIZE 97
+#define CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_FUNCTION_ARGUMENTS_SIZE 394
+
+extern const uint8_t
+    chapter_11_valid_implicit_casts_convert_function_arguments[CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_FUNCTION_ARGUMENTS_SIZE];
+
+#define CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_STATIC_INITIALIZER_SIZE 96
 
 extern const uint8_t
     chapter_11_valid_implicit_casts_convert_static_initializer[CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_STATIC_INITIALIZER_SIZE];
@@ -1166,7 +1181,7 @@ extern const uint8_t
 
 extern const uint8_t chapter_11_valid_implicit_casts_long_constants[CHAPTER_11_VALID_IMPLICIT_CASTS_LONG_CONSTANTS_SIZE];
 
-#define CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_BY_ASSIGNMENT_SIZE 115
+#define CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_BY_ASSIGNMENT_SIZE 309
 
 extern const uint8_t
     chapter_11_valid_implicit_casts_convert_by_assignment[CHAPTER_11_VALID_IMPLICIT_CASTS_CONVERT_BY_ASSIGNMENT_SIZE];
@@ -1179,18 +1194,26 @@ extern const uint8_t chapter_11_valid_long_expressions_assign[CHAPTER_11_VALID_L
 
 extern const uint8_t chapter_11_valid_long_expressions_return_long[CHAPTER_11_VALID_LONG_EXPRESSIONS_RETURN_LONG_SIZE];
 
-#define CHAPTER_11_VALID_LONG_EXPRESSIONS_LONG_AND_INT_LOCALS_SIZE 334
+#define CHAPTER_11_VALID_LONG_EXPRESSIONS_LONG_AND_INT_LOCALS_SIZE 330
 
 extern const uint8_t
     chapter_11_valid_long_expressions_long_and_int_locals[CHAPTER_11_VALID_LONG_EXPRESSIONS_LONG_AND_INT_LOCALS_SIZE];
 
-#define CHAPTER_11_VALID_LONG_EXPRESSIONS_ARITHMETIC_OPS_SIZE 703
+#define CHAPTER_11_VALID_LONG_EXPRESSIONS_COMPARISONS_SIZE 493
+
+extern const uint8_t chapter_11_valid_long_expressions_comparisons[CHAPTER_11_VALID_LONG_EXPRESSIONS_COMPARISONS_SIZE];
+
+#define CHAPTER_11_VALID_LONG_EXPRESSIONS_ARITHMETIC_OPS_SIZE 699
 
 extern const uint8_t chapter_11_valid_long_expressions_arithmetic_ops[CHAPTER_11_VALID_LONG_EXPRESSIONS_ARITHMETIC_OPS_SIZE];
 
-#define CHAPTER_11_VALID_LONG_EXPRESSIONS_TYPE_SPECIFIERS_SIZE 317
+#define CHAPTER_11_VALID_LONG_EXPRESSIONS_TYPE_SPECIFIERS_SIZE 314
 
 extern const uint8_t chapter_11_valid_long_expressions_type_specifiers[CHAPTER_11_VALID_LONG_EXPRESSIONS_TYPE_SPECIFIERS_SIZE];
+
+#define CHAPTER_11_VALID_LONG_EXPRESSIONS_LOGICAL_SIZE 530
+
+extern const uint8_t chapter_11_valid_long_expressions_logical[CHAPTER_11_VALID_LONG_EXPRESSIONS_LOGICAL_SIZE];
 
 #define CHAPTER_11_VALID_LONG_EXPRESSIONS_SIMPLE_SIZE 85
 
@@ -1204,11 +1227,40 @@ extern const uint8_t chapter_11_valid_long_expressions_multi_op[CHAPTER_11_VALID
 
 extern const uint8_t chapter_11_valid_long_expressions_static_long[CHAPTER_11_VALID_LONG_EXPRESSIONS_STATIC_LONG_SIZE];
 
-#define CHAPTER_11_VALID_EXPLICIT_CASTS_SIGN_EXTEND_SIZE 235
+#define CHAPTER_11_VALID_LONG_EXPRESSIONS_LARGE_CONSTANTS_SIZE 369
+
+extern const uint8_t chapter_11_valid_long_expressions_large_constants[CHAPTER_11_VALID_LONG_EXPRESSIONS_LARGE_CONSTANTS_SIZE];
+
+#define CHAPTER_11_VALID_EXPLICIT_CASTS_SIGN_EXTEND_SIZE 234
 
 extern const uint8_t chapter_11_valid_explicit_casts_sign_extend[CHAPTER_11_VALID_EXPLICIT_CASTS_SIGN_EXTEND_SIZE];
 
-#define Q3VM_VERIFICATION_SIZE 288
+#define CHAPTER_11_VALID_EXPLICIT_CASTS_TRUNCATE_SIZE 325
+
+extern const uint8_t chapter_11_valid_explicit_casts_truncate[CHAPTER_11_VALID_EXPLICIT_CASTS_TRUNCATE_SIZE];
+
+#define CHAPTER_12_VALID_EXPLICIT_CASTS_EXTENSION_SIZE 412
+
+extern const uint8_t chapter_12_valid_explicit_casts_extension[CHAPTER_12_VALID_EXPLICIT_CASTS_EXTENSION_SIZE];
+
+#define CHAPTER_12_VALID_EXPLICIT_CASTS_ROUND_TRIP_CASTS_SIZE 113
+
+extern const uint8_t chapter_12_valid_explicit_casts_round_trip_casts[CHAPTER_12_VALID_EXPLICIT_CASTS_ROUND_TRIP_CASTS_SIZE];
+
+#define CHAPTER_12_VALID_EXPLICIT_CASTS_CHAINED_CASTS_SIZE 94
+
+extern const uint8_t chapter_12_valid_explicit_casts_chained_casts[CHAPTER_12_VALID_EXPLICIT_CASTS_CHAINED_CASTS_SIZE];
+
+#define CHAPTER_12_VALID_EXPLICIT_CASTS_REWRITE_MOVZ_REGRESSION_SIZE 1061
+
+extern const uint8_t
+    chapter_12_valid_explicit_casts_rewrite_movz_regression[CHAPTER_12_VALID_EXPLICIT_CASTS_REWRITE_MOVZ_REGRESSION_SIZE];
+
+#define CHAPTER_12_VALID_EXPLICIT_CASTS_TRUNCATE_SIZE 519
+
+extern const uint8_t chapter_12_valid_explicit_casts_truncate[CHAPTER_12_VALID_EXPLICIT_CASTS_TRUNCATE_SIZE];
+
+#define Q3VM_VERIFICATION_SIZE 300
 
 extern test_run_t q3vm_verification[Q3VM_VERIFICATION_SIZE];
 

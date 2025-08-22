@@ -126,7 +126,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] args Arguments for function call.
  * @return Return value of the function call. */
-static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args);
+static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args);
 
 /** Executes a block copy operation (memcpy) within currentVM data space.
  * @param[out] dest Pointer (in VM space).
@@ -316,14 +316,14 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
 
   vm->lastError = 0;
   {
-    uint32_t args[MAX_VMMAIN_ARGS];
-    va_list  ap;
-    uint8_t  i;
+    int24_t args[MAX_VMMAIN_ARGS];
+    va_list ap;
+    uint8_t i;
 
-    args[0] = command;
+    args[0] = INT24(command);
     va_start(ap, command);
     for (i = 1; i < (uint8_t)ARRAY_LEN(args); i++) {
-      args[i] = va_arg(ap, uint32_t);
+      args[i] = va_arg(ap, int24_t);
     }
     va_end(ap);
 
@@ -601,7 +601,7 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
   log3_2("%02X PUSHED int8\n", *opStack32);
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
-static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
+static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
   uint8_t        _opStack[OPSTACK_SIZE + 4] = {0}; /* 256 4 byte double words + 4 safety bytes */
   uint8_t       *opStack8                   = &_opStack[4];
   stdint_t       programCounter;
@@ -644,7 +644,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
   programStack -= (6 + 3 * MAX_VMMAIN_ARGS);
 
   for (arg = 0; arg < MAX_VMMAIN_ARGS; arg++) {
-    *(int24_t *)&dataBase[programStack + 6 + arg * 3] = INT24(args[arg]);
+    *(int24_t *)&dataBase[programStack + 6 + arg * 3] = args[arg];
   }
 
   *(int24_t *)&dataBase[programStack + 3] = INT24(0);  /* return stack */
