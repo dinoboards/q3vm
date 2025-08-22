@@ -63,9 +63,9 @@ typedef enum {
   OP_DIVU,       /*  55  Divide unsigned integers. */
   OP_DIVU3,      /*  56  */
   OP_ENTER,      /*  57  Begin subroutine. */
-  OP_EQ,         /*  58  Compare integers, jump if equal. */
-  OP_EQ3,        /*  59  */
-  OP_EQF,        /*  60  Compare floats, jump if equal */
+  OP_EQ3,        /*  58  */
+  OP_EQ4,        /*  59  Compare integers, jump if equal. */
+  OP_EQF4,       /*  60  Compare floats, jump if equal */
   OP_EQU3,       /*  61  */
   OP_GEF,        /*  62  Compare floats, jump if greater-than-or-equal */
   OP_GEI,        /*  63  Compare integers, jump if greater-than-or-equal. */

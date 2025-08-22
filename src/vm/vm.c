@@ -940,7 +940,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       DISPATCH();
 
-    case OP_EQ: {
+    case OP_EQ4: {
       pop_2_int32();
       log3_3("%08X == %08X\n", r1, r0);
       programCounter = (r1 == r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
@@ -1060,7 +1060,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    case OP_EQF:
+    case OP_EQF4:
       opStack8 -= 8;
 
       if (opStackFlt[1] == opStackFlt[2]) {

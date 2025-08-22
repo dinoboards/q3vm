@@ -59,9 +59,9 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "DIVU",       /*  55  Divide unsigned integers. */
     "DIVU3",      /*  56  */
     "ENTER",      /*  57  Begin subroutine. */
-    "EQ",         /*  58  Compare integers, jump if equal. */
-    "EQ3",        /*  59  */
-    "EQF",        /*  60  Compare floats, jump if equal */
+    "EQ3",        /*  58  */
+    "EQ4",        /*  59  Compare integers, jump if equal. */
+    "EQF4",       /*  60  Compare floats, jump if equal */
     "EQU3",       /*  61  */
     "GEF",        /*  62  Compare floats, jump if greater-than-or-equal */
     "GEI",        /*  63  Compare integers, jump if greater-than-or-equal. */
