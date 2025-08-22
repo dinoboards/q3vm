@@ -16,60 +16,89 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-#pragma GCC diagnostic ignored "-Woverflow"
+long a;
+long b;
 
-int return_truncated_long(long l);
-
-long return_extended_int(int i);
-
-int truncate_on_assignment(long l, int expected);
+int addition(void);
+int subtraction(void);
+int multiplication(void);
+int division(void);
+int remaind(void);
+int complement(void);
 
 int main(void) {
 
-  // return statements
-
-  /* return_truncated_long will truncate 2^24 + 2 to 2
-   * assigning it to result converts this to a long
-   * but preserves its value.
-   */
-  long result = return_truncated_long(16777218l);
-  if (result != 2l) {
+  /* Addition */
+  a = 4294967290l; // 2^32 - 6
+  b = 5l;
+  if (!addition()) {
     return 1;
   }
 
-  /* return_extended_int sign-extends its argument, preserving its value */
-  result = return_extended_int(-10);
-  if (result != -10) {
+  /* Subtraction */
+  a = -16777210l;
+  b = 90l;
+  if (!subtraction()) {
     return 2;
   }
 
-  // initializer
-
-  /* This is 2^24 + 2,
-   * it will be truncated to 2 by assignment
-   */
-  {
-    int i = 16777218l;
-    if (i != 2) {
-      return 3;
-    }
-
-    // assignment expression
-
-    // 2^26 will be truncated to 0 when assigned to an int
-    if (!truncate_on_assignment(67108864l, 0)) {
-      return 4;
-    }
-
-    return 0;
+  /* Multiplication */
+  a = 16777210l;
+  if (!multiplication()) {
+    return 3;
   }
+
+  /* Division */
+  a = 16777210l;
+  if (!division()) {
+    return 4;
+  }
+
+  /* Remainder */
+  a = 33554425l; // 2^25 - 7
+  if (!remaind()) {
+    return 5;
+  }
+
+  /* Complement */
+  a = 2147483647l; // LONG_MAX - 1
+  if (!complement()) {
+    return 6;
+  }
+
+  return 0;
 }
 
-int return_truncated_long(long l) { return l; }
+int addition(void) {
+  // a == 16777210l, i.e. 2^24 - 6
+  // b = 5;
+  return (a + b == 4294967295l);
+}
 
-long return_extended_int(int i) { return i; }
+int subtraction(void) {
+  // a = -16777210l;
+  // b = 90l;
+  return (a - b == -16777300l);
+}
 
-int truncate_on_assignment(long l, int expected) {
-  int result = l; // implicit conversion truncates l
-  return result == expected;
+int multiplication(void) {
+  // a = 16777210l;
+  return (a * 4l == 67108840l);
+}
+
+int division(void) {
+  // a = 16777210l;
+  b = a / 128l;
+  return (b == 131071l);
+}
+
+int remaind(void) {
+  // a = 33554425l; // 2^25 - 7
+  b = -a % 16777210l;
+  return (b == -5l);
+}
+
+int complement(void) {
+  // a = 2147483647l, i.e. LONG_MAX - 1
+  return (~a == -2147483648l);
 }
