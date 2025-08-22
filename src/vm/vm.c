@@ -954,7 +954,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_NE: {
+    case OP_NE4: {
       pop_2_int32();
       log3_3("%08X != %08X\n", r1, r0);
       programCounter = (r1 != r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
@@ -968,7 +968,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_LTI: {
+    case OP_LTI4: {
       pop_2_int32();
       log3_3("%08X < %08X\n", r1, r0);
       programCounter = (r1 < r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
@@ -982,7 +982,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_LEI: {
+    case OP_LEI4: {
       pop_2_int32();
       log3_3("%08X <= %08X\n", r1, r0);
       programCounter = (r1 <= r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
@@ -996,14 +996,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_GTI: {
+    case OP_GTI4: {
       pop_2_int32();
       log3_3("%08X > %08X\n", r1, r0);
       programCounter = (r1 > r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
       DISPATCH();
     }
 
-    case OP_GEI: {
+    case OP_GEI4: {
       pop_2_int32();
       log3_3("%08X >= %08X\n", r1, r0);
       programCounter = (r1 >= r0) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
@@ -1042,7 +1042,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    case OP_GTU:
+    case OP_GTU4:
       opStack8 -= 8;
       if (((unsigned)r1) > ((unsigned)r0)) {
         programCounter = r2;
@@ -1051,7 +1051,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    case OP_GEU:
+    case OP_GEU4:
       opStack8 -= 8;
       if (((unsigned)r1) >= ((unsigned)r0)) {
         programCounter = r2;
@@ -1100,7 +1100,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    case OP_GTF:
+    case OP_GTF4:
       opStack8 -= 8;
 
       if (opStackFlt[1] > opStackFlt[2]) {
@@ -1110,7 +1110,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
         programCounter += INT_INCREMENT;
         DISPATCH();
       }
-    case OP_GEF:
+    case OP_GEF4:
       opStack8 -= 8;
 
       if (opStackFlt[1] >= opStackFlt[2]) {
@@ -1123,7 +1123,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
       /*===================================================================*/
 
-    case OP_NEGI:
+    case OP_NEGI4:
       pop_1_int32();
       push_1_int32(-r0);
       DISPATCH();
@@ -1146,7 +1146,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_SUB:
+    case OP_SUB4:
       log3_4("%08X - %08X = %08X PUSHED\n", r1, r0, r1 - r0);
       opStack8 -= 4;
       *opStack32 = r1 - r0;
@@ -1178,7 +1178,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       *opStack32 = ((unsigned)r1) / ((unsigned)r0);
       DISPATCH();
 
-    case OP_MODI:
+    case OP_MODI4:
       opStack8 -= 4;
       *opStack32 = r1 % r0;
       DISPATCH();
@@ -1190,12 +1190,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_MODU:
+    case OP_MODU4:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) % ((unsigned)r0);
       DISPATCH();
 
-    case OP_MULI: {
+    case OP_MULI4: {
       pop_2_int32();
       log3_3("%08X * %08X =", r1, r0);
       push_1_int32(r1 * r0);
@@ -1209,7 +1209,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_MULU:
+    case OP_MULU4:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) * ((unsigned)r0);
       DISPATCH();
@@ -1267,7 +1267,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_LSH: {
+    case OP_LSH4: {
       pop_2_uint32();
       log3_3("%08X << %08X =", r1, r0);
       push_1_uint32(r1 << r0);
@@ -1281,7 +1281,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_RSHI: {
+    case OP_RSHI4: {
       pop_2_int32();
       log3_3("%08X >> %08X =", r1, r0);
       push_1_int32(r1 >> r0);
@@ -1295,18 +1295,18 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-    case OP_RSHU:
+    case OP_RSHU4:
       opStack8 -= 4;
       *opStack32 = ((unsigned)r1) >> r0;
       DISPATCH();
-    case OP_NEGF:
+    case OP_NEGF4:
       opStackFlt[0] = -opStackFlt[0];
       DISPATCH();
     case OP_ADDF4:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] + opStackFlt[1];
       DISPATCH();
-    case OP_SUBF:
+    case OP_SUBF4:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] - opStackFlt[1];
       DISPATCH();
@@ -1314,7 +1314,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] / opStackFlt[1];
       DISPATCH();
-    case OP_MULF:
+    case OP_MULF4:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] * opStackFlt[1];
       DISPATCH();

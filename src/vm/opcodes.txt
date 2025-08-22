@@ -60,21 +60,21 @@ OP_EQ3
 OP_EQ4                   Compare integers, jump if equal.
 OP_EQF4                  Compare floats, jump if equal
 OP_EQU3
-OP_GEF                  Compare floats, jump if greater-than-or-equal
-OP_GEI                  Compare integers, jump if greater-than-or-equal.
+OP_GEF4                  Compare floats, jump if greater-than-or-equal
 OP_GEI3
-OP_GEU                  Compare unsigned integers, jump if greater-than-or-equal
+OP_GEI4                  Compare integers, jump if greater-than-or-equal.
 OP_GEU3
-OP_GTF                  Compare floats, jump if greater-than
-OP_GTI                  Compare integers, jump if greater-than.
+OP_GEU4                  Compare unsigned integers, jump if greater-than-or-equal
+OP_GTF4                  Compare floats, jump if greater-than
 OP_GTI3
-OP_GTU                  Compare unsigned integers, jump if greater-than
+OP_GTI4                  Compare integers, jump if greater-than.
 OP_GTU3
+OP_GTU4                  Compare unsigned integers, jump if greater-than
 OP_JUMP                 Unconditional jump.
 OP_LEAVE                End subroutine.
 OP_LEF                  Compare floats, jump if less-than-or-equal
-OP_LEI                  Compare integers, jump if less-than-or-equal.
 OP_LEI3
+OP_LEI4                  Compare integers, jump if less-than-or-equal.
 OP_LEU                  Compare unsigned integers, jump if less-than-or-equal
 OP_LEU3
 OP_LOAD1                Load 1-byte from memory
@@ -83,40 +83,40 @@ OP_LOAD3                Load 3-bytes from memory
 OP_LOAD4                Load 4-bytes from memory
 OP_LOADF4               Load 4 byte float from memory
 OP_LOCAL                Get local variable.
-OP_LSH                  Left-shift
 OP_LSH3
+OP_LSH4                  Left-shift
 OP_LTF                  Compare floats, jump if less-than
-OP_LTI                  Compare integers, jump if less-than.
 OP_LTI3
+OP_LTI4                  Compare integers, jump if less-than.
 OP_LTU                  Compare unsigned integers, jump if less-than
 OP_LTU3
-OP_MODI                 Modulus (signed).
 OP_MODI3
-OP_MODU                 Modulus (unsigned).
+OP_MODI4                 Modulus (signed).
 OP_MODU3
-OP_MULF                 Multiply floats
-OP_MULI                 Multiply signed integers.
+OP_MODU4                 Modulus (unsigned).
+OP_MULF4                 Multiply floats
 OP_MULI3
-OP_MULU                 Multiply unsigned integers.
+OP_MULI4                 Multiply signed integers.
 OP_MULU3
-OP_NE                   Compare integers, jump if not equal.
+OP_MULU4                 Multiply unsigned integers.
 OP_NE3
+OP_NE4                   Compare integers, jump if not equal.
 OP_NEF                  Compare floats, jump if not-equal
-OP_NEGF                 Negate float
-OP_NEGI                 Negate integer.
+OP_NEGF4                 Negate float
 OP_NEGI3
+OP_NEGI4                 Negate integer.
 OP_POP                  Discard top-of-stack.
 OP_PUSH                 Push to stack.
-OP_RSHI                 Right-shift (algebraic; preserve sign)
 OP_RSHI3
-OP_RSHU                 Right-shift (bitwise; ignore sign)
+OP_RSHI4                 Right-shift (algebraic; preserve sign)
 OP_RSHU3
+OP_RSHU4                 Right-shift (bitwise; ignore sign)
 OP_SEX24
 OP_SEX8_3
 OP_STORE1               Store 1-byte to memory
 OP_STORE2               Store 2-byte to memory
 OP_STORE3
 OP_STORE4               *(stack[top-1]) = stack[top]
-OP_SUB                  Subtract integers (two's complement).
 OP_SUB3
-OP_SUBF                 Subtract floats
+OP_SUB4                  Subtract integers (two's complement).
+OP_SUBF4                 Subtract floats
