@@ -10,8 +10,8 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "ARG3",       /*   6  Marshal argument */
     "ARG4",       /*   7  */
     "ARGF4",      /*   8  */
-    "BAND",       /*   9  Bitwise AND */
-    "BAND3",      /*  10  */
+    "BAND3",      /*   9  */
+    "BAND4",      /*  10  Bitwise AND */
     "BCOM",       /*  11  Bitwise COMplement */
     "BCOM3",      /*  12  */
     "BLOCK_COPY", /*  13  memcpy */
@@ -119,8 +119,7 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "STORE2",     /* 115  Store 2-byte to memory */
     "STORE3",     /* 116  */
     "STORE4",     /* 117  *(stack[top-1]) = stack[top] */
-    "STOREF4",    /* 118  *(stack[top-1]) = stack[top] */
-    "SUB",        /* 119  Subtract integers (two's complement). */
-    "SUB3",       /* 120  */
-    "SUBF",       /* 121  Subtract floats */
+    "SUB",        /* 118  Subtract integers (two's complement). */
+    "SUB3",       /* 119  */
+    "SUBF",       /* 120  Subtract floats */
 };

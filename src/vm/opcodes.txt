@@ -7,8 +7,8 @@ OP_ADDF4                Add floats
 OP_ARG3                 Marshal argument
 OP_ARG4
 OP_ARGF4
-OP_BAND                 Bitwise AND
 OP_BAND3
+OP_BAND4                 Bitwise AND
 OP_BCOM                 Bitwise COMplement
 OP_BCOM3
 OP_BLOCK_COPY           memcpy

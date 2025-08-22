@@ -14,8 +14,8 @@ typedef enum {
   OP_ARG3,       /*   6  Marshal argument */
   OP_ARG4,       /*   7  */
   OP_ARGF4,      /*   8  */
-  OP_BAND,       /*   9  Bitwise AND */
-  OP_BAND3,      /*  10  */
+  OP_BAND3,      /*   9  */
+  OP_BAND4,      /*  10  Bitwise AND */
   OP_BCOM,       /*  11  Bitwise COMplement */
   OP_BCOM3,      /*  12  */
   OP_BLOCK_COPY, /*  13  memcpy */
@@ -123,9 +123,9 @@ typedef enum {
   OP_STORE2,     /* 115  Store 2-byte to memory */
   OP_STORE3,     /* 116  */
   OP_STORE4,     /* 117  *(stack[top-1]) = stack[top] */
-  OP_SUB,        /* 119  Subtract integers (two's complement). */
-  OP_SUB3,       /* 120  */
-  OP_SUBF,       /* 121  Subtract floats */
+  OP_SUB,        /* 118  Subtract integers (two's complement). */
+  OP_SUB3,       /* 119  */
+  OP_SUBF,       /* 120  Subtract floats */
   OP_MAX,        /* Make this the last item */
 
 } opcode_t;
