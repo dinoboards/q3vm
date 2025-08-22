@@ -396,7 +396,51 @@ ASMMultipleFn(CODE_CUxU2) {
 
   default:
     WriteComment();
+    printf("TODO: CODE_CU%cU2\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
+ASMMultipleFn(CODE_CUxU3) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '4':
+    opcode = OP_CU4U3;
+    break;
+
+  default:
+    WriteComment();
     printf("TODO: CODE_CU%cU3\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
+ASMMultipleFn(CODE_CUxU4) {
+  instructionCount++;
+
+  opcode_t opcode;
+
+  Parse();
+  switch (token[0]) {
+  case '3':
+    opcode = OP_CU3U4;
+    break;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CU%cU4\n", token[0]);
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }

@@ -10,7 +10,6 @@ fi
 
 
 IGNORESET=(
-  round_trip_casts
   same_size_conversion
   truncate
 )

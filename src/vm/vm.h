@@ -29,7 +29,7 @@
 
 #define MEMORY_SAFE
 
-#if 0
+#if 1
 extern size_t strlcpy(char *dst, const char *src, size_t size);
 
 #define DEBUG_VM /**< ifdef: enable debug functions and additional checks */

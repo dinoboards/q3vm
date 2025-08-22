@@ -41,6 +41,8 @@ OP_CONSTU3
 OP_CONSTU4
 OP_CU2I3
 OP_CU3U2
+OP_CU3U4
+OP_CU4U3
 OP_CVFI                 Convert to float from integer
 OP_CVFI3
 OP_CVIF                 Convert to integer from float

@@ -1400,6 +1400,18 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
+    case OP_CU4U3: {
+      pop_1_uint32();
+      push_1_uint24(UINT24((uint32_t)r0));
+      DISPATCH();
+    }
+
+    case OP_CU3U4: {
+      pop_1_uint24();
+      push_1_uint32((uint32_t)UINT(r0_uint24));
+      DISPATCH();
+    }
+
     case OP_CONSTU1: {
       push_1_int8(r2_uint8);
       programCounter += INT8_INCREMENT;
