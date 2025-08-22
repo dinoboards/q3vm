@@ -9,8 +9,8 @@ OP_ARG4
 OP_ARGF4
 OP_BAND3
 OP_BAND4                 Bitwise AND
-OP_BCOM4                 Bitwise COMplement
 OP_BCOM3
+OP_BCOM4                 Bitwise COMplement
 OP_BLOCK_COPY           memcpy
 OP_BOR                  Bitwise OR
 OP_BOR3
@@ -26,6 +26,7 @@ OP_CI3I2
 OP_CI3I4
 OP_CI3U4
 OP_CI4I3
+OP_CI4U3
 OP_CONSTF4
 OP_CONSTGP3
 OP_CONSTGP4             Load constant to stack.

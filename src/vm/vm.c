@@ -949,11 +949,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
 
     case OP_EQ3: {
       pop_2_uint24();
-      if (UINT(r1_uint24) == UINT(r0_uint24)) {
-        programCounter = r2_int24_old;
-      } else {
-        programCounter += INT24_INCREMENT;
-      }
+      log3_3("%06X == %06X\n", UINT(r1_uint24), UINT(r0_uint24));
+      programCounter = (UINT(r1_uint24) == UINT(r0_uint24)) ? UINT(r2_uint24) : programCounter + INT24_INCREMENT;
       DISPATCH();
     }
 
@@ -1258,9 +1255,17 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       push_1_uint24(UINT24(UINT(r1_uint24) ^ UINT(r0_uint24)));
       DISPATCH();
     }
-    case OP_BCOM4:
+
+    case OP_BCOM3: {
+      pop_1_uint24();
+      push_1_uint24(UINT24(~UINT((r0_uint24))));
+      DISPATCH();
+    }
+
+    case OP_BCOM4: {
       *opStack32 = ~((unsigned)r0);
       DISPATCH();
+    }
 
     case OP_LSH: {
       pop_2_uint32();
@@ -1382,6 +1387,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CU2I3: {
       pop_1_uint16();
       push_1_int24(INT24(r0_uint16));
+      DISPATCH();
+    }
+
+    case OP_CI4U3: {
+      pop_1_int32();
+      push_1_uint24(UINT24((uint32_t)r0));
       DISPATCH();
     }
 

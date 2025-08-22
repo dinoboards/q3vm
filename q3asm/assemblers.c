@@ -361,6 +361,10 @@ ASMMultipleFn(CODE_CIxU3) {
     WriteComment();
     return;
 
+  case '4':
+    opcode = OP_CI4U3;
+    break;
+
   default:
     WriteComment();
     printf("TODO: CODE_CI%cU3\n", token[0]);
