@@ -5,23 +5,23 @@
  * Implicit conversions of function arguments are in a separate test case, convert_function_arguments.c
  */
 
-#ifdef SUPPRESS_WARNINGS
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wconstant-conversion"
-#else
 #pragma GCC diagnostic ignored "-Woverflow"
-#endif
-#endif
+
+int return_truncated_long(long l);
+
+long return_extended_int(int i);
+
+int truncate_on_assignment(long l, int expected);
 
 int main(void) {
 
   // return statements
 
-  /* return_truncated_long will truncate 2^32 + 2 to 2
+  /* return_truncated_long will truncate 2^24 + 2 to 2
    * assigning it to result converts this to a long
    * but preserves its value.
    */
-  long result = return_truncated_long(4294967298l);
+  long result = return_truncated_long(16777218l);
   if (result != 2l) {
     return 1;
   }
@@ -34,19 +34,19 @@ int main(void) {
 
   // initializer
 
-  /* This is 2^32 + 2,
+  /* This is 2^24 + 2,
    * it will be truncated to 2 by assignment
    */
   {
-    int i = 4294967298l;
+    int i = 16777218l;
     if (i != 2) {
       return 3;
     }
 
     // assignment expression
 
-    // 2^34 will be truncated to 0 when assigned to an int
-    if (!truncate_on_assignment(17179869184l, 0)) {
+    // 2^26 will be truncated to 0 when assigned to an int
+    if (!truncate_on_assignment(67108864l, 0)) {
       return 4;
     }
 

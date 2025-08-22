@@ -16,49 +16,60 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-int truncate(long l, int expected);
+#pragma GCC diagnostic ignored "-Woverflow"
+
+int return_truncated_long(long l);
+
+long return_extended_int(int i);
+
+int truncate_on_assignment(long l, int expected);
 
 int main(void) {
-  /* If a long is already in the range of 'int',
-   * truncation doesn't change its value.
-  //  */
-  // if (!truncate(10l, 10)) {
-  //   return 1;
-  // }
 
-  // /* Truncating a negative int also preserves its value */
-  // if (!truncate(-10l, -10)) {
-  //   return 2;
-  // }
-  /* If a long is outside the range of int,
-   * subtract 2^32 until it's in range
+  // return statements
+
+  /* return_truncated_long will truncate 2^24 + 2 to 2
+   * assigning it to result converts this to a long
+   * but preserves its value.
    */
-  if (!truncate(67108869l, // 2^26 + 5
-                5)) {
-    return 3;
+  long result = return_truncated_long(16777218l);
+  if (result != 2l) {
+    return 1;
   }
 
-  /* If a negative long is outside the range of int,
-   * add 2^32 until it's in range
-   */
-  if (!truncate(-67108859l, // (-2^26) + 5
-                5l)) {
-    return 4;
+  /* return_extended_int sign-extends its argument, preserving its value */
+  result = return_extended_int(-10);
+  if (result != -10) {
+    return 2;
   }
 
-  /* truncate long constant that can't
-   * be expressed in 32 bits, to test rewrite rule
+  // initializer
+
+  /* This is 2^24 + 2,
+   * it will be truncated to 2 by assignment
    */
   {
-    int i = (int)67108869l; // 2^26 + 5
-    if (i != 5)
-      return 5;
+    int i = 16777218l;
+    if (i != 2) {
+      return 3;
+    }
+
+    // assignment expression
+
+    // 2^26 will be truncated to 0 when assigned to an int
+    if (!truncate_on_assignment(67108864l, 0)) {
+      return 4;
+    }
 
     return 0;
   }
 }
 
-int truncate(long l, int expected) {
-  int result = (int)l;
-  return (result == expected);
+int return_truncated_long(long l) { return l; }
+
+long return_extended_int(int i) { return i; }
+
+int truncate_on_assignment(long l, int expected) {
+  int result = l; // implicit conversion truncates l
+  return result == expected;
 }
