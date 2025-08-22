@@ -606,7 +606,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
   ustdint_t      stackOnEntry;
   uint8_t       *dataBase;
   const uint8_t *codeBase;
-  ustdint_t      arg;
   uint8_t        opcode;
   vm_operand_t   r0, r1;
 
@@ -640,9 +639,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
   programCounter = 0;
   programStack -= (6 + 3 * MAX_VMMAIN_ARGS);
 
-  for (arg = 0; arg < MAX_VMMAIN_ARGS; arg++) {
-    *(int24_t *)&dataBase[programStack + 6 + arg * 3] = args[arg];
-  }
+  memcpy(&dataBase[programStack + 6], args, MAX_VMMAIN_ARGS * 3);
 
   *(int24_t *)&dataBase[programStack + 3] = INT24(0);  /* return stack */
   *(int24_t *)&dataBase[programStack]     = INT24(-1); /* will terminate the loop on return */
