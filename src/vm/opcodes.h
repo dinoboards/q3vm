@@ -123,7 +123,6 @@ typedef enum {
   OP_STORE2,     /* 115  Store 2-byte to memory */
   OP_STORE3,     /* 116  */
   OP_STORE4,     /* 117  *(stack[top-1]) = stack[top] */
-  OP_STOREF4,    /* 118  *(stack[top-1]) = stack[top] */
   OP_SUB,        /* 119  Subtract integers (two's complement). */
   OP_SUB3,       /* 120  */
   OP_SUBF,       /* 121  Subtract floats */

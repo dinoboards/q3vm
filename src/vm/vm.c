@@ -772,15 +772,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       DISPATCH();
     }
 
-      *(vm_operand_t *)&dataBase[r1] = r0;
-      opStack8 -= 8;
-      DISPATCH();
-
-    case OP_STOREF4:
-      *(vm_operand_t *)&dataBase[r1] = r0;
-      opStack8 -= 8;
-      DISPATCH();
-
     case OP_STORE2:
       pop_1_uint16();
       pop_1_uint24();

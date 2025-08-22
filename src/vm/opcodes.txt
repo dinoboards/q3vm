@@ -116,7 +116,6 @@ OP_STORE1               Store 1-byte to memory
 OP_STORE2               Store 2-byte to memory
 OP_STORE3
 OP_STORE4               *(stack[top-1]) = stack[top]
-OP_STOREF4              *(stack[top-1]) = stack[top]
 OP_SUB                  Subtract integers (two's complement).
 OP_SUB3
 OP_SUBF                 Subtract floats

@@ -20,7 +20,7 @@ assemblers_t assemblers[] = {
     {"ARGU3",   OP_ARG3,       assfn(ARG3)      },
     {"ARGU4",   OP_ARG4,       assfn(ARG4)      },
     {"ASGNB",   OP_BLOCK_COPY, assfn(CODE_24BIT)},
-    {"ASGNF4",  OP_STOREF4,    assfn(CODE_OP)   },
+    {"ASGNF4",  OP_STORE4,     assfn(CODE_OP)   },
     {"ASGNI1",  OP_STORE1,     assfn(CODE_OP)   },
     {"ASGNI2",  OP_STORE2,     assfn(CODE_OP)   },
     {"ASGNI4",  OP_STORE4,     assfn(CODE_OP)   },
