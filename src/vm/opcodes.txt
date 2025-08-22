@@ -12,8 +12,8 @@ OP_BAND4                 Bitwise AND
 OP_BCOM3
 OP_BCOM4                 Bitwise COMplement
 OP_BLOCK_COPY           memcpy
-OP_BOR                  Bitwise OR
 OP_BOR3
+OP_BOR4                  Bitwise OR
 OP_BXOR                 Bitwise eXclusive-OR
 OP_BXOR3
 OP_CALL                 Call subroutine.

@@ -19,8 +19,8 @@ typedef enum {
   OP_BCOM3,      /*  11  */
   OP_BCOM4,      /*  12  Bitwise COMplement */
   OP_BLOCK_COPY, /*  13  memcpy */
-  OP_BOR,        /*  14  Bitwise OR */
-  OP_BOR3,       /*  15  */
+  OP_BOR3,       /*  14  */
+  OP_BOR4,       /*  15  Bitwise OR */
   OP_BXOR,       /*  16  Bitwise eXclusive-OR */
   OP_BXOR3,      /*  17  */
   OP_CALL,       /*  18  Call subroutine. */
