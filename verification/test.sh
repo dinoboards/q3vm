@@ -11,7 +11,6 @@ fi
 
 IGNORESET=(
   same_size_conversion
-  truncate
 )
 
 function skipped_function() {

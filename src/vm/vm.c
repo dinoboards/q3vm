@@ -795,7 +795,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
       log3_3("*(%06X) = %02X  MOVE\n", UINT(r0_uint24), r0_uint8);
       DISPATCH();
 
-    case OP_ARG:
+    case OP_ARG3:
       /* single byte offset from programStack */
 #ifdef DEBUG_VM
       printf("  ARG *[%06X + %02X (%06X)] = %06X\n", programStack, r2_int8, programStack + r2_int8, r0);
@@ -1409,6 +1409,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args) {
     case OP_CU3U4: {
       pop_1_uint24();
       push_1_uint32((uint32_t)UINT(r0_uint24));
+      DISPATCH();
+    }
+
+    case OP_CU4I3: {
+      pop_1_uint32();
+      push_1_int24(INT24(r0));
       DISPATCH();
     }
 

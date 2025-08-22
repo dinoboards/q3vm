@@ -93,7 +93,7 @@ ASMFn(ARGF) {
   }
 }
 
-ASMFn(ARG) {
+ASMFn(ARG3) {
   instructionCount++;
   const int v = 6 + currentArgOffset;
 
@@ -276,6 +276,10 @@ ASMMultipleFn(CODE_CUxI3) {
   case '3':
     WriteComment();
     return;
+
+  case '4':
+    opcode = OP_CU4I3;
+    break;
 
   default:
     WriteComment();

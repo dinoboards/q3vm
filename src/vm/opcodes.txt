@@ -4,7 +4,7 @@ OP_BREAK                vm->breakCount++
 OP_ADD                  Add integers (two's complement).
 OP_ADD3
 OP_ADDF                 Add floats
-OP_ARG                  Marshal argument
+OP_ARG3                  Marshal argument
 OP_ARG4
 OP_ARGF
 OP_BAND                 Bitwise AND
@@ -42,6 +42,7 @@ OP_CONSTU4
 OP_CU2I3
 OP_CU3U2
 OP_CU3U4
+OP_CU4I3
 OP_CU4U3
 OP_CVFI                 Convert to float from integer
 OP_CVFI3
