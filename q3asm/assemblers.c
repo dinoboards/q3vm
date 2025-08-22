@@ -15,7 +15,6 @@ typedef struct assemblers_s {
 #define DIRFn(O) void TryNewAssemble_##O(const assemblers_t _unsued __attribute__((unused)))
 
 ASMFn(CODE_24BIT) {
-  instructionCount++;
   Parse();
   const int v = ParseExpression();
 
@@ -26,7 +25,6 @@ ASMFn(CODE_24BIT) {
 }
 
 ASMFn(CODE_FLOAT) {
-  instructionCount++;
   Parse();
   const int v = ParseExpression();
 
@@ -37,7 +35,6 @@ ASMFn(CODE_FLOAT) {
 }
 
 ASMFn(CODE_32BIT) {
-  instructionCount++;
   Parse();
   const int v = ParseExpression();
 
@@ -48,7 +45,6 @@ ASMFn(CODE_32BIT) {
 }
 
 ASMFn(CODE_16BIT) {
-  instructionCount++;
   Parse();
   const int v = ParseExpression();
 
@@ -59,7 +55,6 @@ ASMFn(CODE_16BIT) {
 }
 
 ASMFn(CODE_8BIT) {
-  instructionCount++;
   Parse();
   const int v = ParseExpression();
 
@@ -71,7 +66,6 @@ ASMFn(CODE_8BIT) {
 
 // call instructions reset currentArgOffset
 ASMFn(CALL) {
-  instructionCount++;
   WriteCode(assembler.opcode);
 
   EmitByte(&segment[CODESEG], assembler.opcode);
@@ -79,7 +73,6 @@ ASMFn(CALL) {
 }
 
 ASMFn(ARG3) {
-  instructionCount++;
   const int v = 6 + currentArgOffset;
 
   WriteInt8Code(assembler.opcode, v);
@@ -96,7 +89,6 @@ ASMFn(ARG3) {
 }
 
 ASMFn(ARG4) {
-  instructionCount++;
   const int v = 6 + currentArgOffset;
 
   WriteInt8Code(assembler.opcode, v);
@@ -115,7 +107,6 @@ ASMFn(ARG4) {
 // address of a local is converted to OP_LOCAL
 ASMFn(ADDRL) {
   int v;
-  instructionCount++;
   Parse();
   v = ParseExpression();
   v = 6 + currentArgs + v;
@@ -146,8 +137,6 @@ DIRFn(BYTE) {
 // ret just leaves something on the op stack
 ASMFn(RET) {
   const int v = 6 + currentLocals + currentArgs;
-  instructionCount++;
-
   WriteInt16Code(assembler.opcode, v);
 
   EmitByte(&segment[CODESEG], assembler.opcode);
@@ -170,7 +159,6 @@ DIRFn(LABEL) {
 ASMFn(ADDRF) {
   int v;
 
-  instructionCount++;
   Parse();
   v = ParseExpression();
   v = 12 + currentArgs + currentLocals + v;
@@ -182,15 +170,12 @@ ASMFn(ADDRF) {
 }
 
 ASMFn(CODE_OP) {
-  instructionCount++;
   WriteCode(assembler.opcode);
 
   EmitByte(&segment[CODESEG], assembler.opcode);
 }
 
 ASMMultipleFn(CODE_CIxI4) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -217,8 +202,6 @@ ASMMultipleFn(CODE_CIxI4) {
 }
 
 ASMMultipleFn(CODE_CIxI3) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -247,8 +230,6 @@ ASMMultipleFn(CODE_CIxI3) {
 }
 
 ASMMultipleFn(CODE_CUxI3) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -279,8 +260,6 @@ ASMMultipleFn(CODE_CUxI3) {
 }
 
 ASMMultipleFn(CODE_CIxU4) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -307,8 +286,6 @@ ASMMultipleFn(CODE_CIxU4) {
 }
 
 ASMMultipleFn(CODE_CIxI1) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -329,8 +306,6 @@ ASMMultipleFn(CODE_CIxI1) {
 }
 
 ASMMultipleFn(CODE_CIxI2) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -351,8 +326,6 @@ ASMMultipleFn(CODE_CIxI2) {
 }
 
 ASMMultipleFn(CODE_CIxU3) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -377,8 +350,6 @@ ASMMultipleFn(CODE_CIxU3) {
 }
 
 ASMMultipleFn(CODE_CUxU2) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -399,8 +370,6 @@ ASMMultipleFn(CODE_CUxU2) {
 }
 
 ASMMultipleFn(CODE_CUxU3) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -421,8 +390,6 @@ ASMMultipleFn(CODE_CUxU3) {
 }
 
 ASMMultipleFn(CODE_CUxU4) {
-  instructionCount++;
-
   opcode_t opcode;
 
   Parse();
@@ -444,8 +411,6 @@ ASMMultipleFn(CODE_CUxU4) {
 
 ASMFn(PROC) {
   char name[1024];
-  instructionCount++;
-
   Parse(); // function name
   strcpy(name, token);
 
@@ -471,7 +436,6 @@ ASMFn(PROC) {
 }
 
 ASMMultipleFn(ENDPROC) {
-  instructionCount += 2;
   Parse();      // skip the function name
   ParseValue(); // locals
   ParseValue(); // arg marshalling

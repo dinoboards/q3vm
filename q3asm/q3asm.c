@@ -116,8 +116,6 @@ char lineBuffer[MAX_LINE_LENGTH];
 int  lineParseOffset;
 char token[MAX_LINE_LENGTH];
 
-int instructionCount;
-
 typedef struct {
   char *name;
   int   opcode;
@@ -1013,7 +1011,6 @@ static void AssembleLine(void) {
         EmitByte(&segment[CODESEG], opcode);
       }
 
-      instructionCount++;
       return;
     }
   }
@@ -1098,7 +1095,6 @@ static void WriteVmFile(void) {
   report("data segment: %7i\n", segment[DATASEG].imageUsed);
   report("lit  segment: %7i\n", segment[LITSEG].imageUsed);
   report("bss  segment: %7i\n", segment[BSSSEG].imageUsed);
-  report("instruction count: %i\n", instructionCount);
 
   if (errorCount != 0) {
     report("Not writing a file due to errors\n");
@@ -1113,11 +1109,10 @@ static void WriteVmFile(void) {
   // vmHeader_t changes, this needs to be adjusted too.
   headerSize = sizeof(header);
 
-  header.instructionCount = to_uint24(instructionCount);
-  header.codeLength       = to_uint24(segment[CODESEG].imageUsed);
-  header.litLength        = to_uint24(segment[LITSEG].imageUsed);
-  header.dataLength       = to_uint24(segment[DATASEG].imageUsed);
-  header.bssLength        = to_uint24(segment[BSSSEG].imageUsed);
+  header.codeLength = to_uint24(segment[CODESEG].imageUsed);
+  header.litLength  = to_uint24(segment[LITSEG].imageUsed);
+  header.dataLength = to_uint24(segment[DATASEG].imageUsed);
+  header.bssLength  = to_uint24(segment[BSSSEG].imageUsed);
 
   report("Writing to %s\n", imageName);
 
@@ -1181,7 +1176,6 @@ static void Assemble(void) {
       segment[i].imageUsed     = 0;
     }
     segment[LITSEG].imageUsed = 1; // skip the 0 byte, so NULL pointers are fixed up properly
-    instructionCount          = 0;
 
     for (i = 0; i < numAsmFiles; i++) {
       currentFileIndex = i;

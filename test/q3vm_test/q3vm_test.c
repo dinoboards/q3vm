@@ -140,13 +140,12 @@ void testArguments(void) {
   VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), systemCalls);
   VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, dataSegment, sizeof(dataSegment), systemCalls);
 
-  vmHeader_t vmHeader       = {0};
-  vmHeader.vmMagic          = VM_MAGIC;
-  vmHeader.instructionCount = to_uint24(1000);
-  vmHeader.codeLength       = to_uint24(1024);
-  vmHeader.dataLength       = to_uint24(2048);
-  vmHeader.litLength        = to_uint24(0);
-  vmHeader.bssLength        = to_uint24(256);
+  vmHeader_t vmHeader = {0};
+  vmHeader.vmMagic    = VM_MAGIC;
+  vmHeader.codeLength = to_uint24(1024);
+  vmHeader.dataLength = to_uint24(2048);
+  vmHeader.litLength  = to_uint24(0);
+  vmHeader.bssLength  = to_uint24(256);
 
   printf("8\r\n");
 

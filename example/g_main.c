@@ -16,7 +16,6 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-long main(void) {
-  // 2147483647 is the largest possible value of type int
-  return -4294967296l;
-}
+int a = -5;
+
+int main(int command, int arg0, int arg1) { printf("command: %d, arg0: %d, arg1: %d\n", command, arg0, arg1); }

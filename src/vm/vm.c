@@ -194,8 +194,6 @@ int VM_Create(vm_t                *vm,
 
     Com_Memset(vm, 0, sizeof(vm_t));
     vm->systemCall       = systemCalls;
-    vm->instructionCount = UINT(header->instructionCount);
-
     vm->codeBase         = &bytecode[sizeof(vmHeader_t)];
     vm->codeLength       = UINT(header->codeLength);
     vm->litBase          = vm->codeBase + vm->codeLength;
@@ -259,7 +257,6 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
   Com_Printf(".bss  length: %6i bytes\n", vm->bssLength);*/
   Com_Printf("Stack size:   %6i bytes\n", VM_PROGRAM_STACK_SIZE);
   Com_Printf("Allocated memory: %6i bytes\n", vm->workingRAMLength);
-  Com_Printf("Instruction count: %i\n", vm->instructionCount);
   return 0;
 }
 #endif
@@ -272,7 +269,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
   }
 
   if (header->vmMagic == VM_MAGIC) {
-    if (UINT(header->codeLength) == 0 || UINT(header->instructionCount) == 0 || UINT(header->bssLength) > VM_MAX_BSS_LENGTH ||
+    if (UINT(header->codeLength) == 0 || UINT(header->bssLength) > VM_MAX_BSS_LENGTH ||
         UINT(header->codeLength) + UINT(header->litLength) + UINT(header->dataLength) > bytecodeLength) {
       Com_Printf("Warning: bad header\n");
       VM_AbortError(VM_MALFORMED_HEADER, "Malformed bytecode image\n");
@@ -300,7 +297,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
   return 0;
 }
 
-/* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
+/* TODO: Build ez80 platform specific version to just pass through args */
 intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
   intptr_t r;
 

@@ -102,12 +102,11 @@ typedef enum {
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of
  *  the file. This is always little endian encoded in the file. */
 typedef struct {
-  uint32_t vmMagic;          /**< 00: Bytecode image shall start with VM_MAGIC */
-  uint24_t instructionCount; /**< 04: Number of instructions in .qvm */
-  uint24_t codeLength;       /**< 07: Bytes in code segment */
-  uint24_t litLength;        /**< 0A: Bytes in strings segment (after .data segment) */
-  uint24_t dataLength;       /**< 0D: Bytes in .data segment */
-  uint24_t bssLength;        /**< 10: How many bytes should be used for .bss segment */
+  uint32_t vmMagic;    /**< 00: Bytecode image shall start with VM_MAGIC */
+  uint24_t codeLength; /**< 07: Bytes in code segment */
+  uint24_t litLength;  /**< 0A: Bytes in strings segment (after .data segment) */
+  uint24_t dataLength; /**< 0D: Bytes in .data segment */
+  uint24_t bssLength;  /**< 10: How many bytes should be used for .bss segment */
 } vmHeader_t;
 
 #ifdef DEBUG_VM
@@ -139,8 +138,6 @@ typedef struct vm_s {
   uint32_t (*systemCall)(struct vm_s *vm, uint8_t *parms);
 
   /*------------------------------------*/
-
-  ustdint_t instructionCount; /**< Number of instructions for VM */
 
   const uint8_t *codeBase;   /**< Bytecode code segment in ROM */
   vm_size_t      codeLength; /**< Number of bytes in code segment */

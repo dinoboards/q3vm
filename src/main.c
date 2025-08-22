@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
     VM_LoadDebugInfo(&vm, mapFileImage, pDebugInfo, 0x10000);
 #endif
     /* call virtual machine vmMain() with integer argument (here 0) */
-    retVal = VM_Call(&vm, 0);
+    retVal = VM_Call(&vm, 0, 1, 2, 3);
 
     if (vm.lastError) {
       printf("VM Aborted with error code: %d\n", vm.lastError);
