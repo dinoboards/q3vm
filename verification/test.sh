@@ -44,10 +44,10 @@ for dir in $all_dirs; do
         if [[ "$file" =~ _client$ ]]; then
           libFile=${file::-7}
 
-          jobs+="\"./execute-lib-test.sh ${dir}/$file ${dir}/$libFile\" "$'\n'
+          jobs+="./execute-lib-test.sh ${dir}/$file ${dir}/$libFile "$'\n'
         fi
       else
-          jobs+="\"./execute-test.sh ${dir}/$file\" "$'\n'
+          jobs+="./execute-test.sh ${dir}/$file "$'\n'
       fi
     fi
   done
@@ -57,7 +57,7 @@ done
 MAX_JOBS=16 # Set the maximum number of concurrent jobs
 
 # # Execute commands from the file in parallel, with a limit
-echo "$jobs" | xargs -P ${MAX_JOBS} -I{} bash -c '{}'
+echo "$jobs" | parallel -P ${MAX_JOBS}
 
 echo "Verification Run Completed."
 

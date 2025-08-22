@@ -135,11 +135,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, uint32_t *args);
  * @param[in,out] vm Current VM */
 static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, const vm_t *vm);
 
-/** Helper function for the _vmf inline function _vmf in vm.h.
- * @param[in] x Number that is actually a IEEE 754 float.
- * @return float number */
-extern float _vmf(intptr_t x);
-
 /******************************************************************************
  * DEBUG FUNCTIONS (only used if DEBUG_VM is defined)
  ******************************************************************************/
@@ -309,6 +304,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
 intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
   intptr_t r;
 
+#ifdef MEMORY_SAFE
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Missing VM Pointe");
     return VM_INVALID_POINTER;
@@ -316,9 +312,9 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
 
   if (vm->codeLength < 1)
     VM_AbortError(VM_NOT_LOADED, "VM not loaded");
+#endif
 
   vm->lastError = 0;
-  /* FIXME this is not nice. we should check the actual number of arguments */
   {
     uint32_t args[MAX_VMMAIN_ARGS];
     va_list  ap;
