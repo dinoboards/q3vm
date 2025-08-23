@@ -14,6 +14,7 @@ fname=$(basename $full)
 function cleanup_function() {
   rm $fname.asm
   mv $fname.qvm $(dirname $full)/
+  mv $fname.lst $(dirname $full)/
 }
 
 trap cleanup_function EXIT
@@ -44,8 +45,10 @@ if [[ ${result} != ${expected} ]]; then
   echo "Expected ${expected} but got ${result} '${full}"
   echo -e ${FADE}
   echo "${trace}" | sed 's/^/  /'
-  echo -e ${NORMAL}
   echo "  --------------"
+  echo "${output}"
+  echo "  --------------"
+  echo -e ${NORMAL}
   echo
 else
 

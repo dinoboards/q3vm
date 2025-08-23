@@ -99,7 +99,7 @@ assemblers_t assemblers[] = {
     {"GTU4",    OP_GTU4,       assfn(CODE_32BIT)},
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"INDIRB",  OP_IGNORE,     assfn(COMMENT)   },
-    {"INDIRF4", OP_LOADF4,     assfn(CODE_OP)   },
+    {"INDIRF4", OP_LOAD4,      assfn(CODE_OP)   },
     {"INDIRI1", OP_LOAD1,      assfn(CODE_OP)   },
     {"INDIRI2", OP_LOAD2,      assfn(CODE_OP)   },
     {"INDIRI4", OP_LOAD4,      assfn(CODE_OP)   },

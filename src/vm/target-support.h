@@ -38,4 +38,13 @@ extern int24_t  to_int24(ustdint_t x);
 #define UINT24 to_uint24
 #define INT24  to_int24
 
+// for ZDS to access an IO port
+// #define io_read(a) (*((XSFR)a))
+
+#define MOCK_IO_ACCESS
+
+#define io_read(a) *mock_io
+
+#define io_write(addr, v) mock_io[0] = ~v;
+
 #endif

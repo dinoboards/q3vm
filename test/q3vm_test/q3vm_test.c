@@ -117,7 +117,9 @@ void testArguments(void) {
   int  imageSize;
 
   vm.codeLength = 0;
+  printf("1\n");
   VM_Call(&vm, 0);
+  printf("2\n");
 
   VM_ArgPtr(0, NULL);
   VM_ArgPtr(1, NULL);
@@ -163,6 +165,7 @@ int main(int argc, char **argv) {
   const char *files[] = {"test.qvm", argv[argc > 1]};
   const char *file    = files[argc > 1];
 
+#if MEMORY_SAFE
   printf("\nExpect Negative assertions:\n");
   testArguments();
 
@@ -174,6 +177,7 @@ int main(int argc, char **argv) {
   testInject(file, 4, -1);
 
   printf("Completed Expected Negative Assertions\n");
+#endif
 
   /* finally: test the normal case */
   return testNominal(file);

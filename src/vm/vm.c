@@ -236,7 +236,9 @@ int VM_Create(vm_t                *vm,
     printf("  BSS Length:     %06X\n", vm->bssLength);
     printf("  BSS End:        %06X\n", vm->dataLength + vm->bssLength);
     printf("  PS Top:         %06X\n", vm->programStack);
+#ifdef MEMORY_SAFE
     printf("  PS Bottom:      %06X\n", vm->stackBottom);
+#endif
 #endif
   }
   return 0;
@@ -444,50 +446,115 @@ locals from sp
 
 #ifdef MEMORY_SAFE
 uint8_t bad_memory[16];
-
-const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
-  if (vaddr < 0) {
-    Com_Printf("Attempted to read at %06X\n", vaddr);
-    vm->lastError = VM_LIT_ACCESS_ERROR;
-    Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Error");
-    return bad_memory;
-  }
-
-  if (vaddr < (vm_operand_t)vm->litLength) {
-    if (vaddr + size > (vm_operand_t)vm->litLength) {
-      vm->lastError = VM_LIT_ACCESS_ERROR;
-      Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Error");
-      return bad_memory;
-    }
-    return &vm->codeBase[vm->codeLength + vaddr];
-  }
-
-  if ((vm_size_t)vaddr + size > vm->workingRAMLength + vm->litLength) {
-    Com_Printf("Attempted to read at %06X -- (%06X %06X)\n", vaddr, vm->workingRAMLength, vm->litLength);
-    vm->lastError = VM_RAM_ACCESS_ERROR;
-    Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Error");
-    return bad_memory;
-  }
-
-  return &vm->dataBase[vaddr];
-}
 #else
-#define VM_RedirectLit(vm, a, l) ((a < (vm_operand_t)vm->litLength) ? &vm->codeBase[vm->codeLength + a] : &vm->dataBase[a])
+const uint8_t *bad_memory = 0;
 #endif
+
+#ifdef MOCK_IO_ACCESS
+uint8_t mock_io[4] = {1, 2, 3, 4};
+#else
+// uint8_t *mock_io = (uint8_t *)0xFFFFFF;
+#endif
+
+#ifdef MEMORY_SAFE
+
+bool VM_VerifyReadOK(vm_t *vm, vm_size_t vaddr, int size) {
+  if (vaddr > 0xFF0000 && size == 1) {
+    printf("mocking I/O Access\n");
+    return true;
+  }
+
+  if (vaddr < vm->litLength) {
+    if (vaddr + size > vm->litLength) {
+      vm->lastError = VM_LIT_ACCESS_ERROR;
+      Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Read Error - attempt read beyond LIT segment");
+      return false;
+    }
+    return true;
+  }
+
+  if (vaddr + size > vm->workingRAMLength + vm->litLength) {
+    Com_Printf("Attempted to read at %06X+(%06X) -- (%06X %06X)\n", vaddr, size, vm->workingRAMLength, vm->litLength);
+    vm->lastError = VM_RAM_ACCESS_ERROR;
+    Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Read Error - attempt read beyond RAM");
+    return false;
+  }
+
+  return true;
+}
+
+bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
+  if (vaddr > 0xFF0000 && size == 1) {
+    printf("mocking I/O Access\n");
+    return true;
+  }
+
+  if (vaddr < vm->litLength) {
+    Com_Printf("Attempted to write at %06X -- (%06X %06X)\n", vaddr, vm->workingRAMLength, vm->litLength);
+
+    vm->lastError = VM_LIT_ACCESS_ERROR;
+    Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Write Error - attempt to write to LIT segment");
+    return false;
+  }
+
+  if (vaddr + size > vm->workingRAMLength + vm->litLength) {
+    Com_Printf("Attempted to write at %06X -- (%06X %06X)\n", vaddr, vm->workingRAMLength, vm->litLength);
+    vm->lastError = VM_RAM_ACCESS_ERROR;
+    Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Write Error - attempt to write beyond RAM");
+    return false;
+  }
+
+  return true;
+}
+
+#else
+
+#define VM_VerifyReadOK(a, b, c) (1)
+
+#define VM_VerifyWriteOK(a, b, c) (1)
+
+#endif
+
+// For 8 bit access:
+// If address > FFFF00, map to Z80 I/O
+// if address > FF0000, map to a share host memory range (not yet implemented)
+#define VM_ReadAddrByte(vaddr, fn)                                                                                                 \
+  {                                                                                                                                \
+    if (!VM_VerifyReadOK(vm, vaddr, 1)) {                                                                                          \
+      fn(*bad_memory);                                                                                                             \
+    } else {                                                                                                                       \
+                                                                                                                                   \
+      if (((vm_size_t)(vaddr) > 0xFF0000)) {                                                                                       \
+        fn(io_read(vaddr));                                                                                                        \
+      } else {                                                                                                                     \
+        fn(*(((vm_size_t)(vaddr) < litLength) ? &codeBase[codeLength + (vm_size_t)(vaddr)] : &dataBase[(vm_size_t)(vaddr)]));      \
+      }                                                                                                                            \
+    }                                                                                                                              \
+  }
+
+#define VM_GetReadAddr(vaddr, size)                                                                                                \
+  (!VM_VerifyReadOK(vm, vaddr, size)                                                                                               \
+       ? bad_memory                                                                                                                \
+       : (((((vm_size_t)(vaddr) < litLength) ? &codeBase[codeLength + (vm_size_t)(vaddr)] : &dataBase[(vm_size_t)(vaddr)]))))
+
+#define VM_WriteAddrByte(vaddr, value)                                                                                             \
+  {                                                                                                                                \
+    if (!VM_VerifyWriteOK(vm, vaddr, 1)) {                                                                                         \
+      ;                                                                                                                            \
+    } else {                                                                                                                       \
+                                                                                                                                   \
+      if (((vm_size_t)(vaddr) > 0xFF0000)) {                                                                                       \
+        io_write(vaddr, value);                                                                                                    \
+      } else {                                                                                                                     \
+        dataBase[(vm_size_t)(vaddr)] = value;                                                                                      \
+      }                                                                                                                            \
+    }                                                                                                                              \
+  }
+
+#define VM_GetWriteAddr(vaddr, size) (!VM_VerifyWriteOK(vm, vaddr, size) ? bad_memory : &dataBase[(vm_size_t)(vaddr)])
 
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
-
-#define VM_DataRead_uint32(vm, vaddr) (*((uint32_t *)VM_RedirectLit(vm, UINT(vaddr), 4)))
-
-#define VM_DataRead_uint24(vm, vaddr)                                                                                              \
-  (*((uint24_t *)((UINT(vaddr) < vm->litLength) ? &vm->codeBase[vm->codeLength + UINT(vaddr)] : &vm->dataBase[UINT(vaddr)])))
-
-#define VM_DataRead_uint16(vm, vaddr)                                                                                              \
-  (*((uint16_t *)((UINT(vaddr) < vm->litLength) ? &vm->codeBase[vm->codeLength + UINT(vaddr)] : &vm->dataBase[UINT(vaddr)])))
-
-#define VM_DataRead_float(vm, vaddr) (*(float *)VM_RedirectLit(vm, vaddr, 4))
-#define VM_DataRead_uint8(vm, vaddr) (*(uint8_t *)VM_RedirectLit(vm, vaddr, 1))
 
 #define pop_2_int32()                                                                                                              \
   r0 = *((int32_t *)opStack8);                                                                                                     \
@@ -563,9 +630,11 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
   log3_2("%08X PUSHED int32\n", *opStack32);
 
 #define push_1_uint32(a)                                                                                                           \
-  opStack8 += 4;                                                                                                                   \
-  *opStack32 = a;                                                                                                                  \
-  log3_2("%08X PUSHED uint32\n", *opStack32);
+  {                                                                                                                                \
+    opStack8 += 4;                                                                                                                 \
+    *opStack32 = a;                                                                                                                \
+    log3_2("%08X PUSHED uint32\n", *opStack32);                                                                                    \
+  }
 
 #define push_1_uint24(a)                                                                                                           \
   opStack8 += 4;                                                                                                                   \
@@ -578,9 +647,11 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
   log3_2("%08X PUSHED int24\n", *opStack32);
 
 #define push_1_uint16(a)                                                                                                           \
-  opStack8 += 4;                                                                                                                   \
-  *opStack32 = (uint32_t)(uint16_t)a;                                                                                              \
-  log3_2("%08X PUSHED uint16\n", *opStack32);
+  {                                                                                                                                \
+    opStack8 += 4;                                                                                                                 \
+    *opStack32 = (uint32_t)(uint16_t)a;                                                                                            \
+    log3_2("%08X PUSHED uint16\n", *opStack32);                                                                                    \
+  }
 
 #define push_1_int16(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
@@ -588,9 +659,11 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
   log3_2("%08X PUSHED int16\n", *opStack32);
 
 #define push_1_uint8(a)                                                                                                            \
-  opStack8 += 4;                                                                                                                   \
-  *opStack32 = (uint8_t)(a);                                                                                                       \
-  log3_2("%02X PUSHED uint8\n", *opStack32);
+  {                                                                                                                                \
+    opStack8 += 4;                                                                                                                 \
+    *opStack32 = (uint8_t)(a);                                                                                                     \
+    log3_2("%02X PUSHED uint8\n", *opStack32);                                                                                     \
+  }
 
 #define push_1_int8(a)                                                                                                             \
   opStack8 += 4;                                                                                                                   \
@@ -599,15 +672,13 @@ const uint8_t *VM_RedirectLit(vm_t *vm, int32_t vaddr, int size) {
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
-  uint8_t        _opStack[OPSTACK_SIZE + 4] = {0}; /* 256 4 byte double words + 4 safety bytes */
-  uint8_t       *opStack8                   = &_opStack[4];
-  stdint_t       programCounter;
-  ustdint_t      programStack;
-  ustdint_t      stackOnEntry;
-  uint8_t       *dataBase;
-  const uint8_t *codeBase;
-  uint8_t        opcode;
-  vm_operand_t   r0, r1;
+  uint8_t      _opStack[OPSTACK_SIZE + 4] = {0}; /* 256 4 byte double words + 4 safety bytes */
+  uint8_t     *opStack8                   = &_opStack[4];
+  stdint_t     programCounter;
+  ustdint_t    programStack;
+  ustdint_t    stackOnEntry;
+  uint8_t      opcode;
+  vm_operand_t r0, r1;
 
   int24_t r0_int24;
   int24_t r1_int24;
@@ -618,6 +689,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
   int16_t  r0_int16;
   int8_t   r0_int8;
   uint8_t  r0_uint8;
+
+  uint8_t *const       dataBase   = vm->dataBase;
+  const uint8_t *const codeBase   = vm->codeBase;
+  const vm_size_t      litLength  = vm->litLength;
+  const vm_size_t      codeLength = vm->codeLength;
 
 #ifdef DEBUG_VM
   vmSymbol_t *profileSymbol;
@@ -632,9 +708,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
   /* uncomment this for debugging breakpoints */
   vm->breakFunction = 0;
 #endif
-
-  dataBase = vm->dataBase;
-  codeBase = vm->codeBase;
 
   programCounter = 0;
   programStack -= (6 + 3 * MAX_VMMAIN_ARGS);
@@ -716,63 +789,59 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       DISPATCH();
     }
 
-    case OP_LOADF4: {
-      r0 = *opStack32 = *((uint32_t *)VM_RedirectLit(vm, r0, 4));
-      DISPATCH();
-    }
-
     case OP_LOAD4: {
       pop_1_uint24();
       log3_2("R0: %06X", UINT(r0_uint24));
-      push_1_uint32(VM_DataRead_uint32(vm, r0_uint24));
+      push_1_uint32(*((uint32_t *)VM_GetReadAddr(UINT(r0_uint24), 4)));
       DISPATCH();
     }
 
     case OP_LOAD3: {
       pop_1_uint24();
       log3_2("RO: %06X", UINT(r0_uint24));
-      push_1_uint24(VM_DataRead_uint24(vm, r0_uint24));
+      push_1_uint24(*((uint24_t *)VM_GetReadAddr(UINT(r0_uint24), 3)));
       DISPATCH();
     }
 
     case OP_LOAD2:
       pop_1_uint24();
       log3_2("R0: %06X", UINT(r0_uint24));
-      push_1_uint16(VM_DataRead_uint16(vm, r0_uint24));
+      push_1_uint16(*((uint16_t *)VM_GetReadAddr(UINT(r0_uint24), 2)));
       DISPATCH();
 
     case OP_LOAD1: {
       pop_1_uint24();
       log3_2("R0: %06X", UINT(r0_uint24));
-      push_1_uint8(*VM_RedirectLit(vm, (vm_operand_t)UINT(r0_uint24), 1));
+      VM_ReadAddrByte((vm_operand_t)UINT(r0_uint24), push_1_uint8);
       DISPATCH();
     }
-
-    case OP_STORE3:
-      pop_2_uint24();
-      *(uint24_t *)&dataBase[UINT(r1_uint24)] = r0_uint24;
-      log3_3("*(%06X) = %08X  MOVE (3 bytes)\n", UINT(r1_uint24), UINT(r0_uint24));
-      DISPATCH();
 
     case OP_STORE4: {
       pop_1_uint32();
       pop_1_uint24();
-      *((uint32_t *)&dataBase[UINT(r0_uint24)]) = r0;
+      *((uint32_t *)VM_GetWriteAddr(UINT(r0_uint24), 4)) = r0;
       log3_3("*(%06X) = %08X  MOVE\n", UINT(r0_uint24), r0);
+      DISPATCH();
+    }
+
+    case OP_STORE3: {
+      pop_2_uint24();
+      *((uint24_t *)VM_GetWriteAddr(UINT(r1_uint24), 3)) = r0_uint24;
+      log3_3("*(%06X) = %08X  MOVE (3 bytes)\n", UINT(r1_uint24), UINT(r0_uint24));
       DISPATCH();
     }
 
     case OP_STORE2:
       pop_1_uint16();
       pop_1_uint24();
-      *((uint16_t *)&dataBase[UINT(r0_uint24)]) = r0_uint16;
+      *((uint16_t *)VM_GetWriteAddr(UINT(r0_uint24), 2)) = r0_uint16;
       log3_3("*(%06X) = %04X  MOVE\n", UINT(r0_uint24), r0_uint16);
       DISPATCH();
 
     case OP_STORE1:
       pop_1_uint8();
       pop_1_uint24();
-      dataBase[UINT(r0_uint24)] = r0_uint8;
+      VM_WriteAddrByte((vm_operand_t)UINT(r0_uint24), r0_uint8);
       log3_3("*(%06X) = %02X  MOVE\n", UINT(r0_uint24), r0_uint8);
       DISPATCH();
 

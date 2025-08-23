@@ -16,6 +16,23 @@ typedef char          int8_t;
 typedef unsigned short uint16_t;
 typedef short          int16_t;
 
-int a = -5;
+typedef unsigned int uint24_t;
+typedef int          int24_t;
 
-int main(int command, int arg0, int arg1) { printf("command: %d, arg0: %d, arg1: %d\n", command, arg0, arg1); }
+typedef unsigned long uint32_t;
+typedef long          int32_t;
+
+int main(int command, int arg0, int arg1) {
+
+  /* initializing a tests the rewrite rule for
+   * movq $large_const, memory_address
+   */
+  long a = 16777210L;
+  long b = 0l;
+  /* Assign the value of one long variable
+   * (which is too large for an int to represent)
+   * to another long variable
+   */
+  b = a;
+  return (b == 16777210L);
+}
