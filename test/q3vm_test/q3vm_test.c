@@ -93,12 +93,14 @@ int testNominal(const char *filepath) {
       printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
       failedTests++;
     }
+#ifdef MEMORY_SAFE
     /* now do an invalid function call within the VM */
     retVal = VM_Call(&vm, 2);
     if (vm.lastError != VM_PC_OUT_OF_RANGE) {
       printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
       failedTests++;
     }
+#endif
   }
   VM_VmProfile_f(&vm);
   free(image);
@@ -165,7 +167,7 @@ int main(int argc, char **argv) {
   const char *files[] = {"test.qvm", argv[argc > 1]};
   const char *file    = files[argc > 1];
 
-#if MEMORY_SAFE
+#ifdef MEMORY_SAFE
   printf("\nExpect Negative assertions:\n");
   testArguments();
 

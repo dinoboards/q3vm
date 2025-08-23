@@ -119,8 +119,9 @@ static uint8_t vm_debugLevel; /**< 0: be quiet, 1: debug msgs, 2: print op codes
  * LOCAL FUNCTION PROTOTYPES
  *******************
  ***********************************************************/
-
+#ifdef MEMORY_SAFE
 static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, const vm_size_t bytecodeLength);
+#endif
 
 /** Run a function from the virtual machine with the interpreter (i.e. no JIT).
  * @param[in] vm Pointer to initialized virtual machine.
@@ -171,13 +172,20 @@ static void VM_StackTrace(vm_t *vm, int programCounter, int programStack);
  * FUNCTION BODIES
  ******************************************************************************/
 
-int VM_Create(vm_t                *vm,
-              const uint8_t *const bytecode,
-              const vm_size_t      length,
-              uint8_t *const       workingRAM,
-              const vm_size_t      workingRAMLength,
+#if defined(__clang__) || defined(__GNUC__)
+#define UNUSED_ARG __attribute__((unused))
+#else
+#define UNUSED_ARG
+#endif
+
+int VM_Create(vm_t                      *vm,
+              const uint8_t *const       bytecode,
+              const vm_size_t UNUSED_ARG length,
+              uint8_t *const             workingRAM,
+              const vm_size_t            workingRAMLength,
               uint32_t (*systemCalls)(vm_t *, uint8_t *)) {
 
+#ifdef MEMORY_SAFE
   if (vm == NULL) {
     Com_Error(VM_INVALID_POINTER, "Missing VM");
     return VM_INVALID_POINTER;
@@ -188,6 +196,7 @@ int VM_Create(vm_t                *vm,
 
   if (!bytecode)
     VM_AbortError(VM_INVALID_POINTER, "bytecode is NULL");
+#endif
 
   {
     const vmHeader_t *const header = (const vmHeader_t *const)bytecode;
@@ -205,8 +214,10 @@ int VM_Create(vm_t                *vm,
     vm->programStack     = workingRAMLength - 3;
     vm->workingRAMLength = workingRAMLength;
 
+#ifdef MEMORY_SAFE
     if (VM_ValidateHeader(vm, header, length))
       return -1;
+#endif
 
     /* make sure data section is always initialized with 0
      * (bss would be enough) */
@@ -263,6 +274,7 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 }
 #endif
 
+#ifdef MEMORY_SAFE
 static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, const vm_size_t bytecodeLength) {
 
   if (!header || bytecodeLength <= vm_sizeof(vmHeader_t) || bytecodeLength > VM_MAX_IMAGE_SIZE) {
@@ -298,6 +310,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
 
   return 0;
 }
+#endif
 
 /* TODO: Build ez80 platform specific version to just pass through args */
 intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
@@ -926,9 +939,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
           Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, programCounter));
         }
 #endif
-      } else if ((unsigned)programCounter >= MAX_PROGRAM_COUNTER)
+      }
+#ifdef MEMORY_SAFE
+      else if ((unsigned)programCounter >= MAX_PROGRAM_COUNTER)
         VM_AbortError(VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_CALL");
-
+#endif
       DISPATCH();
     }
     /* push and pop are only needed for discarded or bad function return
@@ -980,8 +995,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       if (programCounter == -1)
         goto done;
 
+#ifdef MEMORY_SAFE
       if ((unsigned)programCounter >= (unsigned)vm->codeLength)
         VM_AbortError(VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_LEAVE");
+#endif
 
       DISPATCH();
     }
@@ -992,8 +1009,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
          */
 
     case OP_JUMP:
+#ifdef MEMORY_SAFE
       if ((unsigned)r0 >= MAX_PROGRAM_COUNTER)
         VM_AbortError(VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_JUMP");
+#endif
 
       programCounter = r0;
       opStack8 -= 4;
@@ -1554,9 +1573,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
   }
 
 done:
+#ifdef MEMORY_SAFE
   if (opStack32[-1] != 0x0000BEEF)
     VM_AbortError(VM_STACK_ERROR, "Operation stack error");
-
+#endif
   vm->programStack = stackOnEntry;
 
   /* return the result of the bytecode computations */
