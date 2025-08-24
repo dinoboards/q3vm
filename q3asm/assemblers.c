@@ -235,6 +235,10 @@ ASMMultipleFn(CODE_CUxI3) {
   Parse();
 
   switch (token[0]) {
+  case '1':
+    opcode = OP_CU1I3;
+    break;
+
   case '2':
     opcode = OP_CU2I3;
     break;

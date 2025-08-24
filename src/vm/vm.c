@@ -1457,6 +1457,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       DISPATCH();
     }
 
+    case OP_CU1I3: {
+      pop_1_uint8(R0);
+      push_1_int24(INT24(R0.uint8));
+      DISPATCH();
+    }
+
     case OP_CU2I3: {
       pop_1_uint16(R0);
       push_1_int24(INT24(R0.uint16));
