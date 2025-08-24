@@ -134,7 +134,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args);
  * @param[in] src Pointer (in VM space).
  * @param[in] n Number of bytes.
  * @param[in,out] vm Current VM */
-static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, const vm_t *vm);
+static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, vm_t *vm);
 
 /******************************************************************************
  * DEBUG FUNCTIONS (only used if DEBUG_VM is defined)
@@ -383,7 +383,8 @@ int32_t VM_FloatToInt(float f) {
   return fi.i;
 }
 
-bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, const vm_t *const vm) {
+#ifdef MEMORY_SAFE
+bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, vm_t *const vm) {
   if (!vmAddr || !vm)
     return -1;
 
@@ -394,14 +395,17 @@ bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, const vm_t
 
   return 0;
 }
+#endif
 
-static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, const vm_t *vm) {
+static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, vm_t *vm) {
 
+#ifdef MEMORY_SAFE
   if (VM_MemoryRangeValid(src, n, vm))
     return;
 
   if (VM_MemoryRangeValid(src, n, vm))
     return;
+#endif
 
   {
     const uint8_t *true_src = (src < vm->litLength) ? &vm->codeBase[vm->codeLength + src] : &vm->dataBase[src];

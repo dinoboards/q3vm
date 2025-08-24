@@ -93,7 +93,14 @@ int testNominal(const char *filepath) {
       printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
       failedTests++;
     }
+
 #ifdef MEMORY_SAFE
+    retVal = VM_Call(&vm, 5);
+    if (vm.lastError != VM_DATA_OUT_OF_RANGE) {
+      printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
+      failedTests++;
+    }
+
     /* now do an invalid function call within the VM */
     retVal = VM_Call(&vm, 2);
     if (vm.lastError != VM_PC_OUT_OF_RANGE) {
@@ -119,13 +126,12 @@ void testArguments(void) {
   int  imageSize;
 
   vm.codeLength = 0;
-  printf("1\n");
   VM_Call(&vm, 0);
-  printf("2\n");
-
   VM_ArgPtr(0, NULL);
-  VM_ArgPtr(1, NULL);
+
+#ifdef MEMORY_SAFE
   VM_MemoryRangeValid(0, 0, NULL);
+#endif
   loadImage(NULL, &imageSize);
 
   loadImage("invalidpathfoobar", &imageSize);
@@ -150,8 +156,6 @@ void testArguments(void) {
   vmHeader.dataLength = to_uint24(2048);
   vmHeader.litLength  = to_uint24(0);
   vmHeader.bssLength  = to_uint24(256);
-
-  printf("8\r\n");
 
   VM_Create(&vm, (uint8_t *)&vmHeader,
             sizeof(vmHeader_t) + to_ustdint(vmHeader.codeLength) + to_ustdint(vmHeader.dataLength) +
@@ -243,16 +247,26 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
     return fprintf(stderr, "%s", (const char *)VMA_PTR(3, vm));
 
   case -3: /* MEMSET */
-    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) == 0) {
-      memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
+#ifdef MEMORY_SAFE
+    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0) {
+      VM_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
+      return VM_DATA_OUT_OF_RANGE;
     }
+#endif
+    memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
+
     return VMA_UINT24(3);
 
   case -4: /* MEMCPY */
-    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) == 0 &&
-        VM_MemoryRangeValid(VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/, vm) == 0) {
-      memcpy(VMA_PTR(3, vm), VMA_PTR(6, vm), VMA_UINT24(9));
+#ifdef MEMORY_SAFE
+    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0 ||
+        VM_MemoryRangeValid(VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0) {
+      VM_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
+      return VM_DATA_OUT_OF_RANGE;
     }
+
+#endif
+    memcpy(VMA_PTR(3, vm), VMA_PTR(6, vm), VMA_UINT24(9));
     return VMA_UINT24(3);
 
   case -6: /* FLOATFF */
