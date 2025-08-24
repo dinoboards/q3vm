@@ -1,6 +1,6 @@
 #include "bg_lib.h"
 
-void printf(const char *fmt, ...);
+// void printf(const char *fmt, ...);
 /*
 ================
 vmMain
@@ -22,26 +22,6 @@ typedef int          int24_t;
 typedef unsigned long uint32_t;
 typedef long          int32_t;
 
-/** @brief Simple function to sum up character values.
-  This is used for a test in the makefile.
-  @param[in] f pointer to string.
-  @return test number. */
-int testCase(const char *f);
-
-/* this call is supposed to fail */
-int badcall(int i);
-
-/* test float system calls */
-float floatff(float f);
-
-/* test recursive calls */
-int recursive(int i);
-
-int fib(int n);
-
-volatile int        bssTest;         /* don't initialize, should be zero */
-volatile static int dataTest = -999; /* don't change, should be 999 */
-
 /*
 ================
 vmMain
@@ -51,13 +31,92 @@ This must be the very first function compiled into the .qvm file
 ================
 */
 
-int vmMain(int command, int arg0, int arg1, int arg2) {
-  char str[] = "Hello\n";
+/* Test basic arithmetic operations on long integers
+ * when one or both operands and the result are outside the range of int */
 
-  // printf("cmd:   %i\n", command);
-  // printf("arg0:  %i\n", arg0);
-  // printf("arg1:  %i\n", arg1);
-  // printf("arg2:  %i\n", arg2);
+long a;
+long b;
 
-  printf(str, "World");
+int addition(void);
+int subtraction(void);
+int multiplication(void);
+int division(void);
+int remaind(void);
+int complement(void);
+
+int main(void) {
+
+  /* Addition */
+  a = 4294967290l; // 2^32 - 6
+  b = 5l;
+  // if (!addition()) {
+  //   return 1;
+  // }
+
+  // /* Subtraction */
+  // a = -16777210l;
+  // b = 90l;
+  // if (!subtraction()) {
+  //   return 2;
+  // }
+
+  // /* Multiplication */
+  // a = 16777210l;
+  // if (!multiplication()) {
+  //   return 3;
+  // }
+
+  // /* Division */
+  // a = 16777210l;
+  // if (!division()) {
+  //   return 4;
+  // }
+
+  // /* Remainder */
+  // a = 33554425l; // 2^25 - 7
+  // if (!remaind()) {
+  //   return 5;
+  // }
+
+  /* Complement */
+  a = 2147483647l; // LONG_MAX - 1
+  if (!complement()) {
+    return 6;
+  }
+
+  return 0;
+}
+
+int addition(void) {
+  // a == 16777210l, i.e. 2^24 - 6
+  // b = 5;
+  return (a + b == 4294967295l);
+}
+
+int subtraction(void) {
+  // a = -16777210l;
+  // b = 90l;
+  return (a - b == -16777300l);
+}
+
+int multiplication(void) {
+  // a = 16777210l;
+  return (a * 4l == 67108840l);
+}
+
+int division(void) {
+  // a = 16777210l;
+  b = a / 128l;
+  return (b == 131071l);
+}
+
+int remaind(void) {
+  // a = 33554425l; // 2^25 - 7
+  b = -a % 16777210l;
+  return (b == -5l);
+}
+
+int complement(void) {
+  // a = 2147483647l, i.e. LONG_MAX - 1
+  return (~a == -2147483648l);
 }

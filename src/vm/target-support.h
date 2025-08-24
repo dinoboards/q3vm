@@ -47,4 +47,9 @@ extern int24_t  to_int24(ustdint_t x);
 
 #define io_write(addr, v) mock_io[0] = ~v;
 
+#define FMT_INT32 "%08X"
+#define FMT_INT24 "%06X"
+#define FMT_INT16 "%04X"
+#define FMT_INT8  "%02X"
+
 #endif
