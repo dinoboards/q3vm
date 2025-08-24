@@ -885,7 +885,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_BLOCK_COPY:
-      VM_BlockCopy(R1.int32, R0.int32, r2_uint24_old, vm);
+      VM_BlockCopy(R1.int32, R0.int32, UINT(R2.uint24), vm);
       programCounter += INT24_INCREMENT;
       opStack8 -= 8;
       DISPATCH();
@@ -1550,14 +1550,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_CONSTP3: {
-      opStack8 += 4;
-      R1       = R0;
-      R0.int32 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24_old;
-      programCounter += INT24_INCREMENT;
-      DISPATCH();
-    }
-
-    case OP_CONSTP4: {
       opStack8 += 4;
       R1       = R0;
       R0.int32 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24_old;

@@ -30,7 +30,7 @@
 | OP_PUSH           | ENDPROC                   | `OS++`                                                        |
 | OP_POP            | POP                       | `OS--`                                                        |
 | OP_CONSTGP3 v24   | ADDRGP3                   | `OS++; *OS = v24`                                             |
-| OP_CONSTP4 v24    | CNSTP4                    | `OS++; *OS = (int32)v24`                                      |
+| OP_CONSTP3 v24    | CNSTP4                    | `OS++; *OS = (int32)v24`                                      |
 | OP_CONSTU1 v8     | CNSTU1                    | `OS++; *OS = (uint32)v8`                                      |
 | OP_CONSTI1 iv8    | CNSTI1                    | `OS++; *OS = (int32)iv8`                                      |
 | OP_CONSTU2 v16    | CNSTU2                    | `OS++; *OS = (uint32)v16`                                     |
