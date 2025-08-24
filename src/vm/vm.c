@@ -684,6 +684,7 @@ typedef union stack_entry_u {
   uint24_t uint24;
   int32_t  int32;
   uint32_t uint32;
+  float    flt;
 } stack_entry_t;
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
@@ -776,17 +777,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
 #endif
       DISPATCH();
 
-    case OP_CONSTGP3:
+    case OP_CONSTGP3: {
       push_1_uint24(R2.uint24);
       programCounter += INT24_INCREMENT;
       DISPATCH();
-
-    case OP_CONSTGP4:
-      opStack8 += 4;
-      R1       = R0;
-      R0.int32 = *opStack32 = r2_int24_old;
-      programCounter += INT24_INCREMENT;
-      DISPATCH();
+    }
 
     case OP_LOCAL: {
       log3_2("&PS[" FMT_INT16 "]", R2.uint16);
