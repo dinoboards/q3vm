@@ -289,6 +289,32 @@ ASMMultipleFn(CODE_CIxU4) {
   EmitByte(&segment[CODESEG], opcode);
 }
 
+ASMMultipleFn(CODE_CIxF4) {
+  opcode_t opcode;
+
+  Parse();
+
+  switch (token[0]) {
+  case '3':
+    opcode = OP_CI3F4;
+    break;
+
+  case '4':
+    opcode = OP_CI4F4;
+    break;
+
+  default:
+    WriteComment();
+    printf("TODO: CODE_CI%cF4\n", token[0]);
+    // CodeError("Bad sign extension: %s\n", token);
+    return;
+  }
+
+  WriteCode(opcode);
+
+  EmitByte(&segment[CODESEG], opcode);
+}
+
 ASMMultipleFn(CODE_CIxI1) {
   opcode_t opcode;
 

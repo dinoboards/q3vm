@@ -633,7 +633,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 
 #define push_1_float(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
-  *opStack32 = a;                                                                                                                  \
+  *opStackFlt = a;                                                                                                                 \
   log3_2(FMT_FLT " PUSHED float\n", *opStackFlt);
 
 #define push_1_int32(a)                                                                                                            \
@@ -804,30 +804,28 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       pop_2_floats();
       log3_3(FMT_FLT " + " FMT_FLT " = ", R1.flt, R0.flt);
       R1.flt += R0.flt;
-      push_1_float(R1.uint32);
+      push_1_float(R1.flt);
       DISPATCH();
     }
 
     case OP_ARG3: {
-      /* single byte offset from programStack */
+      pop_1_uint24(R0);
 #ifdef DEBUG_VM
-      printf("  ARG *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
-             programStack + R2.int8, R0.int32);
+      printf("  ARG3 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
+             programStack + R2.int8, UINT(R0.uint24));
 #endif
-      *(int24_t *)&dataBase[programStack + R2.int8] = INT24(R0.uint32);
-      opStack8 -= 4;
+      *(uint24_t *)&dataBase[programStack + R2.int8] = R0.uint24;
       programCounter += 1;
       DISPATCH();
     }
 
     case OP_ARG4: {
-      /* single byte offset from programStack */
+      pop_1_uint32(R0);
 #ifdef DEBUG_VM
       printf("  ARG4 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
-             programStack + R2.int8, R0.int32);
+             programStack + R2.int8, R0.uint32);
 #endif
-      *(int32_t *)&dataBase[programStack + R2.int8] = R0.int32;
-      opStack8 -= 4;
+      *(uint32_t *)&dataBase[programStack + R2.int8] = R0.uint32;
       programCounter += 1;
       DISPATCH();
     }
@@ -986,6 +984,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       DISPATCH();
     }
 
+    case OP_CI3F4: {
+      pop_1_int24(R0);
+      push_1_float((float)INT(R0.int24));
+      DISPATCH();
+    }
+
     /* convert I3 to I1*/
     case OP_CI3I1: {
       pop_1_int24(R0);
@@ -1013,7 +1017,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_CI4F4: {
-      opStackFlt[0] = (float)opStack32[0];
+      pop_1_int32(R0);
+      push_1_float((float)R0.int32);
       DISPATCH();
     }
 
@@ -1324,16 +1329,11 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       DISPATCH();
     }
 
-    case OP_LEF: {
-      opStack8 -= 8;
-
-      if (opStackFlt[1] <= opStackFlt[2]) {
-        programCounter = INT(R2.int24);
-        DISPATCH();
-      } else {
-        programCounter += INT_INCREMENT;
-        DISPATCH();
-      }
+    case OP_LEF4: {
+      pop_2_floats();
+      log3_3(FMT_FLT " <= " FMT_FLT "\n", R1.flt, R0.flt);
+      programCounter = (R1.flt <= R0.flt) ? UINT(R2.uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
     }
 
     case OP_LEI3: {
@@ -1626,7 +1626,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       pop_2_floats();
       log3_3(FMT_FLT " - " FMT_FLT " = ", R1.flt, R0.flt);
       R1.flt -= R0.flt;
-      push_1_float(R1.uint32);
+      push_1_float(R1.flt);
       DISPATCH();
     }
     }

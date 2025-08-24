@@ -60,7 +60,7 @@ assemblers_t assemblers[] = {
     {"CODE",    DIRECTIVE,     assfn(CODE)      },
     {"CONSTU2", OP_CONSTU2,    assfn(CODE_16BIT)},
     {"CVFI4",   OP_CF4I4,      assfn(CODE_OP)   },
-    {"CVIF4",   OP_CI4F4,      assfn(CODE_OP)   },
+    {"CVIF4",   OP_MULTIPLE,   assfn(CODE_CIxF4)},
     {"CVII1",   OP_IGNORE,     assfn(CODE_CIxI1)},
     {"CVII2",   OP_MULTIPLE,   assfn(CODE_CIxI2)},
     {"CVII3",   OP_MULTIPLE,   assfn(CODE_CIxI3)}, /* extend sign Ix to I3*/
@@ -87,6 +87,7 @@ assemblers_t assemblers[] = {
     {"EQU",     DIRECTIVE,     assfn(EQU)       },
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"FILE",    DIRECTIVE,     assfn(COMMENT)   },
+    {"LEF4",    OP_LEF4,       assfn(CODE_24BIT)},
     {"GEF4",    OP_GEF4,       assfn(CODE_24BIT)},
     {"GEI3",    OP_GEI3,       assfn(CODE_24BIT)},
     {"GEI4",    OP_GEI4,       assfn(CODE_24BIT)},

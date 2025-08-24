@@ -22,6 +22,7 @@ OP_CI1I3
 OP_CI1I4                Sign-Extend 8-bit
 OP_CI2I3
 OP_CI2I4                Sign-Extend 16-bit
+OP_CI3F4
 OP_CI3I1
 OP_CI3I2
 OP_CI3I4
@@ -70,7 +71,7 @@ OP_GTU3
 OP_GTU4                  Compare unsigned integers, jump if greater-than
 OP_JUMP                 Unconditional jump.
 OP_LEAVE                End subroutine.
-OP_LEF                  Compare floats, jump if less-than-or-equal
+OP_LEF4                  Compare floats, jump if less-than-or-equal
 OP_LEI3
 OP_LEI4                  Compare integers, jump if less-than-or-equal.
 OP_LEU                  Compare unsigned integers, jump if less-than-or-equal
