@@ -113,13 +113,11 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "RSHI4",      /* 109  Right-shift (algebraic; preserve sign) */
     "RSHU3",      /* 110  */
     "RSHU4",      /* 111  Right-shift (bitwise; ignore sign) */
-    "SEX24",      /* 112  */
-    "SEX8_3",     /* 113  */
-    "STORE1",     /* 114  Store 1-byte to memory */
-    "STORE2",     /* 115  Store 2-byte to memory */
-    "STORE3",     /* 116  */
-    "STORE4",     /* 117  *(stack[top-1]) = stack[top] */
-    "SUB3",       /* 118  */
-    "SUB4",       /* 119  Subtract integers (two's complement). */
-    "SUBF4",      /* 120  Subtract floats */
+    "STORE1",     /* 112  Store 1-byte to memory */
+    "STORE2",     /* 113  Store 2-byte to memory */
+    "STORE3",     /* 114  */
+    "STORE4",     /* 115  *(stack[top-1]) = stack[top] */
+    "SUB3",       /* 116  */
+    "SUB4",       /* 117  Subtract integers (two's complement). */
+    "SUBF4",      /* 118  Subtract floats */
 };

@@ -110,8 +110,6 @@ OP_RSHI3
 OP_RSHI4                 Right-shift (algebraic; preserve sign)
 OP_RSHU3
 OP_RSHU4                 Right-shift (bitwise; ignore sign)
-OP_SEX24
-OP_SEX8_3
 OP_STORE1               Store 1-byte to memory
 OP_STORE2               Store 2-byte to memory
 OP_STORE3

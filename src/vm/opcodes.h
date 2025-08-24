@@ -117,15 +117,13 @@ typedef enum {
   OP_RSHI4,      /* 109  Right-shift (algebraic; preserve sign) */
   OP_RSHU3,      /* 110  */
   OP_RSHU4,      /* 111  Right-shift (bitwise; ignore sign) */
-  OP_SEX24,      /* 112  */
-  OP_SEX8_3,     /* 113  */
-  OP_STORE1,     /* 114  Store 1-byte to memory */
-  OP_STORE2,     /* 115  Store 2-byte to memory */
-  OP_STORE3,     /* 116  */
-  OP_STORE4,     /* 117  *(stack[top-1]) = stack[top] */
-  OP_SUB3,       /* 118  */
-  OP_SUB4,       /* 119  Subtract integers (two's complement). */
-  OP_SUBF4,      /* 120  Subtract floats */
+  OP_STORE1,     /* 112  Store 1-byte to memory */
+  OP_STORE2,     /* 113  Store 2-byte to memory */
+  OP_STORE3,     /* 114  */
+  OP_STORE4,     /* 115  *(stack[top-1]) = stack[top] */
+  OP_SUB3,       /* 116  */
+  OP_SUB4,       /* 117  Subtract integers (two's complement). */
+  OP_SUBF4,      /* 118  Subtract floats */
   OP_MAX,        /* Make this the last item */
 
 } opcode_t;
