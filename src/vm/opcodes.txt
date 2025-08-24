@@ -29,7 +29,6 @@ OP_CI3U4
 OP_CI4F4                 Convert to integer from float
 OP_CI4I3
 OP_CI4U3
-OP_CONSTF4
 OP_CONSTGP3         push address pointer to stack.
 OP_CONSTI1
 OP_CONSTI2

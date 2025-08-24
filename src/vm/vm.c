@@ -561,6 +561,12 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
 
+#define pop_2_floats()                                                                                                             \
+  R0.flt = *((float *)opStack8);                                                                                                   \
+  R1.flt = *((float *)(opStack8 - 4));                                                                                             \
+  log3_3(FMT_FLT " " FMT_FLT " POP int32\n", R0.flt, R1.flt);                                                                      \
+  opStack8 -= 8;
+
 #define pop_2_int32()                                                                                                              \
   R0.int32 = *((int32_t *)opStack8);                                                                                               \
   R1.int32 = *((int32_t *)(opStack8 - 4));                                                                                         \
@@ -627,7 +633,8 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 
 #define push_1_float(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
-  *opStack32 = a;
+  *opStack32 = a;                                                                                                                  \
+  log3_2(FMT_FLT " PUSHED float\n", *opStackFlt);
 
 #define push_1_int32(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
@@ -794,8 +801,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_ADDF4: {
-      opStack8 -= 4;
-      opStackFlt[0] = opStackFlt[0] + opStackFlt[1];
+      pop_2_floats();
+      log3_3(FMT_FLT " + " FMT_FLT " = ", R1.flt, R0.flt);
+      R1.flt += R0.flt;
+      push_1_float(R1.uint32);
       DISPATCH();
     }
 
@@ -1021,14 +1030,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       DISPATCH();
     }
 
-    case OP_CONSTF4: {
-      opStack8 += 4;
-      R1       = R0;
-      R0.int32 = *opStack32 = R2.int32;
-      programCounter += INT32_INCREMENT;
-      DISPATCH();
-    }
-
     case OP_CONSTGP3: {
       push_1_uint24(R2.uint24);
       programCounter += INT24_INCREMENT;
@@ -1213,15 +1214,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
       VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
 
     case OP_GEF4: {
-      opStack8 -= 8;
-
-      if (opStackFlt[1] >= opStackFlt[2]) {
-        programCounter = INT(R2.int24);
-        DISPATCH();
-      } else {
-        programCounter += INT_INCREMENT;
-        DISPATCH();
-      }
+      pop_2_floats();
+      log3_3(FMT_FLT " >= " FMT_FLT "\n", R1.flt, R0.flt);
+      programCounter = (R1.flt >= R0.flt) ? UINT(R2.uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
     }
 
     case OP_GEI3: {
@@ -1421,15 +1417,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_LTF: {
-      opStack8 -= 8;
-
-      if (opStackFlt[1] < opStackFlt[2]) {
-        programCounter = INT(R2.int24);
-        DISPATCH();
-      } else {
-        programCounter += INT_INCREMENT;
-        DISPATCH();
-      }
+      pop_2_floats();
+      log3_3(FMT_FLT " < " FMT_FLT "\n", R1.flt, R0.flt);
+      programCounter = (R1.flt < R0.flt) ? UINT(R2.uint24) : programCounter + INT24_INCREMENT;
+      DISPATCH();
     }
 
     case OP_LTI3: {
@@ -1632,8 +1623,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_SUBF4: {
-      opStack8 -= 4;
-      opStackFlt[0] = opStackFlt[0] - opStackFlt[1];
+      pop_2_floats();
+      log3_3(FMT_FLT " - " FMT_FLT " = ", R1.flt, R0.flt);
+      R1.flt -= R0.flt;
+      push_1_float(R1.uint32);
       DISPATCH();
     }
     }

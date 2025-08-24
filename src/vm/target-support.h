@@ -51,5 +51,6 @@ extern int24_t  to_int24(ustdint_t x);
 #define FMT_INT24 "%06X"
 #define FMT_INT16 "%04X"
 #define FMT_INT8  "%02X"
+#define FMT_FLT   "%f"
 
 #endif
