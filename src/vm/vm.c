@@ -432,11 +432,7 @@ locals from sp
 ==============
 */
 
-// #define r2 (*((vm_operand_t *)&codeBase[programCounter]))
 #define R2 (*((stack_entry_t *)&codeBase[programCounter]))
-
-#define r2_int24_old  INT(*((int24_t *)&codeBase[programCounter]))
-#define r2_uint24_old UINT(*((uint24_t *)&codeBase[programCounter]))
 
 #define INT_INCREMENT       sizeof(uint32_t)
 #define INT8_INCREMENT      sizeof(uint8_t)
@@ -758,7 +754,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
       Com_Printf("%s%i %s\t(" FMT_INT8 " " FMT_INT24 ");\tSP=" FMT_INT24 ",  R0=" FMT_INT24 ", R1=" FMT_INT24 " \n", VM_Indent(vm),
-                 (int)(opStack8 - _opStack), opnames[opcode], opcode, r2, programStack, R0.int32, R1.int32);
+                 (int)(opStack8 - _opStack), opnames[opcode], opcode, R2.int32, programStack, R0.int32, R1.int32);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
@@ -1550,10 +1546,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_CONSTP3: {
-      opStack8 += 4;
-      R1       = R0;
-      R0.int32 = *opStack32 = (vm_operand_t)(int32_t)r2_uint24_old;
-      programCounter += INT24_INCREMENT;
+      push_1_uint24(R2.uint24) programCounter += INT24_INCREMENT;
       DISPATCH();
     }
     }
