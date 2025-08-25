@@ -1260,7 +1260,7 @@ extern const uint8_t
 
 extern const uint8_t chapter_12_valid_explicit_casts_truncate[CHAPTER_12_VALID_EXPLICIT_CASTS_TRUNCATE_SIZE];
 
-#define CHAPTER_99_FLOAT_ARTH_SIZE 377
+#define CHAPTER_99_FLOAT_ARTH_SIZE 543
 
 extern const uint8_t chapter_99_float_arth[CHAPTER_99_FLOAT_ARTH_SIZE];
 

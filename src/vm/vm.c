@@ -865,22 +865,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_ARGF4: {
-      /* single byte offset from programStack */
-#ifdef DEBUG_VM
-      float    f = *((float *)&R0.int32);
-      uint32_t i = *((uint32_t *)&R0.int32);
-
-      printf("  ARGF *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = %f (" FMT_INT32 ") (from: " FMT_INT24 ")\n", programStack,
-             R2.int8, programStack + R2.int8, f, i, (int)(opStack8 - _opStack));
-#endif
-
-      *((uint32_t *)&dataBase[programStack + R2.int8]) = R0.int32;
-      opStack8 -= 4;
-      PC++;
-      DISPATCH();
-    }
-
     case OP_BAND3: {
       pop_2_uint24();
       log3_3(FMT_INT32 " & " FMT_INT32 " = ", UINT(R1.uint24), UINT(R0.uint24));
