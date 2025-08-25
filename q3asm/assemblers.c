@@ -336,6 +336,10 @@ ASMMultipleFn(CODE_CIxI2) {
     WriteComment(); /* No operation needed for size reduction */
     return;
 
+  case '4':
+    WriteComment(); /* No operation needed for size reduction */
+    return;
+
   default:
     WriteComment();
     printf("TODO: CODE_CI%cI2\n", token[0]);

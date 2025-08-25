@@ -27,6 +27,9 @@ int sub_test_8();
 int sub_test_9();
 int sub_test_10();
 int sub_test_11();
+int sub_test_12();
+int sub_test_13();
+int sub_test_14();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -64,6 +67,15 @@ int main(void) {
 
   if (sub_test_11())
     return 11;
+
+  if (sub_test_12())
+    return 12;
+
+  if (sub_test_13())
+    return 13;
+
+  if (sub_test_14())
+    return 14;
 
   return 0;
 }
@@ -225,6 +237,19 @@ int sub_test_12() {
 
 int sub_test_13() {
   int24_t aa;
+  int16_t bb;
+
+  aa = -12;
+  bb = aa;
+
+  if (bb == -12)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_14() {
+  int32_t aa;
   int16_t bb;
 
   aa = -12;
