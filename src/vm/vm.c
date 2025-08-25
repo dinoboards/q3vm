@@ -598,6 +598,15 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   log3_2(FMT_INT8 " POP uint8\n", Rx.uint8);                                                                                       \
   opStack8 -= 4;
 
+#define pop_1_float(Rx)                                                                                                            \
+  Rx.flt = *((float *)opStack8);                                                                                                   \
+  log3_2(FMT_FLT " POP float\n", Rx.flt);                                                                                          \
+  opStack8 -= 4;
+
+#define retrieve_1_float(Rx)                                                                                                       \
+  Rx.flt = *((float *)opStack8);                                                                                                   \
+  log3_2(FMT_FLT " POP float\n", Rx.flt);
+
 #define push_1_float(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
   *opStackFlt = a;                                                                                                                 \
@@ -605,6 +614,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 
 #define push_1_int32(a)                                                                                                            \
   opStack8 += 4;                                                                                                                   \
+  *opStack32 = a;                                                                                                                  \
+  log3_2(FMT_INT32 " PUSHED int32\n", *opStack32);
+
+#define assign_1_int32(a)                                                                                                          \
   *opStack32 = a;                                                                                                                  \
   log3_2(FMT_INT32 " PUSHED int32\n", *opStack32);
 
@@ -932,10 +945,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_CF4I4: {
-      *opStack32 = Q_ftol(opStackFlt[0]);
+      *opStack32 = (int32_t)*((float *)opStack8);
       DISPATCH();
     }
-
       /* extend sign I1 to I3*/
     case OP_CI1I3: {
       pop_1_int8(R0);
