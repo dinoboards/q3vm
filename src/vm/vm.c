@@ -63,39 +63,6 @@
  * command number + 3 arguments */
 #define MAX_VMMAIN_ARGS 4
 
-/* GCC can do "computed gotos" instead of a traditional switch/case
- * interpreter, this speeds up the execution.
- *
- * The following section is from Python's ceval.c file:
- *
- *   Computed GOTOs, or
- *       the-optimization-commonly-but-improperly-known-as-"threaded code"
- *   using gcc's labels-as-values extension
- *   (http://gcc.gnu.org/onlinedocs/gcc/Labels-as-Values.html).
- *
- *   The traditional bytecode evaluation loop uses a "switch" statement, which
- *   decent compilers will optimize as a single indirect branch instruction
- *   combined with a lookup table of jump addresses. However, since the
- *   indirect jump instruction is shared by all opcodes, the CPU will have a
- *   hard time making the right prediction for where to jump next (actually, it
- *   will be always wrong except in the uncommon case of a sequence of several
- *   identical opcodes).
- *   "Threaded code" in contrast, uses an explicit jump table and an explicit
- *   indirect jump instruction at the end of each opcode. Since the jump
- *   instruction is at a different address for each opcode, the CPU will make a
- *   separate prediction for each of these instructions, which is equivalent to
- *   predicting the second opcode of each opcode pair. These predictions have a
- *   much better chance to turn out valid, especially in small bytecode loops.
- *   A mispredicted branch on a modern CPU flushes the whole pipeline and can
- *   cost several CPU cycles (depending on the pipeline depth), and potentially
- *   many more instructions (depending on the pipeline width).  A correctly
- *   predicted branch, however, is nearly free.
- * */
-#ifdef __GNUC__
-#ifndef DEBUG_VM /* can't use computed gotos in debug mode */
-#endif
-#endif
-
 /** Max. size of BSS section */
 #define VM_MAX_BSS_LENGTH 10485760
 
@@ -696,8 +663,8 @@ typedef union stack_entry_u {
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
-  uint8_t       _opStack[OPSTACK_SIZE + 4] = {0}; /* 256 4 byte double words + 4 safety bytes */
-  uint8_t      *opStack8                   = &_opStack[4];
+  uint8_t       _opStack[OPSTACK_SIZE + 4]; /* 256 4 byte double words + 4 safety bytes */
+  uint8_t      *opStack8 = &_opStack[4];
   stdint_t      programCounter;
   ustdint_t     programStack;
   ustdint_t     stackOnEntry;
