@@ -43,6 +43,8 @@ int sub_test_1();
 int sub_test_2();
 int sub_test_3();
 int sub_test_4();
+int sub_test_5();
+int sub_test_6();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -62,6 +64,9 @@ int main(void) {
 
   if (sub_test_5())
     return 5;
+
+  if (sub_test_6())
+    return 6;
 
   return 0;
 }
@@ -125,6 +130,19 @@ int sub_test_5() {
   c = a | b;
 
   if (c == 0x77FF)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_6() {
+  uint32_t a = 0x00FF;
+  uint32_t b = 0x7788;
+  uint32_t c;
+
+  c = a ^ b;
+
+  if (c == 0x7777)
     return 0;
 
   return 1;

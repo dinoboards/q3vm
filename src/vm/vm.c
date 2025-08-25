@@ -927,9 +927,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_BXOR4: {
-      pop_2_uint32();
-      log3_3(FMT_INT32 " ^ " FMT_INT32 " =", R1.int32, R0.int32);
-      push_1_uint32(R1.int32 ^ R0.int32);
+      op_2_uint32_to_1_uint32(^);
       DISPATCH();
     }
 
