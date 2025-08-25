@@ -721,6 +721,12 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   R_uint32 = R1_uint32(-4) operation R0_uint32(-4);                                                                                \
   log3_2(FMT_INT32 " PUSHED uint32\n", R_uint32);
 
+#define op_1_uint32_to_1_uint32(operation)                                                                                         \
+  log3_2(FMT_INT32 " POP uint32\n", R0_uint32(0));                                                                                 \
+  log3_2(#operation FMT_INT32 " =", R0_uint32(0));                                                                                 \
+  R_uint32 = ~R0_uint32(0);                                                                                                        \
+  log3_2(FMT_INT32 " PUSHED uint32\n", R_uint32);
+
 #define op_2_float_to_1_float(operation)                                                                                           \
   log3_3(FMT_FLT " " FMT_FLT " POP float\n", R1_float(0), R0_float(0));                                                            \
   opStack8 -= 4;                                                                                                                   \
@@ -894,9 +900,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_BCOM4: {
-      pop_1_uint32(R0);
-      log3_2("~" FMT_INT32 " =", R0.int32);
-      push_1_uint32(~R0.int32);
+      op_1_uint32_to_1_uint32(~);
       DISPATCH();
     }
 
