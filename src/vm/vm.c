@@ -1021,12 +1021,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_CONSTI3: {
-      push_1_int24(R2.int24);
-      PC += INT32_INCREMENT;
-      DISPATCH();
-    }
-
     case OP_CONSTI4: {
       push_1_int32(R2.int32);
       PC += INT32_INCREMENT;
@@ -1051,8 +1045,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_CONSTU3: {
-      push_1_uint24(R2.uint24);
+    case OP_CONSTs3: {
+      push_1_int24(R2.int24);
       PC += INT24_INCREMENT;
       DISPATCH();
     }
