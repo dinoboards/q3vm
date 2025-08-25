@@ -905,9 +905,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_BLOCK_COPY: {
-      VM_BlockCopy(R1.int32, R0.int32, UINT(R2.uint24), vm);
+      pop_2_uint24();
+      VM_BlockCopy(UINT(R1.uint24), UINT(R0.uint24), UINT(R2.uint24), vm);
       PC += INT24_INCREMENT;
-      opStack8 -= 8;
       DISPATCH();
     }
 
