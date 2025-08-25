@@ -23,12 +23,11 @@ OP_CI3F4
 OP_CI3s4
 OP_CI4F4                 Convert to integer from float
 OP_CONSTGP3         push address pointer to stack.
-OP_CONSTI4
 OP_CONSTP3
 OP_CONSTs1
 OP_CONSTs2
 OP_CONSTs3
-OP_CONSTU4
+OP_CONSTs4
 OP_CU1I3
 OP_CU2I3
 OP_CU3U2

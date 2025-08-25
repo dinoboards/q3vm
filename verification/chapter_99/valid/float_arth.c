@@ -38,6 +38,7 @@ int sub_test_OP_CI4U3();
 int sub_test_OP_CONSTs1();
 int sub_test_OP_CONSTs2();
 int sub_test_OP_CONSTs3();
+int sub_test_OP_CONSTs4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -108,6 +109,9 @@ int main(void) {
 
   if (sub_test_OP_CONSTs3())
     return 22;
+
+  if (sub_test_OP_CONSTs4())
+    return 23;
 
   return 0;
 }
@@ -414,6 +418,29 @@ int sub_test_OP_CONSTs3() {
 
   b = -12;
   if (-a != b)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_CONSTs4() {
+  uint32_t a;
+  int32_t  b;
+  float    c;
+
+  a = 12u;
+  b = 12;
+
+  if (a != b)
+    return 1;
+
+  b = -12;
+  if (-a != b)
+    return 1;
+
+  c = 12.0;
+
+  if (c != 12.0)
     return 1;
 
   return 0;
