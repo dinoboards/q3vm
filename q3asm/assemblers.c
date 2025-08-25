@@ -181,7 +181,7 @@ ASMMultipleFn(CODE_CIxI4) {
   Parse();
   switch (token[0]) {
   case '3':
-    opcode = OP_CI3I4;
+    opcode = OP_CI3s4;
     break;
 
   default:
@@ -262,7 +262,7 @@ ASMMultipleFn(CODE_CIxU4) {
 
   switch (token[0]) {
   case '3':
-    opcode = OP_CI3U4;
+    opcode = OP_CI3s4;
     break;
 
   case '4':
