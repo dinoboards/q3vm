@@ -60,6 +60,9 @@ int main(void) {
   if (sub_test_4())
     return 4;
 
+  if (sub_test_5())
+    return 5;
+
   return 0;
 }
 
@@ -109,6 +112,19 @@ int sub_test_4() {
 
   b = ~a;
   if (b == 0xA5A5A5)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_5() {
+  uint32_t a = 0x00FF;
+  uint32_t b = 0x7788;
+  uint32_t c;
+
+  c = a | b;
+
+  if (c == 0x77FF)
     return 0;
 
   return 1;
