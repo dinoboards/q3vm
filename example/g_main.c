@@ -56,6 +56,7 @@ int sub_test_14();
 int sub_test_15();
 int sub_test_OP_CI3s4();
 int sub_test_OP_CI2s3();
+int sub_test_OP_CI4I3();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -111,6 +112,9 @@ int main(void) {
 
   if (sub_test_OP_CI2s3())
     return 17;
+
+  if (sub_test_OP_CI4I3())
+    return 18;
 
   return 0;
 }
@@ -338,6 +342,19 @@ int sub_test_OP_CI2s3() {
 
   if (bu != -12)
     return 1;
+
+  if (bs != -12)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_CI4I3() {
+  int32_t a;
+  int24_t bs;
+
+  a  = -12;
+  bs = a;
 
   if (bs != -12)
     return 1;

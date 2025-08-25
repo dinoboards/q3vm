@@ -30,6 +30,10 @@ int sub_test_11();
 int sub_test_12();
 int sub_test_13();
 int sub_test_14();
+int sub_test_15();
+int sub_test_OP_CI3s4();
+int sub_test_OP_CI2s3();
+int sub_test_OP_CI4I3();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -76,6 +80,18 @@ int main(void) {
 
   if (sub_test_14())
     return 14;
+
+  if (sub_test_15())
+    return 15;
+
+  if (sub_test_OP_CI3s4())
+    return 16;
+
+  if (sub_test_OP_CI2s3())
+    return 17;
+
+  if (sub_test_OP_CI4I3())
+    return 18;
 
   return 0;
 }
@@ -259,4 +275,66 @@ int sub_test_14() {
     return 0;
 
   return 1;
+}
+
+int sub_test_15() {
+  int16_t  aa;
+  uint24_t bb;
+
+  aa = -12;
+  bb = (uint24_t)aa;
+
+  if (bb == -12)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_CI3s4() {
+  int24_t  a;
+  uint32_t bu;
+  int32_t  bs;
+
+  a  = -12;
+  bu = a;
+  bs = a;
+
+  if (bu != -12)
+    return 1;
+
+  if (bs != -12)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_CI2s3() {
+  int16_t  a;
+  uint24_t bu;
+  int24_t  bs;
+
+  a  = -12;
+  bu = a;
+  bs = a;
+
+  if (bu != -12)
+    return 1;
+
+  if (bs != -12)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_CI4I3() {
+  int32_t a;
+  int24_t bs;
+
+  a  = -12;
+  bs = a;
+
+  if (bs != -12)
+    return 1;
+
+  return 0;
 }

@@ -207,8 +207,8 @@ ASMMultipleFn(CODE_CIxI3) {
     break;
 
   case '4':
-    opcode = OP_CI4I3;
-    break;
+    WriteComment();
+    return;
 
   default:
     WriteComment();
