@@ -667,6 +667,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   *opStack32 = (int8_t)(a);                                                                                                        \
   log3_2(FMT_INT8 " PUSHED int8\n", *opStack32);
 
+#define R_int8     (*((int8_t *)(opStack8)))
+#define R0_int8(k) (*((int8_t *)(opStack8 - k)))
+#define R1_int8(k) (*((int8_t *)(opStack8 - k - 4)))
+
 #define R_int24     (*((int24_t *)(opStack8)))
 #define R0_int24(k) (*((int24_t *)(opStack8 - k)))
 #define R1_int24(k) (*((int24_t *)(opStack8 - k - 4)))
@@ -982,8 +986,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
       /* extend sign I1 to I3*/
     case OP_CI1I3: {
-      pop_1_int8(R0);
-      push_1_int24(INT24(R0.int8));
+      R_int24 = INT24(R0_int8(0));
       DISPATCH();
     }
 
