@@ -333,8 +333,8 @@ ASMMultipleFn(CODE_CIxI2) {
   Parse();
   switch (token[0]) {
   case '3':
-    opcode = OP_CI3I2; /* No sign change - but change 'number' size on stack */
-    break;
+    WriteComment(); /* No operation needed for size reduction */
+    return;
 
   default:
     WriteComment();

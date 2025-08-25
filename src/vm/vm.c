@@ -1005,13 +1005,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-      /* convert I3 to I2*/
-    case OP_CI3I2: {
-      pop_1_int24(R0);
-      push_1_int16((int16_t)(INT(R0.int24)));
-      DISPATCH();
-    }
-
     case OP_CI3I4: {
       pop_1_int24(R0);
       push_1_int32((int32_t)(INT(R0.int24)));
