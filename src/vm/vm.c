@@ -674,6 +674,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define R0_uint32(k) (*((uint32_t *)(opStack8 - k)))
 #define R1_uint32(k) (*((uint32_t *)(opStack8 - k - 4)))
 
+#define R_float     (*((float *)(opStack8)))
+#define R0_float(k) (*((float *)(opStack8 - k)))
+#define R1_float(k) (*((float *)(opStack8 - k - 4)))
+
 #define op_2_int24_to_1_int24(operation)                                                                                           \
   log3_3(FMT_INT24 " " FMT_INT24 " POP int24\n", INT(R1_int24(0)), INT(R0_int24(0)));                                              \
   opStack8 -= 4;                                                                                                                   \
@@ -694,6 +698,13 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   log3_3(FMT_INT32 " " #operation " " FMT_INT32 " =", R1_uint32(-4), R0_uint32(-4));                                               \
   R_uint32 = R1_uint32(-4) operation R0_uint32(-4);                                                                                \
   log3_2(FMT_INT32 " PUSHED uint32\n", R_uint32);
+
+#define op_2_float_to_1_float(operation)                                                                                           \
+  log3_3(FMT_FLT " " FMT_FLT " POP float\n", R1_float(0), R0_float(0));                                                            \
+  opStack8 -= 4;                                                                                                                   \
+  log3_3(FMT_FLT " " #operation " " FMT_FLT " =", R1_float(-4), R0_float(-4));                                                     \
+  R_float = R1_float(-4) operation R0_float(-4);                                                                                   \
+  log3_2(FMT_FLT " PUSHED float\n", R_float);
 
 typedef union stack_entry_u {
   int8_t   int8;
@@ -820,10 +831,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_ADDF4: {
-      pop_2_floats();
-      log3_3(FMT_FLT " + " FMT_FLT " = ", R1.flt, R0.flt);
-      R1.flt += R0.flt;
-      push_1_float(R1.flt);
+      op_2_float_to_1_float(+);
       DISPATCH();
     }
 
