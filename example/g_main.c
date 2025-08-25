@@ -232,3 +232,16 @@ int sub_test_11() {
 
   return 1;
 }
+
+int sub_test_12() {
+  int24_t aa;
+  int8_t  bb;
+
+  aa = -12;
+  bb = aa;
+
+  if (bb == -12)
+    return 0;
+
+  return 1;
+}
