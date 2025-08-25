@@ -939,7 +939,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
 
       if (INT(R0.int24) < 0) /* system call */
       {
-        vm_operand_t r;
+        uint32_t r;
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
           Com_Printf("%s%i---> systemcall(%i)\n", VM_Indent(vm), (int)(opStack8 - _opStack), -1 - vPC);
@@ -961,9 +961,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
         *(int24_t *)&dataBase[programStack + 3] = INT24(stomped);
 #endif
 
-        opStack8 += 4; /* save return value */
-        *opStack32 = r;
-        PC         = codeBase + INT(*(int24_t *)&dataBase[programStack]);
+        push_1_uint32(r);
+        PC = codeBase + INT(*(int24_t *)&dataBase[programStack]);
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
           Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, vPC));
