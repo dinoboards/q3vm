@@ -58,7 +58,8 @@ int sub_test_OP_CI3s4();
 int sub_test_OP_CI2s3();
 int sub_test_OP_CI4I3();
 int sub_test_OP_CI4U3();
-int sub_test_OP_CONSTU1();
+int sub_test_OP_CONSTs1();
+int sub_test_OP_CONSTs2();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -121,8 +122,12 @@ int main(void) {
   if (sub_test_OP_CI4U3())
     return 19;
 
-  if (sub_test_OP_CONSTU1())
+  if (sub_test_OP_CONSTs1())
     return 20;
+
+  if (sub_test_OP_CONSTs2())
+    return 21;
+
   return 0;
 }
 
@@ -382,9 +387,26 @@ int sub_test_OP_CI4U3() {
   return 0;
 }
 
-int sub_test_OP_CONSTU1() {
+int sub_test_OP_CONSTs1() {
   uint8_t a;
   int8_t  b;
+
+  a = 12u;
+  b = 12;
+
+  if (a != b)
+    return 1;
+
+  b = -12;
+  if (-a != b)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_CONSTs2() {
+  uint16_t a;
+  int16_t  b;
 
   a = 12u;
   b = 12;
