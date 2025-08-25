@@ -679,6 +679,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define R0_int16(k) (*((int16_t *)(opStack8 - k)))
 #define R1_int16(k) (*((int16_t *)(opStack8 - k - 4)))
 
+#define R_uint16     (*((uint16_t *)(opStack8)))
+#define R0_uint16(k) (*((uint16_t *)(opStack8 - k)))
+#define R1_uint16(k) (*((uint16_t *)(opStack8 - k - 4)))
+
 #define R_int24     (*((int24_t *)(opStack8)))
 #define R0_int24(k) (*((int24_t *)(opStack8 - k)))
 #define R1_int24(k) (*((int24_t *)(opStack8 - k - 4)))
@@ -1075,8 +1079,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_CU2I3: {
-      pop_1_uint16(R0);
-      push_1_int24(INT24(R0.uint16));
+      log3_2(FMT_INT16 " POP uint16\n", R0_uint16(0) & 0xFFFF);
+      R_int24 = INT24(R0_uint16(0));
+      log3_2(FMT_INT24 " PUSH int24\n", INT(R_int24) & 0xFFFFFF);
       DISPATCH();
     }
 
