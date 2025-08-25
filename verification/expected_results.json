@@ -2622,7 +2622,7 @@
   "chapter_13/valid/extra_credit/nan_compound_assign.c": {
     "return_code": 0
   },
-  "chapter_99/float_arth.c": {
+  "chapter_99/valid/float_arth.c": {
     "return_code": 0
   }
 }

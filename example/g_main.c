@@ -42,17 +42,11 @@ int fnx(float);
 int sub_test_1();
 int sub_test_2();
 int sub_test_3();
+int sub_test_4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
 int main(void) {
-  uint32_t a = 3;
-  uint32_t b = 5;
-
-  uint32_t c = a + b;
-
-  if (c != 8)
-    return -1;
 
   if (sub_test_1())
     return 1;
@@ -62,6 +56,9 @@ int main(void) {
 
   if (sub_test_3())
     return 3;
+
+  if (sub_test_4())
+    return 4;
 
   return 0;
 }
@@ -101,6 +98,17 @@ int sub_test_3() {
   x = a;
 
   if (x == 1)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_4() {
+  uint24_t a = 0x5A5A5A;
+  uint24_t b;
+
+  b = ~a;
+  if (b == 0xA5A5A5)
     return 0;
 
   return 1;
