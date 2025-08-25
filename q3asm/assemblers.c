@@ -180,10 +180,6 @@ ASMMultipleFn(CODE_CIxI4) {
 
   Parse();
   switch (token[0]) {
-  case '2':
-    opcode = OP_CI2I4;
-    break;
-
   case '3':
     opcode = OP_CI3I4;
     break;

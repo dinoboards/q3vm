@@ -19,7 +19,6 @@ OP_CALL                 Call subroutine.
 OP_CF4I4                 Convert to float from integer
 OP_CI1I3
 OP_CI2I3
-OP_CI2I4                Sign-Extend 16-bit
 OP_CI3F4
 OP_CI3I1
 OP_CI3I2
