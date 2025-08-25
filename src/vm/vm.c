@@ -912,9 +912,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_BOR3: {
-      pop_2_uint24();
-      log3_3(FMT_INT32 " | " FMT_INT32 " = ", UINT(R1.uint24), UINT(R0.uint24));
-      push_1_uint24(UINT24(UINT(R1.uint24) | UINT(R0.uint24)));
+      op_2_uint24_to_1_uint24(|);
       DISPATCH();
     }
 
