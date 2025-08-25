@@ -357,12 +357,9 @@ ASMMultipleFn(CODE_CIxU3) {
   Parse();
   switch (token[0]) {
   case '3':
+  case '4':
     WriteComment();
     return;
-
-  case '4':
-    opcode = OP_CI4U3;
-    break;
 
   default:
     WriteComment();

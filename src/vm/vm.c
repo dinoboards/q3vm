@@ -1015,12 +1015,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_CI4U3: {
-      pop_1_int32(R0);
-      push_1_uint24(UINT24((uint32_t)R0.int32));
-      DISPATCH();
-    }
-
     case OP_CONSTGP3: {
       push_1_uint24(R2.uint24);
       PC += INT24_INCREMENT;
