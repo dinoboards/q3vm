@@ -671,6 +671,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define R0_int8(k) (*((int8_t *)(opStack8 - k)))
 #define R1_int8(k) (*((int8_t *)(opStack8 - k - 4)))
 
+#define R_uint8     (*((uint8_t *)(opStack8)))
+#define R0_uint8(k) (*((uint8_t *)(opStack8 - k)))
+#define R1_uint8(k) (*((uint8_t *)(opStack8 - k - 4)))
+
 #define R_int16     (*((int16_t *)(opStack8)))
 #define R0_int16(k) (*((int16_t *)(opStack8 - k)))
 #define R1_int16(k) (*((int16_t *)(opStack8 - k - 4)))
@@ -985,33 +989,45 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_CF4I4: {
+      log3_2(FMT_FLT " POP float\n", R0_float(0));
       R_int32 = R0_float(0);
+      log3_2(FMT_INT32 " PUSH int32\n", R_int32);
       DISPATCH();
     }
       /* extend sign I1 to I3*/
     case OP_CI1I3: {
+      log3_2(FMT_INT8 " POP int8\n", R0_int8(0) & 0xFF);
       R_int24 = INT24(R0_int8(0));
+      log3_2(FMT_INT24 " PUSH int24\n", INT(R_int24) & 0xFFFFFF);
       DISPATCH();
     }
 
       /* extend sign I2 to I3*/
     case OP_CI2I3: {
+      log3_2(FMT_INT16 " POP int16\n", R0_int16(0) & 0xFFFF);
       R_int24 = INT24(R0_int16(0));
+      log3_2(FMT_INT24 " PUSH int24\n", INT(R_int24) & 0xFFFFFF);
       DISPATCH();
     }
 
     case OP_CI3F4: {
+      log3_2(FMT_INT24 " POP int24\n", INT(R0_int24(0)) & 0xFFFFFF);
       R_float = (float)INT(R0_int24(0));
+      log3_2(FMT_FLT " PUSH float\n", R_float);
       DISPATCH();
     }
 
     case OP_CI3s4: {
+      log3_2(FMT_INT24 " POP int24\n", INT(R0_int24(0)) & 0xFFFFFF);
       R_int32 = (int32_t)INT(R0_int24(0));
+      log3_2(FMT_INT32 " PUSH int32\n", R_int32);
       DISPATCH();
     }
 
     case OP_CI4F4: {
+      log3_2(FMT_INT32 " POP int32\n", R0_int32(0));
       R_float = (float)R0_int32(0);
+      log3_2(FMT_FLT " PUSH float\n", R_float);
       DISPATCH();
     }
 
@@ -1052,8 +1068,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_CU1I3: {
-      pop_1_uint8(R0);
-      push_1_int24(INT24(R0.uint8));
+      log3_2(FMT_INT8 " POP uint8\n", R0_uint8(0) & 0xFF);
+      R_int24 = INT24(R0_uint8(0));
+      log3_2(FMT_INT24 " PUSH int24\n", INT(R_int24) & 0xFFFFFF);
       DISPATCH();
     }
 
