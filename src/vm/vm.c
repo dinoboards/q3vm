@@ -662,6 +662,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   *opStack32 = (int8_t)(a);                                                                                                        \
   log3_2(FMT_INT8 " PUSHED int8\n", *opStack32);
 
+#define R_int32     (*((int32_t *)(opStack8)))
+#define R0_int32(k) (*((int32_t *)(opStack8 - k)))
+#define R1_int32(k) (*((int32_t *)(opStack8 - k - 4)))
+
 typedef union stack_entry_u {
   int8_t   int8;
   uint8_t  uint8;
@@ -783,9 +787,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
     }
 
     case OP_ADD4: {
-      pop_2_int32();
-      log3_3(FMT_INT32 " + " FMT_INT32 " =", R1.int32, R0.int32);
-      push_1_int32(R1.int32 + R0.int32);
+      log3_3(FMT_INT32 " " FMT_INT32 " POP int32\n", R1_int32(0), R0_int32(0));
+      opStack8 -= 4;
+
+      log3_3(FMT_INT32 " + " FMT_INT32 " =", R1_int32(-4), R0_int32(-4));
+      R_int32 = R1_int32(-4) + R0_int32(-4);
+
+      log3_2(FMT_INT32 " PUSHED int32\n", R_int32);
       DISPATCH();
     }
 

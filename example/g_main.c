@@ -46,6 +46,14 @@ int sub_test_3();
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
 int main(void) {
+  uint32_t a = 3;
+  uint32_t b = 5;
+
+  uint32_t c = a + b;
+
+  if (c != 8)
+    return -1;
+
   if (sub_test_1())
     return 1;
 
