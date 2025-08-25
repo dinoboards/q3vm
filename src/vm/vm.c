@@ -977,7 +977,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_CF4I4: {
-      *opStack32 = (int32_t)*((float *)opStack8);
+      *opStack32 = (int32_t)*opStackFlt;
       DISPATCH();
     }
       /* extend sign I1 to I3*/
