@@ -23,6 +23,8 @@ int sub_test_4();
 int sub_test_5();
 int sub_test_6();
 int sub_test_7();
+int sub_test_8();
+int sub_test_9();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -48,6 +50,12 @@ int main(void) {
 
   if (sub_test_7())
     return 7;
+
+  if (sub_test_8())
+    return 8;
+
+  if (sub_test_9())
+    return 9;
 
   return 0;
 }
@@ -135,6 +143,32 @@ int sub_test_7() {
 
   aa = -12;
   bb = aa;
+
+  if (bb == -12)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_8() {
+  int8_t  aa;
+  int32_t bb;
+
+  aa = -12;
+  bb = (int32_t)aa;
+
+  if (bb == -12)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_9() {
+  int16_t aa;
+  int24_t bb;
+
+  aa = -12;
+  bb = (int24_t)aa;
 
   if (bb == -12)
     return 0;
