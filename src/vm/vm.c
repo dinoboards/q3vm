@@ -94,7 +94,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] args Arguments for function call.
  * @return Return value of the function call. */
-static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args);
+static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack);
 
 /** Executes a block copy operation (memcpy) within currentVM data space.
  * @param[out] dest Pointer (in VM space).
@@ -298,6 +298,7 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
     int24_t args[MAX_VMMAIN_ARGS];
     va_list ap;
     uint8_t i;
+    uint8_t _opStack[OPSTACK_SIZE + 4]; /* 256 4 byte double words + 4 safety bytes */
 
     args[0] = INT24(command);
     va_start(ap, command);
@@ -307,7 +308,7 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
     va_end(ap);
 
     ++vm->callLevel;
-    r = VM_CallInterpreted(vm, args);
+    r = VM_CallInterpreted(vm, args, _opStack);
     --vm->callLevel;
   }
 
@@ -603,6 +604,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   log3_2(FMT_FLT " POP float\n", Rx.flt);                                                                                          \
   opStack8 -= 4;
 
+#define retrieve_1_uint24(Rx)                                                                                                      \
+  Rx.uint24 = R_uint24;                                                                                                            \
+  log3_2(FMT_INT24 " POP uint24\n", UINT(Rx.uint24));
+
 #define retrieve_1_float(Rx)                                                                                                       \
   Rx.flt = *((float *)opStack8);                                                                                                   \
   log3_2(FMT_FLT " POP float\n", Rx.flt);
@@ -666,6 +671,10 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define R0_int24(k) (*((int24_t *)(opStack8 - k)))
 #define R1_int24(k) (*((int24_t *)(opStack8 - k - 4)))
 
+#define R_uint24     (*((uint24_t *)(opStack8)))
+#define R0_uint24(k) (*((uint24_t *)(opStack8 - k)))
+#define R1_uint24(k) (*((uint24_t *)(opStack8 - k - 4)))
+
 #define R_int32     (*((int32_t *)(opStack8)))
 #define R0_int32(k) (*((int32_t *)(opStack8 - k)))
 #define R1_int32(k) (*((int32_t *)(opStack8 - k - 4)))
@@ -723,12 +732,11 @@ typedef union stack_entry_u {
 typedef const uint8_t *PC_t;
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
-static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args) {
+static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) {
 #ifdef MEMORY_SAFE
   const uint8_t *const PC_end = &vm->codeBase[vm->codeLength];
 #endif
 
-  uint8_t       _opStack[OPSTACK_SIZE + 4]; /* 256 4 byte double words + 4 safety bytes */
   uint8_t      *opStack8 = &_opStack[4];
   PC_t          PC;
   ustdint_t     programStack;
