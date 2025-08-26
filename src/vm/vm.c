@@ -1367,23 +1367,17 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_LTF: {
-      pop_2_floats();
-      log3_3(FMT_FLT " < " FMT_FLT "\n", R1.flt, R0.flt);
-      PC = (R1.flt < R0.flt) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_float_branch(<);
       DISPATCH();
     }
 
     case OP_LTI3: {
-      pop_2_int24();
-      log3_4(FMT_INT24 " < " FMT_INT24 " = %d\n", INT(R1.int24), INT(R0.int24), (INT(R1.int24) < INT(R0.int24)));
-      PC = (INT(R1.int24) < INT(R0.int24)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_int24_branch(<);
       DISPATCH();
     }
 
     case OP_LTI4: {
-      pop_2_int32();
-      log3_3(FMT_INT32 " < " FMT_INT32 "\n", R1.int32, R0.int32);
-      PC = (R1.int32 < R0.int32) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_int32_branch(<);
       DISPATCH();
     }
 
