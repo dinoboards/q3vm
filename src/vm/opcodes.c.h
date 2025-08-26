@@ -33,77 +33,76 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "CONSTs4",    /*  29  */
     "CU1I3",      /*  30  */
     "CU2I3",      /*  31  */
-    "CU4I3",      /*  32  */
-    "CU4U3",      /*  33  */
-    "CVFI3",      /*  34  */
-    "CVIU3",      /*  35  */
-    "CVUI3",      /*  36  */
-    "DIVF4",      /*  37  Divide floats */
-    "DIVI",       /*  38  Divide signed integers. */
-    "DIVI3",      /*  39  */
-    "DIVU",       /*  40  Divide unsigned integers. */
-    "DIVU3",      /*  41  */
-    "ENTER",      /*  42  Begin subroutine. */
-    "EQ3",        /*  43  */
-    "EQ4",        /*  44  Compare integers, jump if equal. */
-    "EQF4",       /*  45  Compare floats, jump if equal */
-    "EQU3",       /*  46  */
-    "GEF4",       /*  47  Compare floats, jump if greater-than-or-equal */
-    "GEI3",       /*  48  */
-    "GEI4",       /*  49  Compare integers, jump if greater-than-or-equal. */
-    "GEU3",       /*  50  */
-    "GEU4",       /*  51  Compare unsigned integers, jump if greater-than-or-equal */
-    "GTF4",       /*  52  Compare floats, jump if greater-than */
-    "GTI3",       /*  53  */
-    "GTI4",       /*  54  Compare integers, jump if greater-than. */
-    "GTU3",       /*  55  */
-    "GTU4",       /*  56  Compare unsigned integers, jump if greater-than */
-    "JUMP",       /*  57  Unconditional jump. */
-    "LEAVE",      /*  58  End subroutine. */
-    "LEF4",       /*  59  Compare floats, jump if less-than-or-equal */
-    "LEI3",       /*  60  */
-    "LEI4",       /*  61  Compare integers, jump if less-than-or-equal. */
-    "LEU",        /*  62  Compare unsigned integers, jump if less-than-or-equal */
-    "LEU3",       /*  63  */
-    "LOAD1",      /*  64  Load 1-byte from memory */
-    "LOAD2",      /*  65  Load 2-bytes from memory */
-    "LOAD3",      /*  66  Load 3-bytes from memory */
-    "LOAD4",      /*  67  Load 4-bytes from memory */
-    "LOADF4",     /*  68  Load 4 byte float from memory */
-    "LOCAL",      /*  69  Get local variable. */
-    "LSH3",       /*  70  */
-    "LSH4",       /*  71  Left-shift */
-    "LTF",        /*  72  Compare floats, jump if less-than */
-    "LTI3",       /*  73  */
-    "LTI4",       /*  74  Compare integers, jump if less-than. */
-    "LTU",        /*  75  Compare unsigned integers, jump if less-than */
-    "LTU3",       /*  76  */
-    "MODI3",      /*  77  */
-    "MODI4",      /*  78  Modulus (signed). */
-    "MODU3",      /*  79  */
-    "MODU4",      /*  80  Modulus (unsigned). */
-    "MULF4",      /*  81  Multiply floats */
-    "MULI3",      /*  82  */
-    "MULI4",      /*  83  Multiply signed integers. */
-    "MULU3",      /*  84  */
-    "MULU4",      /*  85  Multiply unsigned integers. */
-    "NE3",        /*  86  */
-    "NE4",        /*  87  Compare integers, jump if not equal. */
-    "NEF",        /*  88  Compare floats, jump if not-equal */
-    "NEGF4",      /*  89  Negate float */
-    "NEGI3",      /*  90  */
-    "NEGI4",      /*  91  Negate integer. */
-    "POP",        /*  92  Discard top-of-stack. */
-    "PUSH",       /*  93  Push to stack. */
-    "RSHI3",      /*  94  */
-    "RSHI4",      /*  95  Right-shift (algebraic; preserve sign) */
-    "RSHU3",      /*  96  */
-    "RSHU4",      /*  97  Right-shift (bitwise; ignore sign) */
-    "STORE1",     /*  98  Store 1-byte to memory */
-    "STORE2",     /*  99  Store 2-byte to memory */
-    "STORE3",     /* 100  */
-    "STORE4",     /* 101  *(stack[top-1]) = stack[top] */
-    "SUB3",       /* 102  */
-    "SUB4",       /* 103  Subtract integers (two's complement). */
-    "SUBF4",      /* 104  Subtract floats */
+    "CU4U3",      /*  32  */
+    "CVFI3",      /*  33  */
+    "CVIU3",      /*  34  */
+    "CVUI3",      /*  35  */
+    "DIVF4",      /*  36  Divide floats */
+    "DIVI",       /*  37  Divide signed integers. */
+    "DIVI3",      /*  38  */
+    "DIVU",       /*  39  Divide unsigned integers. */
+    "DIVU3",      /*  40  */
+    "ENTER",      /*  41  Begin subroutine. */
+    "EQ3",        /*  42  */
+    "EQ4",        /*  43  Compare integers, jump if equal. */
+    "EQF4",       /*  44  Compare floats, jump if equal */
+    "EQU3",       /*  45  */
+    "GEF4",       /*  46  Compare floats, jump if greater-than-or-equal */
+    "GEI3",       /*  47  */
+    "GEI4",       /*  48  Compare integers, jump if greater-than-or-equal. */
+    "GEU3",       /*  49  */
+    "GEU4",       /*  50  Compare unsigned integers, jump if greater-than-or-equal */
+    "GTF4",       /*  51  Compare floats, jump if greater-than */
+    "GTI3",       /*  52  */
+    "GTI4",       /*  53  Compare integers, jump if greater-than. */
+    "GTU3",       /*  54  */
+    "GTU4",       /*  55  Compare unsigned integers, jump if greater-than */
+    "JUMP",       /*  56  Unconditional jump. */
+    "LEAVE",      /*  57  End subroutine. */
+    "LEF4",       /*  58  Compare floats, jump if less-than-or-equal */
+    "LEI3",       /*  59  */
+    "LEI4",       /*  60  Compare integers, jump if less-than-or-equal. */
+    "LEU",        /*  61  Compare unsigned integers, jump if less-than-or-equal */
+    "LEU3",       /*  62  */
+    "LOAD1",      /*  63  Load 1-byte from memory */
+    "LOAD2",      /*  64  Load 2-bytes from memory */
+    "LOAD3",      /*  65  Load 3-bytes from memory */
+    "LOAD4",      /*  66  Load 4-bytes from memory */
+    "LOADF4",     /*  67  Load 4 byte float from memory */
+    "LOCAL",      /*  68  Get local variable. */
+    "LSH3",       /*  69  */
+    "LSH4",       /*  70  Left-shift */
+    "LTF",        /*  71  Compare floats, jump if less-than */
+    "LTI3",       /*  72  */
+    "LTI4",       /*  73  Compare integers, jump if less-than. */
+    "LTU",        /*  74  Compare unsigned integers, jump if less-than */
+    "LTU3",       /*  75  */
+    "MODI3",      /*  76  */
+    "MODI4",      /*  77  Modulus (signed). */
+    "MODU3",      /*  78  */
+    "MODU4",      /*  79  Modulus (unsigned). */
+    "MULF4",      /*  80  Multiply floats */
+    "MULI3",      /*  81  */
+    "MULI4",      /*  82  Multiply signed integers. */
+    "MULU3",      /*  83  */
+    "MULU4",      /*  84  Multiply unsigned integers. */
+    "NE3",        /*  85  */
+    "NE4",        /*  86  Compare integers, jump if not equal. */
+    "NEF",        /*  87  Compare floats, jump if not-equal */
+    "NEGF4",      /*  88  Negate float */
+    "NEGI3",      /*  89  */
+    "NEGI4",      /*  90  Negate integer. */
+    "POP",        /*  91  Discard top-of-stack. */
+    "PUSH",       /*  92  Push to stack. */
+    "RSHI3",      /*  93  */
+    "RSHI4",      /*  94  Right-shift (algebraic; preserve sign) */
+    "RSHU3",      /*  95  */
+    "RSHU4",      /*  96  Right-shift (bitwise; ignore sign) */
+    "STORE1",     /*  97  Store 1-byte to memory */
+    "STORE2",     /*  98  Store 2-byte to memory */
+    "STORE3",     /*  99  */
+    "STORE4",     /* 100  *(stack[top-1]) = stack[top] */
+    "SUB3",       /* 101  */
+    "SUB4",       /* 102  Subtract integers (two's complement). */
+    "SUBF4",      /* 103  Subtract floats */
 };

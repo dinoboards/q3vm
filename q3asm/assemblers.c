@@ -236,12 +236,9 @@ ASMMultipleFn(CODE_CUxI3) {
     break;
 
   case '3':
+  case '4':
     WriteComment();
     return;
-
-  case '4':
-    opcode = OP_CU4I3;
-    break;
 
   default:
     WriteComment();
