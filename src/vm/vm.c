@@ -523,6 +523,15 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
     }                                                                                                                              \
   }
 
+#define VM_WriteAddrUint16(vaddr, value)                                                                                           \
+  {                                                                                                                                \
+    if (!VM_VerifyWriteOK(vm, vaddr, 2)) {                                                                                         \
+      ;                                                                                                                            \
+    } else {                                                                                                                       \
+      *((uint16_t *)&dataBase[(vm_size_t)(vaddr)]) = value;                                                                        \
+    }                                                                                                                              \
+  }
+
 #define VM_GetWriteAddr(vaddr, size) (!VM_VerifyWriteOK(vm, vaddr, size) ? bad_memory : &dataBase[(vm_size_t)(vaddr)])
 
 #define opStack32  ((int32_t *)opStack8)
@@ -781,27 +790,42 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 
 #define op_2_int24_branch(operation)                                                                                               \
   log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", INT(R1_int24(0)), INT(R0_int24(0)));                                         \
-  PC = (INT(R1_int24(0)) operation INT(R0_int24(0))) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                          \
+  if ((INT(R1_int24(0)) operation INT(R0_int24(0))))                                                                               \
+    PC = codeBase + UINT(R2.uint24);                                                                                               \
+  else                                                                                                                             \
+    PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
 
 #define op_2_uint24_branch(operation)                                                                                              \
   log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));                                     \
-  PC = (UINT(R1_uint24(0)) operation UINT(R0_uint24(0))) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                      \
+  if ((UINT(R1_uint24(0)) operation UINT(R0_uint24(0))))                                                                           \
+    PC = codeBase + UINT(R2.uint24);                                                                                               \
+  else                                                                                                                             \
+    PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
 
 #define op_2_int32_branch(operation)                                                                                               \
   log3_3(FMT_INT32 " " #operation " " FMT_INT32 "\n", R1_int32(0), R0_int32(0));                                                   \
-  PC = (R1_int32(0) operation R0_int32(0)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                                    \
+  if ((R1_int32(0) operation R0_int32(0)))                                                                                         \
+    PC = codeBase + UINT(R2.uint24);                                                                                               \
+  else                                                                                                                             \
+    PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
 
 #define op_2_uint32_branch(operation)                                                                                              \
   log3_3(FMT_INT32 " " #operation " " FMT_INT32 "\n", R1_uint32(0), R0_uint32(0));                                                 \
-  PC = (R1_uint32(0) operation R0_uint32(0)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                                  \
+  if ((R1_uint32(0) operation R0_uint32(0)))                                                                                       \
+    PC = codeBase + UINT(R2.uint24);                                                                                               \
+  else                                                                                                                             \
+    PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
 
 #define op_2_float_branch(operation)                                                                                               \
   log3_3(FMT_FLT " " #operation " " FMT_FLT "\n", R1_float(0), R0_float(0));                                                       \
-  PC = (R1_float(0) operation R0_float(0)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                                    \
+  if ((R1_float(0) operation R0_float(0)))                                                                                         \
+    PC = codeBase + UINT(R2.uint24);                                                                                               \
+  else                                                                                                                             \
+    PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
 
 typedef union stack_entry_u {
@@ -830,7 +854,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
   PC_t          PC;
   ustdint_t     programStack;
   ustdint_t     stackOnEntry;
-  uint8_t       opcode;
   stack_entry_t R0, R1;
 
   uint8_t *const       dataBase   = vm->dataBase;
@@ -890,16 +913,14 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       VM_AbortError(VM_STACK_OVERFLOW, "VM stack overflow");
 #endif
 
-    opcode = *PC++;
-
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
       Com_Printf("%s%i %s\t(" FMT_INT8 " " FMT_INT24 ");\tSP=" FMT_INT24 ",  R0=" FMT_INT24 ", R1=" FMT_INT24 " \n", VM_Indent(vm),
-                 (int)(opStack8 - _opStack), opnames[opcode], opcode, R2.int32, programStack, R0.int32, R1.int32);
+                 (int)(opStack8 - _opStack), opnames[*PC], *PC, R2.int32, programStack, R0.int32, R1.int32);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
-    switch (opcode) {
+    switch (*PC++) {
 #if defined(DEBUG_VM) || defined(MEMORY_SAFE)
     default: /* fall through */
 #endif
@@ -1535,18 +1556,17 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_STORE1: {
-      pop_1_uint8(R0);
-      pop_1_uint24(R1);
-      VM_WriteAddrByte((vm_operand_t)UINT(R1.uint24), R0.uint8);
-      log3_3("*(" FMT_INT24 ") = " FMT_INT8 "  MOVE\n", UINT(R1.uint24), R0.uint8);
+      VM_WriteAddrByte((vm_operand_t)UINT(R1_uint24(0)), R0_uint8(0));
+      log3_3("*(" FMT_INT24 ") = " FMT_INT8 "  MOVE\n", UINT(R1_uint24(0)), R0_uint8(0));
+      opStack8 -= 8;
       DISPATCH();
     }
 
     case OP_STORE2: {
-      pop_1_uint16(R0);
-      pop_1_uint24(R1);
-      *((uint16_t *)VM_GetWriteAddr(UINT(R1.uint24), 2)) = R0.uint16;
-      log3_3("*(" FMT_INT24 ") = " FMT_INT16 "  MOVE\n", UINT(R1.uint24), R0.uint16);
+      VM_WriteAddrUint16((vm_operand_t)UINT(R1_uint24(0)), R0_uint16(0));
+      // *((uint16_t *)VM_GetWriteAddr(UINT(R1_uint24(0)), 2)) = R0_uint16(0);
+      log3_3("*(" FMT_INT24 ") = " FMT_INT16 "  MOVE\n", UINT(R1_uint24(0)), R0_uint16(0));
+      opStack8 -= 8;
       DISPATCH();
     }
 
