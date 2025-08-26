@@ -95,7 +95,7 @@ assemblers_t assemblers[] = {
     {"GEI4",    OP_GEI4,       assfn(CODE_24BIT)},
     {"GEU3",    OP_GEU3,       assfn(CODE_24BIT)},
     {"GEU4",    OP_GEU4,       assfn(CODE_32BIT)},
-    {"GTF4",    OP_GTF4,       assfn(CODE_32BIT)},
+    {"GTF4",    OP_GTF4,       assfn(CODE_24BIT)},
     {"GTI3",    OP_GTI3,       assfn(CODE_24BIT)},
     {"GTI4",    OP_GTI4,       assfn(CODE_24BIT)},
     {"GTU4",    OP_GTU4,       assfn(CODE_32BIT)},
