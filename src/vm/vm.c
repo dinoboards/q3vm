@@ -491,23 +491,6 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 // For 8 bit access:
 // If address > FFFF00, map to Z80 I/O
 // if address > FF0000, map to a share host memory range (not yet implemented)
-#define VM_ReadAddrByte(vaddr, fn)                                                                                                 \
-  {                                                                                                                                \
-    if (!VM_VerifyReadOK(vm, vaddr, 1)) {                                                                                          \
-      fn(*bad_memory);                                                                                                             \
-    } else {                                                                                                                       \
-      if (((vm_size_t)(vaddr) > 0xFF0000)) {                                                                                       \
-        fn(io_read(vaddr));                                                                                                        \
-      } else {                                                                                                                     \
-        fn(*(((vm_size_t)(vaddr) < litLength) ? &litBase[(vm_size_t)(vaddr)] : &dataBase[(vm_size_t)(vaddr)]));                    \
-      }                                                                                                                            \
-    }                                                                                                                              \
-  }
-
-#define VM_GetReadAddr(vaddr, size)                                                                                                \
-  (!VM_VerifyReadOK(vm, vaddr, size)                                                                                               \
-       ? bad_memory                                                                                                                \
-       : (((((vm_size_t)(vaddr) < litLength) ? &litBase[(vm_size_t)(vaddr)] : &dataBase[(vm_size_t)(vaddr)]))))
 
 #define VM_WriteAddrByte(vaddr, value)                                                                                             \
   {                                                                                                                                \
@@ -1361,30 +1344,58 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_LOAD1: {
-      R0.uint24 = R0_uint24(0);
-      log3_2("R0: " FMT_INT24 "\n", UINT(R0.uint24));
-      VM_ReadAddrByte((vm_operand_t)UINT(R0.uint24), assign_1_uint8);
+      log3_2("*(" FMT_INT24 ") = ", UINT(R0_uint24(0)));
+      if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
+        R_uint8 = 0;
+      else {
+        if (UINT(R0_uint24(0)) < litLength)
+          R_uint8 = *(uint8_t *)&litBase[UINT(R0_uint24(0))];
+        else
+          R_uint8 = *(uint8_t *)&dataBase[UINT(R0_uint24(0))];
+      }
+      log3_2(FMT_INT8 " PUSHED uint8\n", R_uint16 & 0xFF);
       DISPATCH();
     }
 
     case OP_LOAD2: {
-      R0.uint24 = R0_uint24(0);
-      log3_2("R0: " FMT_INT24 "", UINT(R0.uint24));
-      assign_1_uint16(*((uint16_t *)VM_GetReadAddr(UINT(R0.uint24), 2)));
+      log3_2("*(" FMT_INT24 ") = ", UINT(R0_uint24(0)));
+      if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
+        R_uint16 = 0;
+      else {
+        if (UINT(R0_uint24(0)) < litLength)
+          R_uint16 = *(uint16_t *)&litBase[UINT(R0_uint24(0))];
+        else
+          R_uint16 = *(uint16_t *)&dataBase[UINT(R0_uint24(0))];
+      }
+      log3_2(FMT_INT16 " PUSHED uint16\n", R_uint16 & 0xFFFF);
       DISPATCH();
     }
 
     case OP_LOAD3: {
-      R0.uint24 = R0_uint24(0);
-      log3_2("RO: " FMT_INT24 "", UINT(R0.uint24));
-      assign_1_uint24(*((uint24_t *)VM_GetReadAddr(UINT(R0.uint24), 3)));
+      log3_2("*(" FMT_INT24 ") = ", UINT(R0_uint24(0)));
+      if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
+        R_uint24 = UINT24(0);
+      else {
+        if (UINT(R0_uint24(0)) < litLength)
+          R_uint24 = *(uint24_t *)&litBase[UINT(R0_uint24(0))];
+        else
+          R_uint24 = *(uint24_t *)&dataBase[UINT(R0_uint24(0))];
+      }
+      log3_2(FMT_INT24 " PUSHED uint24\n", UINT(R_uint24));
       DISPATCH();
     }
 
     case OP_LOAD4: {
-      R0.uint24 = R0_uint24(0);
-      log3_2("R0: " FMT_INT24 "", UINT(R0.uint24));
-      assign_1_uint32(*((uint32_t *)VM_GetReadAddr(UINT(R0.uint24), 4)));
+      log3_2("*(" FMT_INT24 ") = ", UINT(R0_uint24(0)));
+      if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
+        R_uint32 = 0;
+      else {
+        if (UINT(R0_uint24(0)) < litLength)
+          R_uint32 = *(uint32_t *)&litBase[UINT(R0_uint24(0))];
+        else
+          R_uint32 = *(uint32_t *)&dataBase[UINT(R0_uint24(0))];
+      }
+      log3_2(FMT_INT32 " PUSHED uint32\n", R_uint32);
       DISPATCH();
     }
 
