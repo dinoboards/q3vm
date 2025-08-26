@@ -60,6 +60,10 @@ int sub_test_OP_LEI4();
 int sub_test_OP_LEU3();
 int sub_test_OP_LEU4();
 int sub_test_OP_LTU4();
+int sub_test_OP_MODI3();
+int sub_test_OP_MODI4();
+int sub_test_OP_MODU3();
+int sub_test_OP_MODU4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -199,6 +203,18 @@ int main(void) {
 
   if (sub_test_OP_LTU4())
     return 44;
+
+  if (sub_test_OP_MODI3())
+    return 45;
+
+  if (sub_test_OP_MODI4())
+    return 46;
+
+  if (sub_test_OP_MODU3())
+    return 47;
+
+  if (sub_test_OP_MODU4())
+    return 48;
 
   return 0;
 }
@@ -964,6 +980,70 @@ int sub_test_OP_LTU4() {
   c = a > b;
 
   if (!c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MODI3() {
+  int24_t a;
+  int24_t b;
+  int24_t c;
+
+  a = 20;
+  b = 3;
+
+  c = a % b;
+
+  if (c != 2)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MODI4() {
+  int32_t a;
+  int32_t b;
+  int24_t c;
+
+  a = 20;
+  b = 3;
+
+  c = a % b;
+
+  if (c != 2)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MODU3() {
+  uint24_t a;
+  uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 3;
+
+  c = a % b;
+
+  if (c != 2)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MODU4() {
+  uint32_t a;
+  uint32_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 3;
+
+  c = a % b;
+
+  if (c != 2)
     return 1;
 
   return 0;

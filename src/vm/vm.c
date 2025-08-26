@@ -1392,23 +1392,42 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_MODI3: {
-      pop_2_int24();
-      log3_3(FMT_INT32 " %% " FMT_INT32 " = ", INT(R1.int24), INT(R0.int24));
-      push_1_int24(INT24(INT(R1.int24) % INT(R0.int24)));
-      DISPATCH();
-    }
-    case OP_MODI4: {
+      /* op_2_int24_to_1_int24(%); */
+      log3_3(FMT_INT24 " " FMT_INT24 " POP int24\n", INT(R1_int24(0)), INT(R0_int24(0)));
       opStack8 -= 4;
-      *opStack32 = R1.int32 % R0.int32;
+      log3_3(FMT_INT24 " %% " FMT_INT24 " ", INT(R1_int24(-4)), INT(R0_int24(-4)));
+      R_int24 = INT24(INT(R1_int24(-4)) % INT(R0_int24(-4)));
+      log3_2(FMT_INT24 " PUSHED int24\n", INT(R_int24));
       DISPATCH();
     }
 
-    case OP_MODU3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
+    case OP_MODI4: {
+      /* op_2_int32_to_1_int32(%); */
+      log3_3(FMT_INT32 " " FMT_INT32 " POP int32\n", R1_int32(0), R0_int32(0));
+      opStack8 -= 4;
+      log3_3(FMT_INT32 " %% " FMT_INT32 " =", R1_int32(-4), R0_int32(-4));
+      R_int32 = R1_int32(-4) % R0_int32(-4);
+      log3_2(FMT_INT32 " PUSHED int32\n", R_int32);
+      DISPATCH();
+    }
+
+    case OP_MODU3: {
+      /* op_2_uint24_to_1_uint24(%); */
+      log3_3(FMT_INT24 " " FMT_INT24 " POP uint24\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));
+      opStack8 -= 4;
+      log3_3(FMT_INT24 " %% " FMT_INT24 " ", UINT(R1_uint24(-4)), UINT(R0_uint24(-4)));
+      R_uint24 = UINT24(UINT(R1_uint24(-4)) % UINT(R0_uint24(-4)));
+      log3_2(FMT_INT24 " PUSHED uint24\n", UINT(R_uint24));
+      DISPATCH();
+    }
 
     case OP_MODU4: {
+      /* op_2_uint32_to_1_uint32(%); */
+      log3_3(FMT_INT32 " " FMT_INT32 " POP uint32\n", R1_uint32(0), R0_uint32(0));
       opStack8 -= 4;
-      *opStack32 = ((unsigned)R1.int32) % ((unsigned)R0.int32);
+      log3_3(FMT_INT32 " %% " FMT_INT32 " =", R1_uint32(-4), R0_uint32(-4));
+      R_uint32 = R1_uint32(-4) % R0_uint32(-4);
+      log3_2(FMT_INT32 " PUSHED uint32\n", R_uint32);
       DISPATCH();
     }
 

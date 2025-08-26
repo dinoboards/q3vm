@@ -131,6 +131,7 @@ assemblers_t assemblers[] = {
     {"LTU4",    OP_LTU4,       assfn(CODE_24BIT)},
     {"MODI3",   OP_MODI3,      assfn(CODE_OP)   },
     {"MODI4",   OP_MODI4,      assfn(CODE_OP)   },
+    {"MODU3",   OP_MODU3,      assfn(CODE_OP)   },
     {"MODU4",   OP_MODU4,      assfn(CODE_OP)   },
     {"MULF4",   OP_MULF4,      assfn(CODE_OP)   },
     {"MULI3",   OP_MULI3,      assfn(CODE_OP)   },
