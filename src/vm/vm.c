@@ -1189,9 +1189,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_GEF4: {
-      pop_2_floats();
-      log3_3(FMT_FLT " >= " FMT_FLT "\n", R1.flt, R0.flt);
-      PC = (R1.flt >= R0.flt) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_float_branch(>=);
       DISPATCH();
     }
 
