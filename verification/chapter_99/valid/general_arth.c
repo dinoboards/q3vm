@@ -64,6 +64,17 @@ int sub_test_OP_MODI3();
 int sub_test_OP_MODI4();
 int sub_test_OP_MODU3();
 int sub_test_OP_MODU4();
+int sub_test_OP_MULF4();
+int sub_test_OP_MULI3();
+int sub_test_OP_MULI4();
+int sub_test_OP_MULU3();
+int sub_test_OP_MULU4();
+int sub_test_OP_NE3();
+int sub_test_OP_NE4();
+int sub_test_OP_NEF4();
+int sub_test_OP_NEGF4();
+int sub_test_OP_NEGI3();
+int sub_test_OP_NEGI4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -215,6 +226,39 @@ int main(void) {
 
   if (sub_test_OP_MODU4())
     return 48;
+
+  if (sub_test_OP_MULF4())
+    return 49;
+
+  if (sub_test_OP_MULI3())
+    return 50;
+
+  if (sub_test_OP_MULI4())
+    return 51;
+
+  if (sub_test_OP_MULU3())
+    return 52;
+
+  if (sub_test_OP_MULU4())
+    return 53;
+
+  if (sub_test_OP_NE3())
+    return 54;
+
+  if (sub_test_OP_NE4())
+    return 55;
+
+  if (sub_test_OP_NEF4())
+    return 56;
+
+  if (sub_test_OP_NEGF4())
+    return 57;
+
+  if (sub_test_OP_NEGI3())
+    return 58;
+
+  if (sub_test_OP_NEGI4())
+    return 59;
 
   return 0;
 }
@@ -1047,4 +1091,189 @@ int sub_test_OP_MODU4() {
     return 1;
 
   return 0;
+}
+
+int sub_test_OP_MULF4() {
+  float a;
+  float b;
+  float c;
+
+  a = 20.0f;
+  b = 3.0f;
+
+  c = a * b;
+
+  if (c != 60.0f)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MULI3() {
+  int24_t a;
+  int24_t b;
+  int24_t c;
+
+  a = 20;
+  b = 3;
+
+  c = a * b;
+
+  if (c != 60)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MULI4() {
+  int32_t a;
+  int32_t b;
+  int32_t c;
+
+  a = 20;
+  b = 3;
+
+  c = a * b;
+
+  if (c != 60)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MULU3() {
+  uint24_t a;
+  uint24_t b;
+  uint24_t c;
+
+  a = 20;
+  b = 3;
+
+  c = a * b;
+
+  if (c != 60)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_MULU4() {
+  uint32_t a;
+  uint32_t b;
+  uint32_t c;
+
+  a = 20;
+  b = 3;
+
+  c = a * b;
+
+  if (c != 60)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_NE3() {
+  uint24_t a;
+  uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a == b;
+
+  if (c)
+    return 1;
+
+  a = 20;
+  b = 20;
+
+  c = a == b;
+
+  if (!c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_NE4() {
+  uint24_t a;
+  uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a == b;
+
+  if (c)
+    return 1;
+
+  a = 20;
+  b = 20;
+
+  c = a == b;
+
+  if (!c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_NEF4() {
+  float   a;
+  float   b;
+  int24_t c;
+
+  a = 20.0f;
+  b = 2.0f;
+
+  c = a == b;
+
+  if (c)
+    return 1;
+
+  a = 20.0f;
+  b = 20.0f;
+
+  c = a == b;
+
+  if (!c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_NEGF4() {
+  float a = 10.0f;
+  float b;
+
+  b = -a;
+  if (b == -10.0f)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_NEGI3() {
+  int24_t a = 10;
+  int24_t b;
+
+  b = -a;
+  if (b == -10)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_NEGI4() {
+  int32_t a = 10;
+  int32_t b;
+
+  b = -a;
+  if (b == -10)
+    return 0;
+
+  return 1;
 }

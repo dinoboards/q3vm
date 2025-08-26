@@ -728,11 +728,29 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   R_uint24 = UINT24(UINT(R1_uint24(-4)) operation UINT(R0_uint24(-4)));                                                            \
   log3_2(FMT_INT24 " PUSHED uint24\n", UINT(R_uint24));
 
+#define op_1_int24_to_1_int24(operation)                                                                                           \
+  log3_2(FMT_INT24 " POP int24\n", INT(R0_int24(0)));                                                                              \
+  log3_2(#operation FMT_INT24 " =", INT(R0_int24(0)));                                                                             \
+  R_int24 = INT24(operation INT(R0_int24(0)));                                                                                     \
+  log3_2(FMT_INT24 " PUSHED int24\n", INT(R_int24));
+
 #define op_1_uint24_to_1_uint24(operation)                                                                                         \
   log3_2(FMT_INT24 " POP uint24\n", UINT(R0_uint24(0)));                                                                           \
   log3_2(#operation FMT_INT24 " =", UINT(R0_uint24(0)));                                                                           \
-  R_uint24 = UINT24(~UINT(R0_uint24(0)));                                                                                          \
+  R_uint24 = UINT24(operation UINT(R0_uint24(0)));                                                                                 \
   log3_2(FMT_INT24 " PUSHED uint24\n", UINT(R_uint24));
+
+#define op_1_int32_to_1_int32(operation)                                                                                           \
+  log3_2(FMT_INT32 " POP int32\n", R0_int32(0));                                                                                   \
+  log3_2(#operation FMT_INT32 " =", R0_int32(0));                                                                                  \
+  R_int32 = operation R0_int32(0);                                                                                                 \
+  log3_2(FMT_INT32 " PUSHED int32\n", R_int32);
+
+#define op_1_float_to_1_float(operation)                                                                                           \
+  log3_2(FMT_FLT " POP float\n", R0_float(0));                                                                                     \
+  log3_2(#operation FMT_FLT " =", R0_float(0));                                                                                    \
+  R_float = operation R0_float(0);                                                                                                 \
+  log3_2(FMT_FLT " PUSHED float\n", R_float);
 
 #define op_2_int32_to_1_int32(operation)                                                                                           \
   log3_3(FMT_INT32 " " FMT_INT32 " POP int32\n", R1_int32(0), R0_int32(0));                                                        \
@@ -1472,19 +1490,17 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_NEGF4: {
-      opStackFlt[0] = -opStackFlt[0];
+      op_1_float_to_1_float(-);
       DISPATCH();
     }
 
     case OP_NEGI3: {
-      pop_1_int24(R0);
-      push_1_int24(INT24(-INT(R0.int24)));
+      op_1_int24_to_1_int24(-);
       DISPATCH();
     }
 
     case OP_NEGI4: {
-      pop_1_int32(R0);
-      push_1_int32(-R0.int32);
+      op_1_int32_to_1_int32(-);
       DISPATCH();
     }
 

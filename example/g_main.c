@@ -72,6 +72,9 @@ int sub_test_OP_MULU4();
 int sub_test_OP_NE3();
 int sub_test_OP_NE4();
 int sub_test_OP_NEF4();
+int sub_test_OP_NEGF4();
+int sub_test_OP_NEGI3();
+int sub_test_OP_NEGI4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -246,7 +249,16 @@ int main(void) {
     return 55;
 
   if (sub_test_OP_NEF4())
-    return 55;
+    return 56;
+
+  if (sub_test_OP_NEGF4())
+    return 57;
+
+  if (sub_test_OP_NEGI3())
+    return 58;
+
+  if (sub_test_OP_NEGI4())
+    return 59;
 
   return 0;
 }
@@ -1231,4 +1243,37 @@ int sub_test_OP_NEF4() {
     return 1;
 
   return 0;
+}
+
+int sub_test_OP_NEGF4() {
+  float a = 10.0f;
+  float b;
+
+  b = -a;
+  if (b == -10.0f)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_NEGI3() {
+  int24_t a = 10;
+  int24_t b;
+
+  b = -a;
+  if (b == -10)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_NEGI4() {
+  int32_t a = 10;
+  int32_t b;
+
+  b = -a;
+  if (b == -10)
+    return 0;
+
+  return 1;
 }
