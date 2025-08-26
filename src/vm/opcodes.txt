@@ -68,7 +68,7 @@ OP_LSH4                  Left-shift
 OP_LTF4                  Compare floats, jump if less-than
 OP_LTI3
 OP_LTI4                  Compare integers, jump if less-than.
-OP_LTU                  Compare unsigned integers, jump if less-than
+OP_LTU4                  Compare unsigned integers, jump if less-than
 OP_LTU3
 OP_MODI3
 OP_MODI4                 Modulus (signed).

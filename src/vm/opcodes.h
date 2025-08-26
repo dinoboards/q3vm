@@ -75,7 +75,7 @@ typedef enum {
   OP_LTF4,       /*  67  Compare floats, jump if less-than */
   OP_LTI3,       /*  68  */
   OP_LTI4,       /*  69  Compare integers, jump if less-than. */
-  OP_LTU,        /*  70  Compare unsigned integers, jump if less-than */
+  OP_LTU4,       /*  70  Compare unsigned integers, jump if less-than */
   OP_LTU3,       /*  71  */
   OP_MODI3,      /*  72  */
   OP_MODI4,      /*  73  Modulus (signed). */

@@ -127,6 +127,8 @@ assemblers_t assemblers[] = {
     {"LTF4",    OP_LTF4,       assfn(CODE_24BIT)},
     {"LTI3",    OP_LTI3,       assfn(CODE_24BIT)},
     {"LTI4",    OP_LTI4,       assfn(CODE_24BIT)},
+    {"LTU3",    OP_LTU3,       assfn(CODE_24BIT)},
+    {"LTU4",    OP_LTU4,       assfn(CODE_24BIT)},
     {"MODI3",   OP_MODI3,      assfn(CODE_OP)   },
     {"MODI4",   OP_MODI4,      assfn(CODE_OP)   },
     {"MODU4",   OP_MODU4,      assfn(CODE_OP)   },

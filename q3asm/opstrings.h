@@ -40,8 +40,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     {"LEU4", OP_LEU4},
 
     // {"LTF4", OP_LTF4},
-    {"LTI4", OP_LTI4},
-    {"LTU4", OP_LTU},
+    // {"LTI4", OP_LTI4},
+    // {"LTU4", OP_LTU4},
 
     {"NEF4", OP_NEF},
     {"NEI4", OP_NE4},
@@ -82,7 +82,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     {"LSHU3", OP_LSH4},
     {"LSHU3", OP_LSH4},
     {"LTI3", OP_LTI4},
-    {"LTU3",   OP_LTU},
+    {"LTU3",   OP_LTU4},
     {"MODI3", OP_MODI4},
     {"MODU3", OP_MODU4},
     {"MULI3", OP_MULI4},

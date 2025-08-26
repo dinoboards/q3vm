@@ -45,7 +45,7 @@
 | OP_LEI4           | LEI4                           | `OS -= 2; PC = R1 <= R0 ? v : sizeof(v)`                      |
 | OP_GTI4           | GTI4                           | `OS -= 2; PC = R1 > R0 ? v : sizeof(v) `                      |
 | OP_GEI4           | GEI4                           | `OS -= 2; PC = R1 >= R0 ? v : sizeof(v)`                      |
-| OP_LTU            | LTU4                           | `OS -= 2; PC = (uint32_t)R1 >= (uint32_t)R0 ? v : sizeof(v) ` |
+| OP_LTU4            | LTU4                           | `OS -= 2; PC = (uint32_t)R1 >= (uint32_t)R0 ? v : sizeof(v) ` |
 | OP_LEU4            | LEU4                           | `OS -= 2; PC = (uint32_t)R1 <= (uint32_t)R0 ? v : sizeof(v) ` |
 | OP_GTU4           | GTU4                           | `OS -= 2; pc = (uint32_t)R1 > (uint32_t)R0 ? v : sizeof(v)  ` |
 | OP_GEU4           | GEU4                           | `OS -= 2; PC = (uint32_t)R1 >= (uint32_t)R0 ? v : sizeof(v) ` |
