@@ -1188,9 +1188,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_EQU3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
-
     case OP_GEF4: {
       pop_2_floats();
       log3_3(FMT_FLT " >= " FMT_FLT "\n", R1.flt, R0.flt);

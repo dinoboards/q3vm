@@ -41,7 +41,6 @@ OP_ENTER                Begin subroutine.
 OP_EQ3
 OP_EQ4                   Compare integers, jump if equal.
 OP_EQF4                  Compare floats, jump if equal
-OP_EQU3
 OP_GEF4                  Compare floats, jump if greater-than-or-equal
 OP_GEI3
 OP_GEI4                  Compare integers, jump if greater-than-or-equal.

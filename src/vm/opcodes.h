@@ -48,65 +48,64 @@ typedef enum {
   OP_EQ3,        /*  40  */
   OP_EQ4,        /*  41  Compare integers, jump if equal. */
   OP_EQF4,       /*  42  Compare floats, jump if equal */
-  OP_EQU3,       /*  43  */
-  OP_GEF4,       /*  44  Compare floats, jump if greater-than-or-equal */
-  OP_GEI3,       /*  45  */
-  OP_GEI4,       /*  46  Compare integers, jump if greater-than-or-equal. */
-  OP_GEU3,       /*  47  */
-  OP_GEU4,       /*  48  Compare unsigned integers, jump if greater-than-or-equal */
-  OP_GTF4,       /*  49  Compare floats, jump if greater-than */
-  OP_GTI3,       /*  50  */
-  OP_GTI4,       /*  51  Compare integers, jump if greater-than. */
-  OP_GTU3,       /*  52  */
-  OP_GTU4,       /*  53  Compare unsigned integers, jump if greater-than */
-  OP_JUMP,       /*  54  Unconditional jump. */
-  OP_LEAVE,      /*  55  End subroutine. */
-  OP_LEF4,       /*  56  Compare floats, jump if less-than-or-equal */
-  OP_LEI3,       /*  57  */
-  OP_LEI4,       /*  58  Compare integers, jump if less-than-or-equal. */
-  OP_LEU,        /*  59  Compare unsigned integers, jump if less-than-or-equal */
-  OP_LEU3,       /*  60  */
-  OP_LOAD1,      /*  61  Load 1-byte from memory */
-  OP_LOAD2,      /*  62  Load 2-bytes from memory */
-  OP_LOAD3,      /*  63  Load 3-bytes from memory */
-  OP_LOAD4,      /*  64  Load 4-bytes from memory */
-  OP_LOADF4,     /*  65  Load 4 byte float from memory */
-  OP_LOCAL,      /*  66  Get local variable. */
-  OP_LSH3,       /*  67  */
-  OP_LSH4,       /*  68  Left-shift */
-  OP_LTF,        /*  69  Compare floats, jump if less-than */
-  OP_LTI3,       /*  70  */
-  OP_LTI4,       /*  71  Compare integers, jump if less-than. */
-  OP_LTU,        /*  72  Compare unsigned integers, jump if less-than */
-  OP_LTU3,       /*  73  */
-  OP_MODI3,      /*  74  */
-  OP_MODI4,      /*  75  Modulus (signed). */
-  OP_MODU3,      /*  76  */
-  OP_MODU4,      /*  77  Modulus (unsigned). */
-  OP_MULF4,      /*  78  Multiply floats */
-  OP_MULI3,      /*  79  */
-  OP_MULI4,      /*  80  Multiply signed integers. */
-  OP_MULU3,      /*  81  */
-  OP_MULU4,      /*  82  Multiply unsigned integers. */
-  OP_NE3,        /*  83  */
-  OP_NE4,        /*  84  Compare integers, jump if not equal. */
-  OP_NEF,        /*  85  Compare floats, jump if not-equal */
-  OP_NEGF4,      /*  86  Negate float */
-  OP_NEGI3,      /*  87  */
-  OP_NEGI4,      /*  88  Negate integer. */
-  OP_POP,        /*  89  Discard top-of-stack. */
-  OP_PUSH,       /*  90  Push to stack. */
-  OP_RSHI3,      /*  91  */
-  OP_RSHI4,      /*  92  Right-shift (algebraic; preserve sign) */
-  OP_RSHU3,      /*  93  */
-  OP_RSHU4,      /*  94  Right-shift (bitwise; ignore sign) */
-  OP_STORE1,     /*  95  Store 1-byte to memory */
-  OP_STORE2,     /*  96  Store 2-byte to memory */
-  OP_STORE3,     /*  97  */
-  OP_STORE4,     /*  98  *(stack[top-1]) = stack[top] */
-  OP_SUB3,       /*  99  */
-  OP_SUB4,       /* 100  Subtract integers (two's complement). */
-  OP_SUBF4,      /* 101  Subtract floats */
+  OP_GEF4,       /*  43  Compare floats, jump if greater-than-or-equal */
+  OP_GEI3,       /*  44  */
+  OP_GEI4,       /*  45  Compare integers, jump if greater-than-or-equal. */
+  OP_GEU3,       /*  46  */
+  OP_GEU4,       /*  47  Compare unsigned integers, jump if greater-than-or-equal */
+  OP_GTF4,       /*  48  Compare floats, jump if greater-than */
+  OP_GTI3,       /*  49  */
+  OP_GTI4,       /*  50  Compare integers, jump if greater-than. */
+  OP_GTU3,       /*  51  */
+  OP_GTU4,       /*  52  Compare unsigned integers, jump if greater-than */
+  OP_JUMP,       /*  53  Unconditional jump. */
+  OP_LEAVE,      /*  54  End subroutine. */
+  OP_LEF4,       /*  55  Compare floats, jump if less-than-or-equal */
+  OP_LEI3,       /*  56  */
+  OP_LEI4,       /*  57  Compare integers, jump if less-than-or-equal. */
+  OP_LEU,        /*  58  Compare unsigned integers, jump if less-than-or-equal */
+  OP_LEU3,       /*  59  */
+  OP_LOAD1,      /*  60  Load 1-byte from memory */
+  OP_LOAD2,      /*  61  Load 2-bytes from memory */
+  OP_LOAD3,      /*  62  Load 3-bytes from memory */
+  OP_LOAD4,      /*  63  Load 4-bytes from memory */
+  OP_LOADF4,     /*  64  Load 4 byte float from memory */
+  OP_LOCAL,      /*  65  Get local variable. */
+  OP_LSH3,       /*  66  */
+  OP_LSH4,       /*  67  Left-shift */
+  OP_LTF,        /*  68  Compare floats, jump if less-than */
+  OP_LTI3,       /*  69  */
+  OP_LTI4,       /*  70  Compare integers, jump if less-than. */
+  OP_LTU,        /*  71  Compare unsigned integers, jump if less-than */
+  OP_LTU3,       /*  72  */
+  OP_MODI3,      /*  73  */
+  OP_MODI4,      /*  74  Modulus (signed). */
+  OP_MODU3,      /*  75  */
+  OP_MODU4,      /*  76  Modulus (unsigned). */
+  OP_MULF4,      /*  77  Multiply floats */
+  OP_MULI3,      /*  78  */
+  OP_MULI4,      /*  79  Multiply signed integers. */
+  OP_MULU3,      /*  80  */
+  OP_MULU4,      /*  81  Multiply unsigned integers. */
+  OP_NE3,        /*  82  */
+  OP_NE4,        /*  83  Compare integers, jump if not equal. */
+  OP_NEF,        /*  84  Compare floats, jump if not-equal */
+  OP_NEGF4,      /*  85  Negate float */
+  OP_NEGI3,      /*  86  */
+  OP_NEGI4,      /*  87  Negate integer. */
+  OP_POP,        /*  88  Discard top-of-stack. */
+  OP_PUSH,       /*  89  Push to stack. */
+  OP_RSHI3,      /*  90  */
+  OP_RSHI4,      /*  91  Right-shift (algebraic; preserve sign) */
+  OP_RSHU3,      /*  92  */
+  OP_RSHU4,      /*  93  Right-shift (bitwise; ignore sign) */
+  OP_STORE1,     /*  94  Store 1-byte to memory */
+  OP_STORE2,     /*  95  Store 2-byte to memory */
+  OP_STORE3,     /*  96  */
+  OP_STORE4,     /*  97  *(stack[top-1]) = stack[top] */
+  OP_SUB3,       /*  98  */
+  OP_SUB4,       /*  99  Subtract integers (two's complement). */
+  OP_SUBF4,      /* 100  Subtract floats */
   OP_MAX,        /* Make this the last item */
 
 } opcode_t;
