@@ -116,19 +116,6 @@ char lineBuffer[MAX_LINE_LENGTH];
 int  lineParseOffset;
 char token[MAX_LINE_LENGTH];
 
-typedef struct {
-  char *name;
-  int   opcode;
-} sourceOps_t;
-
-sourceOps_t sourceOps[] = {
-#include "opstrings.h"
-};
-
-#define NUM_SOURCE_OPS (sizeof(sourceOps) / sizeof(sourceOps[0]))
-
-int opcodesHash[NUM_SOURCE_OPS];
-
 static int vreport(const char *fmt, va_list vp) {
   if (options.verbose != qtrue)
     return 0;
@@ -901,7 +888,6 @@ static int ParseExpression(void) {
 #define assfn(a) TryNewAssemble_##a
 
 #include "assemblers.c"
-
 #include "assemblers.h"
 
 // #define STAT(L) report(L "\n");
@@ -918,10 +904,7 @@ AssembleLine
 */
 
 static void AssembleLine(void) {
-  hashchain_t *hc;
-  sourceOps_t *op;
-  int          i;
-  int          hash;
+  int i;
 
   Parse();
   if (!token[0]) {
@@ -938,83 +921,6 @@ static void AssembleLine(void) {
     }
   }
 
-  hash = HashString(token);
-
-  /*
-    Opcode search using hash table.
-    Since the opcodes stays mostly fixed, this may benefit even more from a
-   tree.
-    Always with the tree :)
-   -PH
-  */
-  for (hc = hashtable_get(optable, hash); hc; hc = hc->next) {
-    op = (sourceOps_t *)(hc->data);
-    i  = op - sourceOps;
-    if ((hash == opcodesHash[i]) && (!strcmp(token, op->name))) {
-      int opcode;
-      int expression;
-
-      if (op->opcode == OP_UNDEF) {
-        CodeError("Undefined opcode: %s\n", token);
-      }
-      if (op->opcode == OP_IGNORE) {
-        STAT("IGNORE")
-        WriteComment();
-        return; // we ignore most conversions
-      }
-
-      // sign extensions need to check next parm
-      opcode = op->opcode;
-
-#if 0
-      if (opcode == OP_SEX8) {
-        Parse();
-        if (token[0] == '1') {
-          opcode = OP_SEX8;
-          STAT("SEX8");
-        } else if (token[0] == '2') {
-          opcode = OP_SEX16;
-          STAT("SEX16");
-
-        } else if (token[0] == '3') {
-          STAT("IGNORE");
-          WriteComment();
-          return;
-
-        } else if (token[0] == '4') {
-          STAT("IGNORE");
-          WriteComment();
-          return;
-
-        } else {
-
-          CodeError("Bad sign extension: %s\n", token);
-          return;
-        }
-      }
-#endif
-
-      // check for expression
-      Parse();
-      if (token[0] && op->opcode != OP_CI4F4 && op->opcode != OP_CF4I4) {
-
-        expression = ParseExpression();
-
-        WriteInt32Code(opcode, expression);
-
-        EmitByte(&segment[CODESEG], opcode);
-        EmitInt32(&segment[CODESEG], expression);
-
-      } else {
-        WriteCode(opcode);
-
-        EmitByte(&segment[CODESEG], opcode);
-      }
-
-      return;
-    }
-  }
-
   CodeError("Unknown token: %s\n", token);
 }
 
@@ -1024,15 +930,9 @@ InitTables
 ==============
 */
 void InitTables(void) {
-  unsigned i;
 
   symtable = hashtable_new(symtablelen);
   optable  = hashtable_new(100); /* There's hardly 100 opcodes anyway. */
-
-  for (i = 0; i < NUM_SOURCE_OPS; i++) {
-    opcodesHash[i] = HashString(sourceOps[i].name);
-    hashtable_add(optable, opcodesHash[i], sourceOps + i);
-  }
 }
 
 static void writeMapFileForSegment(FILE *f, int seg) {

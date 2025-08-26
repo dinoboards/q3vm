@@ -63,7 +63,7 @@ int testNominal(const char *filepath) {
     return retVal;
   }
 
-  VM_Debug(3);
+  VM_Debug(4);
   if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls) == 0) {
 
 #ifdef DEBUG_VM
@@ -125,6 +125,7 @@ void testArguments(void) {
   vm_t vm = {0};
   int  imageSize;
 
+  VM_Debug(4);
   vm.codeLength = 0;
   VM_Call(&vm, 0);
   VM_ArgPtr(0, NULL);
