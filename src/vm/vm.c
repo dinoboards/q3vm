@@ -760,6 +760,11 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   PC = (UINT(R1_uint24(0)) operation UINT(R0_uint24(0))) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                      \
   opStack8 -= 8;
 
+#define op_2_int32_branch(operation)                                                                                               \
+  log3_3(FMT_INT32 " " #operation " " FMT_INT32 "\n", R1_int32(0), R0_int32(0));                                                   \
+  PC = (R1_int32(0) operation R0_int32(0)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                                    \
+  opStack8 -= 8;
+
 #define op_2_uint32_branch(operation)                                                                                              \
   log3_3(FMT_INT32 " " #operation " " FMT_INT32 "\n", R1_uint32(0), R0_uint32(0));                                                 \
   PC = (R1_uint32(0) operation R0_uint32(0)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                                  \
@@ -1204,9 +1209,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_GEI4: {
-      pop_2_int32();
-      log3_3(FMT_INT32 " >= " FMT_INT32 "\n", R1.int32, R0.int32);
-      PC = (R1.int32 >= R0.int32) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_int32_branch(>=);
       DISPATCH();
     }
 
@@ -1216,14 +1219,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_GEU4: {
-      opStack8 -= 8;
-      if (((unsigned)R1.int32) >= ((unsigned)R0.int32)) {
-        PC = codeBase + INT(R2.int24);
-        DISPATCH();
-      } else {
-        PC += INT_INCREMENT;
-        DISPATCH();
-      }
+      op_2_uint32_branch(>=);
+      DISPATCH();
     }
 
     case OP_GTF4: {

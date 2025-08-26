@@ -50,6 +50,7 @@ int sub_test_OP_DIVI3();
 int sub_test_OP_DIVU3();
 int sub_test_OP_GEI3();
 int sub_test_OP_GEU3();
+int sub_test_OP_GEU4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -155,6 +156,9 @@ int main(void) {
     return 32;
 
   if (sub_test_OP_GEU3())
+    return 33;
+
+  if (sub_test_OP_GEU4())
     return 33;
 
   return 0;
@@ -720,6 +724,22 @@ int sub_test_OP_GEI3() {
 int sub_test_OP_GEU3() {
   uint24_t a;
   uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a < b;
+
+  if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_GEU4() {
+  uint32_t a;
+  uint32_t b;
   int24_t  c;
 
   a = 20;
