@@ -94,7 +94,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] args Arguments for function call.
  * @return Return value of the function call. */
-static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack);
+static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opStack, vm_t *newvm);
 
 /** Executes a block copy operation (memcpy) within currentVM data space.
  * @param[out] dest Pointer (in VM space).
@@ -308,7 +308,7 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
     va_end(ap);
 
     ++vm->callLevel;
-    r = VM_CallInterpreted(vm, args, _opStack);
+    r = VM_CallInterpreted(*vm, args, _opStack, vm);
     --vm->callLevel;
   }
 
@@ -501,7 +501,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
       if (((vm_size_t)(vaddr) > 0xFF0000)) {                                                                                       \
         io_write(vaddr, value);                                                                                                    \
       } else {                                                                                                                     \
-        dataBase[(vm_size_t)(vaddr)] = value;                                                                                      \
+        _vm.dataBase[(vm_size_t)(vaddr)] = value;                                                                                  \
       }                                                                                                                            \
     }                                                                                                                              \
   }
@@ -511,11 +511,11 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
     if (!VM_VerifyWriteOK(vm, vaddr, 2)) {                                                                                         \
       ;                                                                                                                            \
     } else {                                                                                                                       \
-      *((uint16_t *)&dataBase[(vm_size_t)(vaddr)]) = value;                                                                        \
+      *((uint16_t *)&_vm.dataBase[(vm_size_t)(vaddr)]) = value;                                                                    \
     }                                                                                                                              \
   }
 
-#define VM_GetWriteAddr(vaddr, size) (!VM_VerifyWriteOK(vm, vaddr, size) ? bad_memory : &dataBase[(vm_size_t)(vaddr)])
+#define VM_GetWriteAddr(vaddr, size) (!VM_VerifyWriteOK(vm, vaddr, size) ? bad_memory : &_vm.dataBase[(vm_size_t)(vaddr)])
 
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
@@ -774,7 +774,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define op_2_int24_branch(operation)                                                                                               \
   log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", INT(R1_int24(0)), INT(R0_int24(0)));                                         \
   if ((INT(R1_int24(0)) operation INT(R0_int24(0))))                                                                               \
-    PC = codeBase + UINT(R2.uint24);                                                                                               \
+    PC = _vm.codeBase + UINT(R2.uint24);                                                                                           \
   else                                                                                                                             \
     PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
@@ -782,7 +782,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define op_2_uint24_branch(operation)                                                                                              \
   log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));                                     \
   if ((UINT(R1_uint24(0)) operation UINT(R0_uint24(0))))                                                                           \
-    PC = codeBase + UINT(R2.uint24);                                                                                               \
+    PC = _vm.codeBase + UINT(R2.uint24);                                                                                           \
   else                                                                                                                             \
     PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
@@ -790,7 +790,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define op_2_int32_branch(operation)                                                                                               \
   log3_3(FMT_INT32 " " #operation " " FMT_INT32 "\n", R1_int32(0), R0_int32(0));                                                   \
   if ((R1_int32(0) operation R0_int32(0)))                                                                                         \
-    PC = codeBase + UINT(R2.uint24);                                                                                               \
+    PC = _vm.codeBase + UINT(R2.uint24);                                                                                           \
   else                                                                                                                             \
     PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
@@ -798,7 +798,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define op_2_uint32_branch(operation)                                                                                              \
   log3_3(FMT_INT32 " " #operation " " FMT_INT32 "\n", R1_uint32(0), R0_uint32(0));                                                 \
   if ((R1_uint32(0) operation R0_uint32(0)))                                                                                       \
-    PC = codeBase + UINT(R2.uint24);                                                                                               \
+    PC = _vm.codeBase + UINT(R2.uint24);                                                                                           \
   else                                                                                                                             \
     PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
@@ -806,7 +806,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 #define op_2_float_branch(operation)                                                                                               \
   log3_3(FMT_FLT " " #operation " " FMT_FLT "\n", R1_float(0), R0_float(0));                                                       \
   if ((R1_float(0) operation R0_float(0)))                                                                                         \
-    PC = codeBase + UINT(R2.uint24);                                                                                               \
+    PC = _vm.codeBase + UINT(R2.uint24);                                                                                           \
   else                                                                                                                             \
     PC += INT24_INCREMENT;                                                                                                         \
   opStack8 -= 8;
@@ -823,12 +823,12 @@ typedef union stack_entry_u {
   float    flt;
 } stack_entry_t;
 
-#define vPC ((int)(PC - codeBase))
+#define vPC ((int)(PC - _vm.codeBase))
 
 typedef const uint8_t *PC_t;
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
-static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) {
+static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opStack, vm_t *vm) {
 #ifdef MEMORY_SAFE
   const uint8_t *const PC_end = &vm->codeBase[vm->codeLength];
 #endif
@@ -838,12 +838,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
   ustdint_t     programStack;
   ustdint_t     stackOnEntry;
   stack_entry_t R0, R1;
-
-  uint8_t *const       dataBase   = vm->dataBase;
-  const uint8_t *const codeBase   = vm->codeBase;
-  const vm_size_t      litLength  = vm->litLength;
-  const vm_size_t      codeLength = vm->codeLength;
-  const uint8_t *const litBase    = codeBase + codeLength;
 
 #ifdef DEBUG_VM
   vmSymbol_t *profileSymbol;
@@ -859,13 +853,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
   vm->breakFunction = 0;
 #endif
 
-  PC = codeBase;
+  PC = _vm.codeBase;
   programStack -= (6 + 3 * MAX_VMMAIN_ARGS);
 
-  memcpy(&dataBase[programStack + 6], args, MAX_VMMAIN_ARGS * 3);
+  memcpy(&_vm.dataBase[programStack + 6], args, MAX_VMMAIN_ARGS * 3);
 
-  *(int24_t *)&dataBase[programStack + 3] = INT24(0);  /* return stack */
-  *(int24_t *)&dataBase[programStack]     = INT24(-1); /* will terminate the loop on return */
+  *(int24_t *)&_vm.dataBase[programStack + 3] = INT24(0);  /* return stack */
+  *(int24_t *)&_vm.dataBase[programStack]     = INT24(-1); /* will terminate the loop on return */
 
   opStack32[0]  = 0x0000BEEF;
   opStack32[-1] = 0x00000000;
@@ -942,7 +936,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       printf("  ARG3 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
              programStack + R2.int8, UINT(R0.uint24));
 #endif
-      *(uint24_t *)&dataBase[programStack + R2.int8] = R0.uint24;
+      *(uint24_t *)&_vm.dataBase[programStack + R2.int8] = R0.uint24;
       PC++;
       DISPATCH();
     }
@@ -953,7 +947,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       printf("  ARG4 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
              programStack + R2.int8, R0.uint32);
 #endif
-      *(uint32_t *)&dataBase[programStack + R2.int8] = R0.uint32;
+      *(uint32_t *)&_vm.dataBase[programStack + R2.int8] = R0.uint32;
       PC++;
       DISPATCH();
     }
@@ -1006,10 +1000,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_CALL: {
-      *(int24_t *)&dataBase[programStack] = INT24(vPC); /* save current program counter */
+      *(int24_t *)&_vm.dataBase[programStack] = INT24(vPC); /* save current program counter */
       pop_1_int24(R0);
 
-      PC = codeBase + INT(R0.int24); /* jump to the location on the stack */
+      PC = _vm.codeBase + INT(R0.int24); /* jump to the location on the stack */
 
       if (INT(R0.int24) < 0) /* system call */
       {
@@ -1025,9 +1019,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
 #ifdef DEBUG_VM
         stomped = INT(*(int24_t *)&dataBase[programStack + 3]);
 #endif
-        *(int24_t *)&dataBase[programStack + 3] = INT24(-1 - vPC); /*command*/
+        *(int24_t *)&_vm.dataBase[programStack + 3] = INT24(-1 - vPC); /*command*/
 
-        r = vm->systemCall(vm, &dataBase[programStack + 3]);
+        r = vm->systemCall(vm, &_vm.dataBase[programStack + 3]);
 
 #ifdef DEBUG_VM
         /* this is just our stack frame pointer, only needed
@@ -1036,7 +1030,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
 #endif
 
         push_1_uint32(r);
-        PC = codeBase + INT(*(int24_t *)&dataBase[programStack]);
+        PC = _vm.codeBase + INT(*(int24_t *)&_vm.dataBase[programStack]);
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
           Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, vPC));
@@ -1289,7 +1283,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
 
       opStack8 -= 4;
       log3_2("JUMP " FMT_INT24 "\n", UINT(R0_uint24(-4)));
-      PC = codeBase + INT(R0_int24(-4));
+      PC = _vm.codeBase + INT(R0_int24(-4));
       DISPATCH();
     }
 
@@ -1299,7 +1293,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       programStack += R2.int16;
 
       /* grab the saved program counter */
-      PC = codeBase + INT(*(int24_t *)&dataBase[programStack]);
+      PC = _vm.codeBase + INT(*(int24_t *)&_vm.dataBase[programStack]);
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, vPC);
       if (vm_debugLevel) {
@@ -1348,10 +1342,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
         R_uint8 = 0;
       else {
-        if (UINT(R0_uint24(0)) < litLength)
-          R_uint8 = *(uint8_t *)&litBase[UINT(R0_uint24(0))];
+        if (UINT(R0_uint24(0)) < _vm.litLength)
+          R_uint8 = *(uint8_t *)&_vm.litBase[UINT(R0_uint24(0))];
         else
-          R_uint8 = *(uint8_t *)&dataBase[UINT(R0_uint24(0))];
+          R_uint8 = *(uint8_t *)&_vm.dataBase[UINT(R0_uint24(0))];
       }
       log3_2(FMT_INT8 " PUSHED uint8\n", R_uint16 & 0xFF);
       DISPATCH();
@@ -1362,10 +1356,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
         R_uint16 = 0;
       else {
-        if (UINT(R0_uint24(0)) < litLength)
-          R_uint16 = *(uint16_t *)&litBase[UINT(R0_uint24(0))];
+        if (UINT(R0_uint24(0)) < _vm.litLength)
+          R_uint16 = *(uint16_t *)&_vm.litBase[UINT(R0_uint24(0))];
         else
-          R_uint16 = *(uint16_t *)&dataBase[UINT(R0_uint24(0))];
+          R_uint16 = *(uint16_t *)&_vm.dataBase[UINT(R0_uint24(0))];
       }
       log3_2(FMT_INT16 " PUSHED uint16\n", R_uint16 & 0xFFFF);
       DISPATCH();
@@ -1376,10 +1370,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
         R_uint24 = UINT24(0);
       else {
-        if (UINT(R0_uint24(0)) < litLength)
-          R_uint24 = *(uint24_t *)&litBase[UINT(R0_uint24(0))];
+        if (UINT(R0_uint24(0)) < _vm.litLength)
+          R_uint24 = *(uint24_t *)&_vm.litBase[UINT(R0_uint24(0))];
         else
-          R_uint24 = *(uint24_t *)&dataBase[UINT(R0_uint24(0))];
+          R_uint24 = *(uint24_t *)&_vm.dataBase[UINT(R0_uint24(0))];
       }
       log3_2(FMT_INT24 " PUSHED uint24\n", UINT(R_uint24));
       DISPATCH();
@@ -1390,10 +1384,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       if (!VM_VerifyReadOK(vm, UINT(R0_uint24(0)), 4))
         R_uint32 = 0;
       else {
-        if (UINT(R0_uint24(0)) < litLength)
-          R_uint32 = *(uint32_t *)&litBase[UINT(R0_uint24(0))];
+        if (UINT(R0_uint24(0)) < _vm.litLength)
+          R_uint32 = *(uint32_t *)&_vm.litBase[UINT(R0_uint24(0))];
         else
-          R_uint32 = *(uint32_t *)&dataBase[UINT(R0_uint24(0))];
+          R_uint32 = *(uint32_t *)&_vm.dataBase[UINT(R0_uint24(0))];
       }
       log3_2(FMT_INT32 " PUSHED uint32\n", R_uint32);
       DISPATCH();
