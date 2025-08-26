@@ -496,7 +496,6 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
     if (!VM_VerifyReadOK(vm, vaddr, 1)) {                                                                                          \
       fn(*bad_memory);                                                                                                             \
     } else {                                                                                                                       \
-                                                                                                                                   \
       if (((vm_size_t)(vaddr) > 0xFF0000)) {                                                                                       \
         fn(io_read(vaddr));                                                                                                        \
       } else {                                                                                                                     \
@@ -622,9 +621,21 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   *opStack32 = a;                                                                                                                  \
   log3_2(FMT_INT32 " PUSHED int32\n", *opStack32);
 
-#define assign_1_int32(a)                                                                                                          \
+#define assign_1_uint8(a)                                                                                                          \
+  *opStack32 = (uint8_t)(a);                                                                                                       \
+  log3_2(FMT_INT8 " PUSHED uint8\n", *opStack8);
+
+#define assign_1_uint16(a)                                                                                                         \
+  *opStack32 = (uint16_t)(a);                                                                                                      \
+  log3_2(FMT_INT16 " PUSHED uint16\n", *opStack32 & 0xFFFF);
+
+#define assign_1_uint24(a)                                                                                                         \
+  *opStack32 = UINT((uint24_t)(a));                                                                                                \
+  log3_2(FMT_INT24 " PUSHED uint24\n", *opStack32 & 0xFFFFFF);
+
+#define assign_1_uint32(a)                                                                                                         \
   *opStack32 = a;                                                                                                                  \
-  log3_2(FMT_INT32 " PUSHED int32\n", *opStack32);
+  log3_2(FMT_INT32 " PUSHED uint32\n", *opStack32);
 
 #define push_1_uint32(a)                                                                                                           \
   {                                                                                                                                \
@@ -1311,30 +1322,30 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_LOAD1: {
-      pop_1_uint24(R0);
-      log3_2("R0: " FMT_INT24 "", UINT(R0.uint24));
-      VM_ReadAddrByte((vm_operand_t)UINT(R0.uint24), push_1_uint8);
+      R0.uint24 = R0_uint24(0);
+      log3_2("R0: " FMT_INT24 "\n", UINT(R0.uint24));
+      VM_ReadAddrByte((vm_operand_t)UINT(R0.uint24), assign_1_uint8);
       DISPATCH();
     }
 
     case OP_LOAD2: {
-      pop_1_uint24(R0);
+      R0.uint24 = R0_uint24(0);
       log3_2("R0: " FMT_INT24 "", UINT(R0.uint24));
-      push_1_uint16(*((uint16_t *)VM_GetReadAddr(UINT(R0.uint24), 2)));
+      assign_1_uint16(*((uint16_t *)VM_GetReadAddr(UINT(R0.uint24), 2)));
       DISPATCH();
     }
 
     case OP_LOAD3: {
-      pop_1_uint24(R0);
+      R0.uint24 = R0_uint24(0);
       log3_2("RO: " FMT_INT24 "", UINT(R0.uint24));
-      push_1_uint24(*((uint24_t *)VM_GetReadAddr(UINT(R0.uint24), 3)));
+      assign_1_uint24(*((uint24_t *)VM_GetReadAddr(UINT(R0.uint24), 3)));
       DISPATCH();
     }
 
     case OP_LOAD4: {
-      pop_1_uint24(R0);
+      R0.uint24 = R0_uint24(0);
       log3_2("R0: " FMT_INT24 "", UINT(R0.uint24));
-      push_1_uint32(*((uint32_t *)VM_GetReadAddr(UINT(R0.uint24), 4)));
+      assign_1_uint32(*((uint32_t *)VM_GetReadAddr(UINT(R0.uint24), 4)));
       DISPATCH();
     }
 
