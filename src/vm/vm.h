@@ -298,7 +298,7 @@ void Com_Error(vmErrorCode_t level, const char *error);
     return a;                                                                                                                      \
   }
 
-#define VM_Error(a, description) ;
+#define VM_Error(a, description)
 
 #endif
 

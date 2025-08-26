@@ -896,8 +896,6 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       opStack8                            = &_opStack[8];
       goto done;
     }
-    R0.int32 = opStack32[0];
-    R1.int32 = opStack32[-1];
 
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
@@ -923,16 +921,14 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
     switch (*PC++) {
 #if defined(DEBUG_VM) || defined(MEMORY_SAFE)
     default: /* fall through */
-#endif
-
     case OP_UNDEF:
       VM_AbortError(_vm.vm, VM_BAD_INSTRUCTION, "Bad VM instruction");
-
+#endif
+#ifdef DEBUG_VM
     case OP_IGNORE:
       DISPATCH();
 
     case OP_BREAK:
-#ifdef DEBUG_VM
       _vm.vm->breakCount++;
 #endif
       DISPATCH();
