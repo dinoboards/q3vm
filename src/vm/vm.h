@@ -180,6 +180,8 @@ typedef struct vm_s {
   ustdint_t callLevel; /**< Counts recursive VM_Call */
 
   vmErrorCode_t lastError; /**< Last known error */
+
+  struct vm_s *vm;
 } vm_t;
 
 /******************************************************************************
@@ -275,7 +277,7 @@ void VM_Debug(uint8_t level);
  * @param[in] level Error identifier, see vmErrorCode_t.
  * @param[in] error Human readable error text. */
 void Com_Error(vmErrorCode_t level, const char *error);
-#define VM_AbortError(a, description)                                                                                              \
+#define VM_AbortError(vm, a, description)                                                                                          \
   {                                                                                                                                \
     vm->lastError = a;                                                                                                             \
     Com_Error(a, description);                                                                                                     \
@@ -292,7 +294,7 @@ void Com_Error(vmErrorCode_t level, const char *error);
 #define VM_Debug(a)
 #define Com_Error(level, error)
 
-#define VM_AbortError(a, description)                                                                                              \
+#define VM_AbortError(vm, a, description)                                                                                          \
   {                                                                                                                                \
     vm->lastError = a;                                                                                                             \
     return a;                                                                                                                      \
