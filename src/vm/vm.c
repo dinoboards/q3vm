@@ -1099,10 +1099,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_CVIU3:
-    case OP_CVUI3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
-
     case OP_DIVF4:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] / opStackFlt[1];

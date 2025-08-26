@@ -32,8 +32,6 @@ OP_CONSTs4
 OP_CU1I3
 OP_CU2I3
 OP_CU3U4
-OP_CVIU3
-OP_CVUI3
 OP_DIVF4                 Divide floats
 OP_DIVI                 Divide signed integers.
 OP_DIVI3
