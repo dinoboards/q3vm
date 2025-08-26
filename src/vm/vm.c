@@ -1229,16 +1229,12 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_GTI3: {
-      pop_2_int24();
-      log3_3(FMT_INT24 " > " FMT_INT24 "\n", INT(R1.int24), INT(R0.int24));
-      PC = (INT(R1.int24) > INT(R0.int24)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_int24_branch(>);
       DISPATCH();
     }
 
     case OP_GTI4: {
-      pop_2_int32();
-      log3_3(FMT_INT32 " > " FMT_INT32 "\n", R1.int32, R0.int32);
-      PC = (R1.int32 > R0.int32) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_int32_branch(>);
       DISPATCH();
     }
 
