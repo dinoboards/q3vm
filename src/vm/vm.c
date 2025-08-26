@@ -1250,12 +1250,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
 
     case OP_JUMP: {
 #ifdef MEMORY_SAFE
-      if ((unsigned)R0.int32 >= MAX_PROGRAM_COUNTER)
+      if (UINT(R0_uint24(0)) >= MAX_PROGRAM_COUNTER)
         VM_AbortError(VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_JUMP");
 #endif
 
-      PC = codeBase + R0.int32;
       opStack8 -= 4;
+      log3_2("JUMP " FMT_INT24 "\n", UINT(R0_uint24(-4)));
+      PC = codeBase + INT(R0_int24(-4));
       DISPATCH();
     }
 

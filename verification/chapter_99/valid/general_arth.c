@@ -51,6 +51,9 @@ int sub_test_OP_DIVU3();
 int sub_test_OP_GEI3();
 int sub_test_OP_GEU3();
 int sub_test_OP_GEU4();
+int sub_test_OP_GTF4();
+int sub_test_OP_GTU3();
+int sub_test_OP_JUMP();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -159,7 +162,19 @@ int main(void) {
     return 33;
 
   if (sub_test_OP_GEU4())
-    return 33;
+    return 34;
+
+  if (sub_test_OP_GTF4())
+    return 35;
+
+  if (sub_test_OP_GTU3())
+    return 36;
+
+  if (sub_test_OP_GTU4())
+    return 37;
+
+  if (sub_test_OP_JUMP())
+    return 38;
 
   return 0;
 }
@@ -748,6 +763,71 @@ int sub_test_OP_GEU4() {
   c = a < b;
 
   if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_GTF4() {
+  float   a;
+  float   b;
+  int24_t c;
+
+  a = 20.0f;
+  b = 2.0f;
+
+  c = a <= b;
+
+  if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_GTU3() {
+  uint24_t a;
+  uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a <= b;
+
+  if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_GTU4() {
+  uint32_t a;
+  uint32_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a <= b;
+
+  if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_JUMP() {
+  uint24_t a;
+
+  a = 20;
+  if (a)
+    goto skip;
+
+  a = 2;
+
+skip:
+
+  if (a == 2)
     return 1;
 
   return 0;

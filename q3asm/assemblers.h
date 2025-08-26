@@ -110,6 +110,7 @@ assemblers_t assemblers[] = {
     {"INDIRU1", OP_LOAD1,      assfn(CODE_OP)   },
     {"INDIRU2", OP_LOAD2,      assfn(CODE_OP)   },
     {"INDIRU4", OP_LOAD4,      assfn(CODE_OP)   },
+    {"JUMPV",   OP_JUMP,       assfn(CODE_OP)   },
     {"LABEL",   DIRECTIVE,     assfn(LABEL)     },
     {"LEF4",    OP_LEF4,       assfn(CODE_24BIT)},
     {"LEI3",    OP_LEI3,       assfn(CODE_24BIT)},
