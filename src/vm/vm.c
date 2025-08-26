@@ -1133,11 +1133,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_ENTER: {
-      const uint16_t localsAndArgsSize = R2.int16;
+#ifdef DEBUG_VM
+      uint16_t localsAndArgsSize = R2.int16;
+#endif
+      programStack -= R2.int16;
+      log3_4("FRAME SIZE: " FMT_INT16 " (from " FMT_INT24 " to " FMT_INT24 ")\n", R2.int16, programStack + R2.int16, programStack);
+
       PC += INT16_INCREMENT;
-      programStack -= localsAndArgsSize;
-      log3_4("FRAME SIZE: " FMT_INT16 " (from " FMT_INT24 " to " FMT_INT24 ")\n", localsAndArgsSize,
-             programStack + localsAndArgsSize, programStack);
 
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(vm, vPC - 3);

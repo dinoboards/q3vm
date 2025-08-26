@@ -53,4 +53,7 @@ extern int24_t  to_int24(ustdint_t x);
 #define FMT_INT8  "%02X"
 #define FMT_FLT   "%f"
 
+#define MEMORY_SAFE
+#define DEBUG_VM
+
 #endif
