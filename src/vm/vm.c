@@ -933,7 +933,6 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_ADD3: {
       op_2_int24_to_1_int24(+);
-
       DISPATCH();
     }
 
@@ -1608,24 +1607,17 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
     }
 
     case OP_SUB3: {
-      pop_2_int24();
-      log3_3(FMT_INT32 " - " FMT_INT32 " = ", INT(R1.int24), INT(R0.int24));
-      push_1_int24(INT24(INT(R1.int24) - INT(R0.int24)));
+      op_2_int24_to_1_int24(-);
       DISPATCH();
     }
 
     case OP_SUB4: {
-      log3_4(FMT_INT32 " - " FMT_INT32 " = " FMT_INT32 " PUSHED\n", R1.int32, R0.int32, R1.int32 - R0.int32);
-      opStack8 -= 4;
-      *opStack32 = R1.int32 - R0.int32;
+      op_2_int32_to_1_int32(-);
       DISPATCH();
     }
 
     case OP_SUBF4: {
-      pop_2_floats();
-      log3_3(FMT_FLT " - " FMT_FLT " = ", R1.flt, R0.flt);
-      R1.flt -= R0.flt;
-      push_1_float(R1.flt);
+      op_2_float_to_1_float(-);
       DISPATCH();
     }
     }
