@@ -136,6 +136,7 @@ assemblers_t assemblers[] = {
     {"MULF4",   OP_MULF4,      assfn(CODE_OP)   },
     {"MULI3",   OP_MULI3,      assfn(CODE_OP)   },
     {"MULI4",   OP_MULI4,      assfn(CODE_OP)   },
+    {"MULU3",   OP_MULU3,      assfn(CODE_OP)   },
     {"MULU4",   OP_MULU4,      assfn(CODE_OP)   },
     {"NEGF4",   OP_NEGF4,      assfn(CODE_OP)   },
     {"NEGI3",   OP_NEGI3,      assfn(CODE_OP)   },

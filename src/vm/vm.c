@@ -1432,31 +1432,27 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_MULF4: {
-      opStack8 -= 4;
-      opStackFlt[0] = opStackFlt[0] * opStackFlt[1];
+      op_2_float_to_1_float(*);
       DISPATCH();
     }
 
     case OP_MULI3: {
-      pop_2_int24();
-      log3_3(FMT_INT32 " * " FMT_INT32 " = ", INT(R1.int24), INT(R0.int24));
-      push_1_int24(INT24(INT(R1.int24) * INT(R0.int24)));
+      op_2_int24_to_1_int24(*);
       DISPATCH();
     }
 
     case OP_MULI4: {
-      pop_2_int32();
-      log3_3(FMT_INT32 " * " FMT_INT32 " =", R1.int32, R0.int32);
-      push_1_int32(R1.int32 * R0.int32);
+      op_2_int32_to_1_int32(*);
       DISPATCH();
     }
 
-    case OP_MULU3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
+    case OP_MULU3: {
+      op_2_uint24_to_1_uint24(*);
+      DISPATCH();
+    }
 
     case OP_MULU4: {
-      opStack8 -= 4;
-      *opStack32 = ((unsigned)R1.int32) * ((unsigned)R0.int32);
+      op_2_uint32_to_1_uint32(*);
       DISPATCH();
     }
 
