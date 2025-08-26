@@ -99,7 +99,7 @@ assemblers_t assemblers[] = {
     {"GTI3",    OP_GTI3,       assfn(CODE_24BIT)},
     {"GTI4",    OP_GTI4,       assfn(CODE_24BIT)},
     {"GTU3",    OP_GTU3,       assfn(CODE_24BIT)},
-    {"GTU4",    OP_GTU4,       assfn(CODE_32BIT)},
+    {"GTU4",    OP_GTU4,       assfn(CODE_24BIT)},
     {"IMPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"INDIRB",  OP_IGNORE,     assfn(COMMENT)   },
     {"INDIRF4", OP_LOAD4,      assfn(CODE_OP)   },

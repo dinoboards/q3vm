@@ -161,13 +161,16 @@ int main(void) {
     return 33;
 
   if (sub_test_OP_GEU4())
-    return 33;
+    return 34;
 
   if (sub_test_OP_GTF4())
-    return 33;
+    return 35;
 
   if (sub_test_OP_GTU3())
-    return 33;
+    return 36;
+
+  if (sub_test_OP_GTU4())
+    return 37;
 
   return 0;
 }
@@ -780,6 +783,22 @@ int sub_test_OP_GTF4() {
 int sub_test_OP_GTU3() {
   uint24_t a;
   uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a <= b;
+
+  if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_GTU4() {
+  uint32_t a;
+  uint32_t b;
   int24_t  c;
 
   a = 20;

@@ -1244,14 +1244,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_GTU4: {
-      opStack8 -= 8;
-      if (((unsigned)R1.int32) > ((unsigned)R0.int32)) {
-        PC = codeBase + INT(R2.int24);
-        DISPATCH();
-      } else {
-        PC += INT_INCREMENT;
-        DISPATCH();
-      }
+      op_2_uint32_branch(>);
+      DISPATCH();
     }
 
     case OP_JUMP: {
