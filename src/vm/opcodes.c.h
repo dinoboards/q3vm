@@ -33,7 +33,7 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "CONSTs4",    /*  29  */
     "CU1I3",      /*  30  */
     "CU2I3",      /*  31  */
-    "CU4U3",      /*  32  */
+    "CU3U4",      /*  32  */
     "CVFI3",      /*  33  */
     "CVIU3",      /*  34  */
     "CVUI3",      /*  35  */

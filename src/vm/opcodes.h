@@ -37,7 +37,7 @@ typedef enum {
   OP_CONSTs4,    /*  29  */
   OP_CU1I3,      /*  30  */
   OP_CU2I3,      /*  31  */
-  OP_CU4U3,      /*  32  */
+  OP_CU3U4,      /*  32  */
   OP_CVFI3,      /*  33  */
   OP_CVIU3,      /*  34  */
   OP_CVUI3,      /*  35  */

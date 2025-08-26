@@ -330,11 +330,11 @@ ASMMultipleFn(CODE_CIxI2) {
   Parse();
   switch (token[0]) {
   case '3':
-    WriteComment(); /* No operation needed for size reduction */
+    WriteComment(); /* TODO should clear top bytes */
     return;
 
   case '4':
-    WriteComment(); /* No operation needed for size reduction */
+    WriteComment(); /* TODO should clear top bytes */
     return;
 
   default:
@@ -375,7 +375,7 @@ ASMMultipleFn(CODE_CUxU2) {
   Parse();
   switch (token[0]) {
   case '3':
-    WriteComment();
+    WriteComment(); // TODO should clear top byte
     return;
 
   default:
@@ -395,8 +395,8 @@ ASMMultipleFn(CODE_CUxU3) {
   Parse();
   switch (token[0]) {
   case '4':
-    opcode = OP_CU4U3;
-    break;
+    WriteComment();
+    return;
 
   default:
     WriteComment();
@@ -415,8 +415,8 @@ ASMMultipleFn(CODE_CUxU4) {
   Parse();
   switch (token[0]) {
   case '3':
-    WriteComment();
-    return;
+    opcode = OP_CU3U4;
+    break;
 
   default:
     WriteComment();

@@ -1085,9 +1085,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_CU4U3: {
-      pop_1_uint32(R0);
-      push_1_uint24(UINT24((uint32_t)R0.int32));
+    case OP_CU3U4: {
+      log3_2(FMT_INT24 " POP uint24\n", UINT(R0_uint24(0)) & 0xFFFFFF);
+      R_int32 = UINT(R0_uint24(0));
+      log3_2(FMT_INT32 " PUSH int32\n", R_int32);
       DISPATCH();
     }
 

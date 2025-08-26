@@ -44,6 +44,7 @@ int sub_test_OP_CU2I3();
 int sub_test_OP_CU3U2();
 int sub_test_OP_CU3U4();
 int sub_test_OP_CU4I3();
+int sub_test_OP_CU4U3();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -132,6 +133,9 @@ int main(void) {
 
   if (sub_test_OP_CU4I3())
     return 27;
+
+  if (sub_test_OP_CU4U3())
+    return 28;
 
   return 0;
 }
@@ -526,6 +530,23 @@ int sub_test_OP_CU4I3() {
   bs = a;
 
   if (bs != 0x345678)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_CU4U3() {
+  uint32_t a;
+  uint24_t bs;
+
+  a  = 0x82345678;
+  bs = a;
+
+  if (bs != 0x345678)
+    return 1;
+
+  a = (uint32_t)(uint24_t)a;
+  if (a != 0x345678)
     return 1;
 
   return 0;
