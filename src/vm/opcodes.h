@@ -72,7 +72,7 @@ typedef enum {
   OP_LOCAL,      /*  64  Get local variable. */
   OP_LSH3,       /*  65  */
   OP_LSH4,       /*  66  Left-shift */
-  OP_LTF,        /*  67  Compare floats, jump if less-than */
+  OP_LTF4,       /*  67  Compare floats, jump if less-than */
   OP_LTI3,       /*  68  */
   OP_LTI4,       /*  69  Compare integers, jump if less-than. */
   OP_LTU,        /*  70  Compare unsigned integers, jump if less-than */

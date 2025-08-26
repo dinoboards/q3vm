@@ -68,7 +68,7 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "LOCAL",      /*  64  Get local variable. */
     "LSH3",       /*  65  */
     "LSH4",       /*  66  Left-shift */
-    "LTF",        /*  67  Compare floats, jump if less-than */
+    "LTF4",       /*  67  Compare floats, jump if less-than */
     "LTI3",       /*  68  */
     "LTI4",       /*  69  Compare integers, jump if less-than. */
     "LTU",        /*  70  Compare unsigned integers, jump if less-than */

@@ -1366,7 +1366,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_LTF: {
+    case OP_LTF4: {
       op_2_float_branch(<);
       DISPATCH();
     }
