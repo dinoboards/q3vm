@@ -36,10 +36,10 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "CU2I3",      /*  32  */
     "CU3U4",      /*  33  */
     "DIVF4",      /*  34  Divide floats */
-    "DIVI",       /*  35  Divide signed integers. */
-    "DIVI3",      /*  36  */
-    "DIVU",       /*  37  Divide unsigned integers. */
-    "DIVU3",      /*  38  */
+    "DIVI3",      /*  35  */
+    "DIVI4",      /*  36  Divide signed integers. */
+    "DIVU3",      /*  37  */
+    "DIVU4",      /*  38  Divide unsigned integers. */
     "ENTER",      /*  39  Begin subroutine. */
     "EQ3",        /*  40  */
     "EQ4",        /*  41  Compare integers, jump if equal. */

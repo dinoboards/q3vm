@@ -33,10 +33,10 @@ OP_CU1I3
 OP_CU2I3
 OP_CU3U4
 OP_DIVF4                 Divide floats
-OP_DIVI                 Divide signed integers.
 OP_DIVI3
-OP_DIVU                 Divide unsigned integers.
+OP_DIVI4                 Divide signed integers.
 OP_DIVU3
+OP_DIVU4                 Divide unsigned integers.
 OP_ENTER                Begin subroutine.
 OP_EQ3
 OP_EQ4                   Compare integers, jump if equal.

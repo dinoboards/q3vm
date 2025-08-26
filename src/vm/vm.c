@@ -1104,29 +1104,33 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       opStackFlt[0] = opStackFlt[0] / opStackFlt[1];
       DISPATCH();
 
-    case OP_DIVI: {
+    case OP_DIVI3: {
+      // clang-format off
+      op_2_int24_to_1_int24( / );
+      // clang-format on
+      DISPATCH();
+    }
+
+    case OP_DIVI4: {
       // clang-format off
       op_2_int32_to_1_int32( / );
       // clang-format on
       DISPATCH();
     }
 
-    case OP_DIVI3: {
+    case OP_DIVU3: {
       // clang-format off
       op_2_uint24_to_1_uint24( / );
       // clang-format on
       DISPATCH();
     }
 
-    case OP_DIVU: {
+    case OP_DIVU4: {
       // clang-format off
       op_2_uint32_to_1_uint32( / );
       // clang-format on
       DISPATCH();
     }
-
-    case OP_DIVU3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
 
     case OP_ENTER: {
       const uint16_t localsAndArgsSize = R2.int16;

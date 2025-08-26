@@ -40,10 +40,10 @@ typedef enum {
   OP_CU2I3,      /*  32  */
   OP_CU3U4,      /*  33  */
   OP_DIVF4,      /*  34  Divide floats */
-  OP_DIVI,       /*  35  Divide signed integers. */
-  OP_DIVI3,      /*  36  */
-  OP_DIVU,       /*  37  Divide unsigned integers. */
-  OP_DIVU3,      /*  38  */
+  OP_DIVI3,      /*  35  */
+  OP_DIVI4,      /*  36  Divide signed integers. */
+  OP_DIVU3,      /*  37  */
+  OP_DIVU4,      /*  38  Divide unsigned integers. */
   OP_ENTER,      /*  39  Begin subroutine. */
   OP_EQ3,        /*  40  */
   OP_EQ4,        /*  41  Compare integers, jump if equal. */

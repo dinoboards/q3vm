@@ -70,8 +70,8 @@
 | OP_NEGI4          | NEGI4                          | `*OS = -R0`                                                   |
 | OP_ADD4           | ADDP, ADDI4, ADDP4, ADDU4      | `OS--; *OS = R1 + R0`                                         |
 | OP_SUB4           | SUBI4, SUBP4, SUBU4            | `OS--; *OS = R1 - R0`                                         |
-| OP_DIVI           | DIVI4                          | `OS--; *OS = R1 / R0`                                         |
-| OP_DIVU           | DIVU4                          | `OS--; *OS = (uint32_t)R1) / (uint32_t)R0`                    |
+| OP_DIVI4           | DIVI4                          | `OS--; *OS = R1 / R0`                                         |
+| OP_DIVU4           | DIVU4                          | `OS--; *OS = (uint32_t)R1) / (uint32_t)R0`                    |
 | OP_MODI4          | MODI4                          | `OS--; *OS = R1 % R0`                                         |
 | OP_MODU4          | MODU4                          | `OS--; *OS = (uint32_t)R1 % (uint32_t)R0;`                    |
 | OP_MULI4          | MULI4                          | `OS--; *OS = R1 * R0`                                         |
