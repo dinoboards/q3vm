@@ -54,6 +54,9 @@ int sub_test_OP_GEU4();
 int sub_test_OP_GTF4();
 int sub_test_OP_GTU3();
 int sub_test_OP_JUMP();
+int sub_test_OP_LEF4();
+int sub_test_OP_LEI3();
+int sub_test_OP_LEI4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -175,6 +178,15 @@ int main(void) {
 
   if (sub_test_OP_JUMP())
     return 38;
+
+  if (sub_test_OP_LEF4())
+    return 39;
+
+  if (sub_test_OP_LEI3())
+    return 40;
+
+  if (sub_test_OP_LEI4())
+    return 40;
 
   return 0;
 }
@@ -828,6 +840,54 @@ int sub_test_OP_JUMP() {
 skip:
 
   if (a == 2)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_LEF4() {
+  float   a;
+  float   b;
+  int24_t c;
+
+  a = 2.0f;
+  b = 20.0f;
+
+  c = a > b;
+
+  if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_LEI3() {
+  int24_t a;
+  int24_t b;
+  int24_t c;
+
+  a = 2;
+  b = 2;
+
+  c = a > b;
+
+  if (c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_LEI4() {
+  int32_t a;
+  int32_t b;
+  int24_t c;
+
+  a = 2;
+  b = 2;
+
+  c = a > b;
+
+  if (c)
     return 1;
 
   return 0;
