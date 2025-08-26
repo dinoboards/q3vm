@@ -111,10 +111,24 @@ ASMFn(ADDRL) {
   v = ParseExpression();
   v = 6 + currentArgs + v;
 
-  WriteInt16Code(assembler.opcode, v);
+  WriteInt8Code(assembler.opcode, v);
 
   EmitByte(&segment[CODESEG], assembler.opcode);
-  EmitInt16(&segment[CODESEG], v);
+  EmitByte(&segment[CODESEG], v);
+}
+
+// address of a parameter is converted to OP_LOCAL
+ASMFn(ADDRF) {
+  int v;
+
+  Parse();
+  v = ParseExpression();
+  v = 12 + currentArgs + currentLocals + v;
+
+  WriteInt8Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitByte(&segment[CODESEG], v);
 }
 
 DIRFn(BYTE) {
@@ -153,20 +167,6 @@ DIRFn(LABEL) {
   WritePC();
   WriteSymbol(token);
   WriteComment();
-}
-
-// address of a parameter is converted to OP_LOCAL
-ASMFn(ADDRF) {
-  int v;
-
-  Parse();
-  v = ParseExpression();
-  v = 12 + currentArgs + currentLocals + v;
-
-  WriteInt16Code(assembler.opcode, v);
-
-  EmitByte(&segment[CODESEG], assembler.opcode);
-  EmitInt16(&segment[CODESEG], v);
 }
 
 ASMFn(CODE_OP) {

@@ -71,8 +71,8 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "LTF4",       /*  67  Compare floats, jump if less-than */
     "LTI3",       /*  68  */
     "LTI4",       /*  69  Compare integers, jump if less-than. */
-    "LTU4",       /*  70  Compare unsigned integers, jump if less-than */
-    "LTU3",       /*  71  */
+    "LTU3",       /*  70  */
+    "LTU4",       /*  71  Compare unsigned integers, jump if less-than */
     "MODI3",      /*  72  */
     "MODI4",      /*  73  Modulus (signed). */
     "MODU3",      /*  74  */
