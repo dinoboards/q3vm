@@ -50,7 +50,7 @@
 | OP_GTU4           | GTU4                           | `OS -= 2; pc = (uint32_t)R1 > (uint32_t)R0 ? v : sizeof(v)  ` |
 | OP_GEU4           | GEU4                           | `OS -= 2; PC = (uint32_t)R1 >= (uint32_t)R0 ? v : sizeof(v) ` |
 | OP_EQF4           | EQF4                           | `OS -= 2; PC = (float)R1 == (float)R0 ? v : sizeof(v)`        |
-| OP_NEF            | NEF4                           | `OS -= 2; PC = (float)R1 != (float)R0 ? v : sizeof(v)`        |
+| OP_NEF4            | NEF4                           | `OS -= 2; PC = (float)R1 != (float)R0 ? v : sizeof(v)`        |
 | OP_LTF4            | LTF4                           | `OS -= 2; PC = (float)R1 < (float)R0 ? v : sizeof(v)`         |
 | OP_LEF4            | LEF4                           | `OS -= 2; PC = (float)R1 <= (float)R0 ? v : sizeof(v)`        |
 | OP_GTF4           | GTF4                           | `OS -= 2; PC = (float)R1 > (float)R0 ? v : sizeof(v)`         |

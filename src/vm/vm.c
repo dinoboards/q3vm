@@ -1457,29 +1457,18 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_NE3: {
-      pop_2_uint24();
-      log3_3(FMT_INT24 " != " FMT_INT24 "\n", UINT(R1.uint24), UINT(R0.uint24));
-      PC = (UINT(R1.uint24) != UINT(R0.uint24)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_uint24_branch(!=);
       DISPATCH();
     }
 
     case OP_NE4: {
-      pop_2_int32();
-      log3_3(FMT_INT32 " != " FMT_INT32 "\n", R1.int32, R0.int32);
-      PC = (R1.int32 != R0.int32) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_uint32_branch(!=);
       DISPATCH();
     }
 
-    case OP_NEF: {
-      opStack8 -= 8;
-
-      if (opStackFlt[1] != opStackFlt[2]) {
-        PC = codeBase + INT(R2.int24);
-        DISPATCH();
-      } else {
-        PC += INT_INCREMENT;
-        DISPATCH();
-      }
+    case OP_NEF4: {
+      op_2_float_branch(!=);
+      DISPATCH();
     }
 
     case OP_NEGF4: {

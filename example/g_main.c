@@ -69,6 +69,9 @@ int sub_test_OP_MULI3();
 int sub_test_OP_MULI4();
 int sub_test_OP_MULU3();
 int sub_test_OP_MULU4();
+int sub_test_OP_NE3();
+int sub_test_OP_NE4();
+int sub_test_OP_NEF4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -235,6 +238,15 @@ int main(void) {
 
   if (sub_test_OP_MULU4())
     return 53;
+
+  if (sub_test_OP_NE3())
+    return 54;
+
+  if (sub_test_OP_NE4())
+    return 55;
+
+  if (sub_test_OP_NEF4())
+    return 55;
 
   return 0;
 }
@@ -1144,6 +1156,78 @@ int sub_test_OP_MULU4() {
   c = a * b;
 
   if (c != 60)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_NE3() {
+  uint24_t a;
+  uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a == b;
+
+  if (c)
+    return 1;
+
+  a = 20;
+  b = 20;
+
+  c = a == b;
+
+  if (!c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_NE4() {
+  uint24_t a;
+  uint24_t b;
+  int24_t  c;
+
+  a = 20;
+  b = 2;
+
+  c = a == b;
+
+  if (c)
+    return 1;
+
+  a = 20;
+  b = 20;
+
+  c = a == b;
+
+  if (!c)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_OP_NEF4() {
+  float   a;
+  float   b;
+  int24_t c;
+
+  a = 20.0f;
+  b = 2.0f;
+
+  c = a == b;
+
+  if (c)
+    return 1;
+
+  a = 20.0f;
+  b = 20.0f;
+
+  c = a == b;
+
+  if (!c)
     return 1;
 
   return 0;

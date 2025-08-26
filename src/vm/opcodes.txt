@@ -81,7 +81,7 @@ OP_MULU3
 OP_MULU4                 Multiply unsigned integers.
 OP_NE3
 OP_NE4                   Compare integers, jump if not equal.
-OP_NEF                  Compare floats, jump if not-equal
+OP_NEF4                  Compare floats, jump if not-equal
 OP_NEGF4                 Negate float
 OP_NEGI3
 OP_NEGI4                 Negate integer.

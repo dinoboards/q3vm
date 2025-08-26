@@ -88,7 +88,7 @@ typedef enum {
   OP_MULU4,      /*  80  Multiply unsigned integers. */
   OP_NE3,        /*  81  */
   OP_NE4,        /*  82  Compare integers, jump if not equal. */
-  OP_NEF,        /*  83  Compare floats, jump if not-equal */
+  OP_NEF4,       /*  83  Compare floats, jump if not-equal */
   OP_NEGF4,      /*  84  Negate float */
   OP_NEGI3,      /*  85  */
   OP_NEGI4,      /*  86  Negate integer. */

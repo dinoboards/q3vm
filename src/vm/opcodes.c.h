@@ -71,7 +71,7 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "LTF4",       /*  67  Compare floats, jump if less-than */
     "LTI3",       /*  68  */
     "LTI4",       /*  69  Compare integers, jump if less-than. */
-    "LTU",        /*  70  Compare unsigned integers, jump if less-than */
+    "LTU4",       /*  70  Compare unsigned integers, jump if less-than */
     "LTU3",       /*  71  */
     "MODI3",      /*  72  */
     "MODI4",      /*  73  Modulus (signed). */
@@ -84,7 +84,7 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "MULU4",      /*  80  Multiply unsigned integers. */
     "NE3",        /*  81  */
     "NE4",        /*  82  Compare integers, jump if not equal. */
-    "NEF",        /*  83  Compare floats, jump if not-equal */
+    "NEF4",       /*  83  Compare floats, jump if not-equal */
     "NEGF4",      /*  84  Negate float */
     "NEGI3",      /*  85  */
     "NEGI4",      /*  86  Negate integer. */
