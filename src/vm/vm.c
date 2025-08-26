@@ -992,6 +992,13 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
+    case OP_CF4I3: {
+      log3_2(FMT_FLT " POP float\n", R0_float(0));
+      R_int24 = INT24(R0_float(0));
+      log3_2(FMT_INT24 " PUSH int24\n", INT(R_int24) & 0xFFFFFF);
+      DISPATCH();
+    }
+
     case OP_CF4I4: {
       log3_2(FMT_FLT " POP float\n", R0_float(0));
       R_int32 = R0_float(0);
@@ -1092,7 +1099,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_CVFI3:
     case OP_CVIU3:
     case OP_CVUI3:
       VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");

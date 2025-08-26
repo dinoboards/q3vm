@@ -19,22 +19,22 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "BXOR3",      /*  15  */
     "BXOR4",      /*  16  Bitwise eXclusive-OR */
     "CALL",       /*  17  Call subroutine. */
-    "CF4I4",      /*  18  Convert to float from integer */
-    "CI1I3",      /*  19  */
-    "CI2I3",      /*  20  */
-    "CI3F4",      /*  21  */
-    "CI3s4",      /*  22  */
-    "CI4F4",      /*  23  Convert to integer from float */
-    "CONSTGP3",   /*  24  push address pointer to stack. */
-    "CONSTP3",    /*  25  */
-    "CONSTs1",    /*  26  */
-    "CONSTs2",    /*  27  */
-    "CONSTs3",    /*  28  */
-    "CONSTs4",    /*  29  */
-    "CU1I3",      /*  30  */
-    "CU2I3",      /*  31  */
-    "CU3U4",      /*  32  */
-    "CVFI3",      /*  33  */
+    "CF4I3",      /*  18  */
+    "CF4I4",      /*  19  Convert to float from integer */
+    "CI1I3",      /*  20  */
+    "CI2I3",      /*  21  */
+    "CI3F4",      /*  22  */
+    "CI3s4",      /*  23  */
+    "CI4F4",      /*  24  Convert to integer from float */
+    "CONSTGP3",   /*  25  push address pointer to stack. */
+    "CONSTP3",    /*  26  */
+    "CONSTs1",    /*  27  */
+    "CONSTs2",    /*  28  */
+    "CONSTs3",    /*  29  */
+    "CONSTs4",    /*  30  */
+    "CU1I3",      /*  31  */
+    "CU2I3",      /*  32  */
+    "CU3U4",      /*  33  */
     "CVIU3",      /*  34  */
     "CVUI3",      /*  35  */
     "DIVF4",      /*  36  Divide floats */

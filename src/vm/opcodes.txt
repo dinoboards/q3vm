@@ -16,6 +16,7 @@ OP_BOR4                  Bitwise OR
 OP_BXOR3
 OP_BXOR4                 Bitwise eXclusive-OR
 OP_CALL                 Call subroutine.
+OP_CF4I3
 OP_CF4I4                 Convert to float from integer
 OP_CI1I3
 OP_CI2I3
@@ -31,7 +32,6 @@ OP_CONSTs4
 OP_CU1I3
 OP_CU2I3
 OP_CU3U4
-OP_CVFI3
 OP_CVIU3
 OP_CVUI3
 OP_DIVF4                 Divide floats

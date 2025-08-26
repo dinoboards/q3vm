@@ -23,22 +23,22 @@ typedef enum {
   OP_BXOR3,      /*  15  */
   OP_BXOR4,      /*  16  Bitwise eXclusive-OR */
   OP_CALL,       /*  17  Call subroutine. */
-  OP_CF4I4,      /*  18  Convert to float from integer */
-  OP_CI1I3,      /*  19  */
-  OP_CI2I3,      /*  20  */
-  OP_CI3F4,      /*  21  */
-  OP_CI3s4,      /*  22  */
-  OP_CI4F4,      /*  23  Convert to integer from float */
-  OP_CONSTGP3,   /*  24  push address pointer to stack. */
-  OP_CONSTP3,    /*  25  */
-  OP_CONSTs1,    /*  26  */
-  OP_CONSTs2,    /*  27  */
-  OP_CONSTs3,    /*  28  */
-  OP_CONSTs4,    /*  29  */
-  OP_CU1I3,      /*  30  */
-  OP_CU2I3,      /*  31  */
-  OP_CU3U4,      /*  32  */
-  OP_CVFI3,      /*  33  */
+  OP_CF4I3,      /*  18  */
+  OP_CF4I4,      /*  19  Convert to float from integer */
+  OP_CI1I3,      /*  20  */
+  OP_CI2I3,      /*  21  */
+  OP_CI3F4,      /*  22  */
+  OP_CI3s4,      /*  23  */
+  OP_CI4F4,      /*  24  Convert to integer from float */
+  OP_CONSTGP3,   /*  25  push address pointer to stack. */
+  OP_CONSTP3,    /*  26  */
+  OP_CONSTs1,    /*  27  */
+  OP_CONSTs2,    /*  28  */
+  OP_CONSTs3,    /*  29  */
+  OP_CONSTs4,    /*  30  */
+  OP_CU1I3,      /*  31  */
+  OP_CU2I3,      /*  32  */
+  OP_CU3U4,      /*  33  */
   OP_CVIU3,      /*  34  */
   OP_CVUI3,      /*  35  */
   OP_DIVF4,      /*  36  Divide floats */
