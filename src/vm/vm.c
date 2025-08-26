@@ -1112,9 +1112,9 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_DIVI3: {
-      pop_2_int24();
-      log3_3(FMT_INT32 " / " FMT_INT32 " =", INT(R1.int24), INT(R0.int24));
-      push_1_int24(INT24(INT(R1.int24) / INT(R0.int24)));
+      // clang-format off
+      op_2_uint24_to_1_uint24( / );
+      // clang-format on
       DISPATCH();
     }
 
