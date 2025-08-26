@@ -750,6 +750,11 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   R_float = R1_float(-4) operation R0_float(-4);                                                                                   \
   log3_2(FMT_FLT " PUSHED float\n", R_float);
 
+#define op_2_int24_branch(operation)                                                                                               \
+  log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", INT(R1_int24(0)), INT(R0_int24(0)));                                         \
+  PC = (INT(R1_int24(0)) operation INT(R0_int24(0))) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                          \
+  opStack8 -= 8;
+
 #define op_2_uint24_branch(operation)                                                                                              \
   log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));                                     \
   PC = (UINT(R1_uint24(0)) operation UINT(R0_uint24(0))) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                      \
@@ -1194,9 +1199,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_GEI3: {
-      pop_2_int24();
-      log3_3(FMT_INT24 " >= " FMT_INT24 "\n", INT(R1.int24), INT(R0.int24));
-      PC = (INT(R1.int24) >= INT(R0.int24)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_int24_branch(>=);
       DISPATCH();
     }
 
@@ -1207,8 +1210,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_GEU3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
+    case OP_GEU3: {
+      op_2_uint24_branch(>=);
+      DISPATCH();
+    }
 
     case OP_GEU4: {
       opStack8 -= 8;
