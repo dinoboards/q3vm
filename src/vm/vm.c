@@ -1238,8 +1238,10 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_GTU3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
+    case OP_GTU3: {
+      op_2_uint24_branch(>);
+      DISPATCH();
+    }
 
     case OP_GTU4: {
       opStack8 -= 8;
