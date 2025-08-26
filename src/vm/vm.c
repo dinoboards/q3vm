@@ -516,7 +516,23 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
     }                                                                                                                              \
   }
 
-#define VM_GetWriteAddr(vaddr, size) (!VM_VerifyWriteOK(_vm.vm, vaddr, size) ? bad_memory : &_vm.dataBase[(vm_size_t)(vaddr)])
+#define VM_WriteAddrUint24(vaddr, value)                                                                                           \
+  {                                                                                                                                \
+    if (!VM_VerifyWriteOK(_vm.vm, vaddr, 3)) {                                                                                     \
+      ;                                                                                                                            \
+    } else {                                                                                                                       \
+      *((uint24_t *)&_vm.dataBase[(vm_size_t)(vaddr)]) = value;                                                                    \
+    }                                                                                                                              \
+  }
+
+#define VM_WriteAddrUint32(vaddr, value)                                                                                           \
+  {                                                                                                                                \
+    if (!VM_VerifyWriteOK(_vm.vm, vaddr, 4)) {                                                                                     \
+      ;                                                                                                                            \
+    } else {                                                                                                                       \
+      *((uint32_t *)&_vm.dataBase[(vm_size_t)(vaddr)]) = value;                                                                    \
+    }                                                                                                                              \
+  }
 
 #define opStack32  ((int32_t *)opStack8)
 #define opStackFlt ((float *)opStack8)
@@ -1570,24 +1586,24 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_STORE2: {
       VM_WriteAddrUint16((vm_operand_t)UINT(R1_uint24(0)), R0_uint16(0));
-      // *((uint16_t *)VM_GetWriteAddr(UINT(R1_uint24(0)), 2)) = R0_uint16(0);
       log3_3("*(" FMT_INT24 ") = " FMT_INT16 "  MOVE\n", UINT(R1_uint24(0)), R0_uint16(0));
       opStack8 -= 8;
       DISPATCH();
     }
 
     case OP_STORE3: {
-      pop_2_uint24();
-      *((uint24_t *)VM_GetWriteAddr(UINT(R1.uint24), 3)) = R0.uint24;
-      log3_3("*(" FMT_INT24 ") = " FMT_INT32 "  MOVE (3 bytes)\n", UINT(R1.uint24), UINT(R0.uint24));
+      R0.uint24 = R0_uint24(0);
+      VM_WriteAddrUint24((vm_operand_t)UINT(R1_uint24(0)), R0.uint24);
+      log3_3("*(" FMT_INT24 ") = " FMT_INT32 "  MOVE (3 bytes)\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));
+      opStack8 -= 8;
       DISPATCH();
     }
 
     case OP_STORE4: {
-      pop_1_uint32(R0);
-      pop_1_uint24(R1);
-      *((uint32_t *)VM_GetWriteAddr(UINT(R1.uint24), 4)) = R0.uint32;
-      log3_3("*(" FMT_INT24 ") = " FMT_INT32 "  MOVE\n", UINT(R1.uint24), R0.uint32);
+      R0.uint32 = R0_uint32(0);
+      VM_WriteAddrUint32((vm_operand_t)UINT(R1_uint24(0)), R0.uint32);
+      log3_3("*(" FMT_INT24 ") = " FMT_INT32 "  MOVE\n", UINT(R1_uint24(0)), R0.uint32);
+      opStack8 -= 8;
       DISPATCH();
     }
 
