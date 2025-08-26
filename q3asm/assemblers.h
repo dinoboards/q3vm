@@ -115,6 +115,8 @@ assemblers_t assemblers[] = {
     {"LEF4",    OP_LEF4,       assfn(CODE_24BIT)},
     {"LEI3",    OP_LEI3,       assfn(CODE_24BIT)},
     {"LEI4",    OP_LEI4,       assfn(CODE_24BIT)},
+    {"LEU3",    OP_LEU3,       assfn(CODE_24BIT)},
+    {"LEU4",    OP_LEU4,       assfn(CODE_24BIT)},
     {"LINE",    DIRECTIVE,     assfn(COMMENT)   },
     {"LIT",     DIRECTIVE,     assfn(LIT)       },
     {"LSHI3",   OP_LSH3,       assfn(CODE_OP)   },

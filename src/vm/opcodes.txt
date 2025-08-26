@@ -56,8 +56,8 @@ OP_LEAVE                End subroutine.
 OP_LEF4                  Compare floats, jump if less-than-or-equal
 OP_LEI3
 OP_LEI4                  Compare integers, jump if less-than-or-equal.
-OP_LEU                  Compare unsigned integers, jump if less-than-or-equal
 OP_LEU3
+OP_LEU4                  Compare unsigned integers, jump if less-than-or-equal
 OP_LOAD1                Load 1-byte from memory
 OP_LOAD2                Load 2-bytes from memory
 OP_LOAD3                Load 3-bytes from memory

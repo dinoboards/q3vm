@@ -1300,19 +1300,15 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_LEU: {
-      opStack8 -= 8;
-      if (((unsigned)R1.int32) <= ((unsigned)R0.int32)) {
-        PC = codeBase + INT(R2.int24);
-        DISPATCH();
-      } else {
-        PC += INT_INCREMENT;
-        DISPATCH();
-      }
+    case OP_LEU3: {
+      op_2_uint24_branch(<=);
+      DISPATCH();
     }
 
-    case OP_LEU3:
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
+    case OP_LEU4: {
+      op_2_uint32_branch(<=);
+      DISPATCH();
+    }
 
     case OP_LOAD1: {
       pop_1_uint24(R0);

@@ -63,8 +63,8 @@ typedef enum {
   OP_LEF4,       /*  55  Compare floats, jump if less-than-or-equal */
   OP_LEI3,       /*  56  */
   OP_LEI4,       /*  57  Compare integers, jump if less-than-or-equal. */
-  OP_LEU,        /*  58  Compare unsigned integers, jump if less-than-or-equal */
-  OP_LEU3,       /*  59  */
+  OP_LEU3,       /*  58  */
+  OP_LEU4,       /*  59  Compare unsigned integers, jump if less-than-or-equal */
   OP_LOAD1,      /*  60  Load 1-byte from memory */
   OP_LOAD2,      /*  61  Load 2-bytes from memory */
   OP_LOAD3,      /*  62  Load 3-bytes from memory */

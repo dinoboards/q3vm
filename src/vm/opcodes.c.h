@@ -59,8 +59,8 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "LEF4",       /*  55  Compare floats, jump if less-than-or-equal */
     "LEI3",       /*  56  */
     "LEI4",       /*  57  Compare integers, jump if less-than-or-equal. */
-    "LEU",        /*  58  Compare unsigned integers, jump if less-than-or-equal */
-    "LEU3",       /*  59  */
+    "LEU3",       /*  58  */
+    "LEU4",       /*  59  Compare unsigned integers, jump if less-than-or-equal */
     "LOAD1",      /*  60  Load 1-byte from memory */
     "LOAD2",      /*  61  Load 2-bytes from memory */
     "LOAD3",      /*  62  Load 3-bytes from memory */
