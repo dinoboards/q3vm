@@ -152,6 +152,7 @@ assemblers_t assemblers[] = {
     {"RET",     OP_LEAVE,      assfn(RET)       },
     {"RSHI3",   OP_RSHI3,      assfn(CODE_OP)   },
     {"RSHI4",   OP_RSHI4,      assfn(CODE_OP)   },
+    {"RSHU3",   OP_RSHU3,      assfn(CODE_OP)   },
     {"RSHU4",   OP_RSHU4,      assfn(CODE_OP)   },
     {"SKIP",    DIRECTIVE,     assfn(SKIP)      },
     {"SUBF4",   OP_SUBF4,      assfn(CODE_OP)   },

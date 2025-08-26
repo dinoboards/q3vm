@@ -75,6 +75,10 @@ int sub_test_OP_NEF4();
 int sub_test_OP_NEGF4();
 int sub_test_OP_NEGI3();
 int sub_test_OP_NEGI4();
+int sub_test_OP_RSHI3();
+int sub_test_OP_RSHI4();
+int sub_test_OP_RSHU3();
+int sub_test_OP_RSHU4();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -259,6 +263,18 @@ int main(void) {
 
   if (sub_test_OP_NEGI4())
     return 59;
+
+  if (sub_test_OP_RSHI3())
+    return 60;
+
+  if (sub_test_OP_RSHI4())
+    return 61;
+
+  if (sub_test_OP_RSHU3())
+    return 62;
+
+  if (sub_test_OP_RSHU4())
+    return 63;
 
   return 0;
 }
@@ -1273,6 +1289,58 @@ int sub_test_OP_NEGI4() {
 
   b = -a;
   if (b == -10)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_RSHI3() {
+  int24_t a = -16;
+  int24_t b = 2;
+  int24_t c;
+
+  c = a >> b;
+
+  if (c == -4)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_RSHI4() {
+  int32_t a = -16;
+  int32_t b = 2;
+  int32_t c;
+
+  c = a >> b;
+
+  if (c == -4)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_RSHU3() {
+  uint24_t a = 0xFF0000;
+  uint24_t b = 8;
+  uint24_t c;
+
+  c = a >> b;
+
+  if (c == 0x00FF00)
+    return 0;
+
+  return 1;
+}
+
+int sub_test_OP_RSHU4() {
+  uint32_t a = 0xFF000000;
+  uint32_t b = 8;
+  uint32_t c;
+
+  c = a >> b;
+
+  if (c == 0x00FF0000)
     return 0;
 
   return 1;
