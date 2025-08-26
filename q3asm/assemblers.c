@@ -305,8 +305,6 @@ ASMMultipleFn(CODE_CIxF4) {
 }
 
 ASMMultipleFn(CODE_CIxI1) {
-  opcode_t opcode;
-
   Parse();
   switch (token[0]) {
   case '3':
@@ -320,20 +318,12 @@ ASMMultipleFn(CODE_CIxI1) {
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }
-  WriteCode(opcode);
-
-  EmitByte(&segment[CODESEG], opcode);
 }
 
 ASMMultipleFn(CODE_CIxI2) {
-  opcode_t opcode;
-
   Parse();
   switch (token[0]) {
   case '3':
-    WriteComment(); /* NOP */
-    return;
-
   case '4':
     WriteComment(); /* NOP */
     return;
@@ -344,14 +334,9 @@ ASMMultipleFn(CODE_CIxI2) {
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }
-  WriteCode(opcode);
-
-  EmitByte(&segment[CODESEG], opcode);
 }
 
 ASMMultipleFn(CODE_CIxU3) {
-  opcode_t opcode;
-
   Parse();
   switch (token[0]) {
   case '3':
@@ -365,14 +350,9 @@ ASMMultipleFn(CODE_CIxU3) {
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }
-  WriteCode(opcode);
-
-  EmitByte(&segment[CODESEG], opcode);
 }
 
 ASMMultipleFn(CODE_CUxU2) {
-  opcode_t opcode;
-
   Parse();
   switch (token[0]) {
   case '3':
@@ -385,14 +365,9 @@ ASMMultipleFn(CODE_CUxU2) {
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }
-  WriteCode(opcode);
-
-  EmitByte(&segment[CODESEG], opcode);
 }
 
 ASMMultipleFn(CODE_CUxU3) {
-  opcode_t opcode;
-
   Parse();
   switch (token[0]) {
   case '4':
@@ -405,9 +380,6 @@ ASMMultipleFn(CODE_CUxU3) {
     // CodeError("Bad sign extension: %s\n", token);
     return;
   }
-  WriteCode(opcode);
-
-  EmitByte(&segment[CODESEG], opcode);
 }
 
 ASMMultipleFn(CODE_CUxU4) {

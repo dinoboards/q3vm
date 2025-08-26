@@ -3,6 +3,9 @@
 # Run 'make'
 #
 # Jan Zwiener 2018-2022
+# Dean Netherton 2025
+
+MAKEFLAGS += --no-print-directory
 
 # Custom config (optional)
 -include config.mk
@@ -82,38 +85,40 @@ LOCAL_LIBRARIES = -lm
 
 # flag -c: Compile without linking
 $(OBJDIR)/%.o: %.c
-	@echo 'CC: $<'
 	@$(CC) $(CFLAGS) $(C_INCLUDES) -c -o"$@" "$<"
 
-default: $(TARGET) q3asm lcc example/bytecode.qvm
+.PHONY: default
+default: $(TARGET) q3asm lcc example/bytecode.qvm test/test.qvm test/q3vm_test/q3vm_test
+	@echo > /dev/null
 
-all: $(TARGET) q3asm lcc example/bytecode.qvm test/test.qvm
+.PHONY: all
+all: $(TARGET) q3asm lcc example/bytecode.qvm test/test.qvm test/q3vm_test/q3vm_test
+	@echo > /dev/null
 
 $(TARGET): $(OBJDIR) $(OBJS)
+	echo "q3vm: Compiled"
 # @echo 'CFLAGS: '$(CFLAGS)
-	$(LINK) $(LINK_FLAGS) -o"$@" $(OBJS) $(LOCAL_LIBRARIES)
-	@echo 'Executable created: '$@
+	@$(LINK) $(LINK_FLAGS) -o"$@" $(OBJS) $(LOCAL_LIBRARIES)
 
 clean:
-	@echo 'Cleanup...'
-	$(CLEANUP) $(OBJDIR)/*.d
-	$(CLEANUP) $(OBJDIR)/*.o
-	$(CLEANUP) $(LCCTOOLPATH)/lcc
-	$(CLEANUP) $(LCCTOOLPATH)/q3cpp
-	$(CLEANUP) $(LCCTOOLPATH)/q3rcc
-	$(CLEANUP) $(LCCTOOLPATH)/q3asm
-	$(CLEANUP) $(TARGET)
-	$(CLEANUP) $(TARGET_BASE).dmp
-	$(CLEANUP) ./*.gcov
-	$(MAKE) -C example clean
-	$(MAKE) -C lcc clean
-	$(MAKE) -C q3asm clean
-	$(MAKE) -C test clean
-	$(MAKE) -C test/q3vm_test clean
+	@$(CLEANUP) $(OBJDIR)/*.d
+	@$(CLEANUP) $(OBJDIR)/*.o
+	@$(CLEANUP) $(LCCTOOLPATH)/lcc
+	@$(CLEANUP) $(LCCTOOLPATH)/q3cpp
+	@$(CLEANUP) $(LCCTOOLPATH)/q3rcc
+	@$(CLEANUP) $(LCCTOOLPATH)/q3asm
+	@$(CLEANUP) $(TARGET)
+	@$(CLEANUP) $(TARGET_BASE).dmp
+	@$(CLEANUP) ./*.gcov
+	@$(MAKE) -C example clean
+	@$(MAKE) -C lcc clean
+	@$(MAKE) -C q3asm clean
+	@$(MAKE) -C test clean
+	@$(MAKE) -C test/q3vm_test clean
 
-test: $(TARGET) test/q3vm_test/q3vm_test test/test.qvm example/bytecode.qvm
+test: $(TARGET) q3asm lcc test/q3vm_test/q3vm_test test/test.qvm
 	@echo "Running "$@
-	./test/q3vm_test/q3vm_test test/test.qvm
+	@./test/q3vm_test/q3vm_test test/test.qvm
 
 dump: $(TARGET)
 	objdump -S --disassemble $(TARGET) > $(TARGET_BASE).dmp
@@ -121,48 +126,48 @@ dump: $(TARGET)
 # static code analysis with cppcheck
 cppcheck:
 	@echo "Running "$@
-	cppcheck --error-exitcode=-1 src/
-	cppcheck --error-exitcode=-1 q3asm/
+	@cppcheck --check-level=exhaustive --force --error-exitcode=-1 src/
+	@cppcheck --error-exitcode=-1 q3asm/
 
 clangcheck: clean
 	@echo "Running "$@
-	scan-build make q3vm DISABLE_GCC_EXTRA_FLAGS=1
-	scan-build make q3asm
+	@scan-build make q3vm DISABLE_GCC_EXTRA_FLAGS=1
+	@scan-build make q3asm
 
-valgrind: $(TARGET) test/test.qvm test/q3vm_test/q3vm_test example/bytecode.qvm
+valgrind: $(TARGET) test/test.qvm test/q3vm_test/q3vm_test example
 	@echo "Running "$@
-	valgrind --error-exitcode=-1 --leak-check=yes ./q3vm example/bytecode.qvm
-	valgrind --error-exitcode=-1 --leak-check=yes ./test/q3vm_test/q3vm_test test/test.qvm
+	@valgrind --error-exitcode=-1 --leak-check=yes ./q3vm example/bytecode.qvm
+	@valgrind --error-exitcode=-1 --leak-check=yes ./test/q3vm_test/q3vm_test test/test.qvm
 
 analysis: clangcheck cppcheck
 
-# Example
+.PHONY: example/bytecode.qvm # force rebuild
 example/bytecode.qvm: q3asm lcc
-	@echo "Building "$@
 	@$(MAKE) -C example
 
 # Test and code coverage firmware
+.PHONY: test/test.qvm
 test/test.qvm: q3asm lcc
-	@echo "Building "$@
+# 	@echo "Building "$@
 	@$(MAKE) -C test
 
+.PHONY: test/q3vm_test/q3vm_test
 test/q3vm_test/q3vm_test:
-	@echo "Building "$@
 	@$(MAKE) -C test/q3vm_test
 
 $(LCCTOOLPATH)/lcc:
-	@echo "Building "$@
+# 	@echo "Building "$@
 	@$(MAKE) -C lcc all
-	cp lcc/build/lcc$(TARGET_EXTENSION) $(LCCTOOLPATH)
-	cp lcc/build/cpp$(TARGET_EXTENSION) $(LCCTOOLPATH)/q3cpp$(TARGET_EXTENSION)
-	cp lcc/build/rcc$(TARGET_EXTENSION) $(LCCTOOLPATH)/q3rcc$(TARGET_EXTENSION)
+	@cp lcc/build/lcc$(TARGET_EXTENSION) $(LCCTOOLPATH)
+	@cp lcc/build/cpp$(TARGET_EXTENSION) $(LCCTOOLPATH)/q3cpp$(TARGET_EXTENSION)
+	@cp lcc/build/rcc$(TARGET_EXTENSION) $(LCCTOOLPATH)/q3rcc$(TARGET_EXTENSION)
 
 lcc: $(LCCTOOLPATH)/lcc
 
 q3asm/q3asm$(TARGET_EXTENSION):
-	@echo "Building "$@
+# 	@echo "Building "$@
 	@$(MAKE) -C q3asm
-	cp q3asm/q3asm$(TARGET_EXTENSION) $(LCCTOOLPATH)
+	@cp q3asm/q3asm$(TARGET_EXTENSION) $(LCCTOOLPATH)
 
 q3asm: q3asm/q3asm$(TARGET_EXTENSION)
 
@@ -172,6 +177,17 @@ doxygen:
 
 gcov: clean test
 	@gcov build/q3vm_test/*.gcda
+
+verification: all
+	@cd verification && ./test.sh
+
+# create c files for inclusion in ez80 firmware app for verify q3vm
+exportez80: all
+	@cd verification && ./test.sh ez80
+
+.PHONY:example
+example: $(TARGET) q3asm lcc example/bytecode.qvm
+	@cd ./example && ../q3vm bytecode.qvm; echo "Exit Code: $$?"
 
 # Make sure that we recompile if a header file was changed
 -include $(C_DEPS)

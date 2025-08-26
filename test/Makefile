@@ -53,32 +53,31 @@ OBJ_NAMES        = $(notdir $(C_SRCS))
 OBJS             = $(addprefix $(OBJDIR)/,$(OBJ_NAMES:%.c=%.asm))
 
 $(OBJDIR)/%.asm: %.c
-	$(LCC) $(LCCFLAGS) -o $@ $<
+	@$(LCC) $(LCCFLAGS) -o $@ $<
 
 all: $(TARGET) $(TARGET_NATIVE)
+	@echo > /dev/null
 
 default: $(TARGET)
+	@echo > /dev/null
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	$(LINK) -m -f bytecode
-	@echo 'Executable created: '$@
+	@$(LINK) -m -f bytecode
 
 # Optional: build g_main.c as native application for benchmarks
 $(TARGET_NATIVE): $(OBJDIR)/g_main.o
-	$(LINK_NATIVE) -o"$(TARGET_NATIVE)" $< $(LOCAL_LIBRARIES)
-	@echo 'Executable created: '$@
+	@$(LINK_NATIVE) -o"$(TARGET_NATIVE)" $< $(LOCAL_LIBRARIES)
 
 $(OBJDIR)/g_main.o: g_main.c
-	$(CC) $(CFLAGS) -c -o"$(OBJDIR)/g_main.o" "g_main.c"
+	@$(CC) $(CFLAGS) -c -o"$(OBJDIR)/g_main.o" "g_main.c"
 
 clean:
-	@echo 'Cleanup...'
-	$(CLEANUP) $(OBJDIR)/*.asm
-	$(CLEANUP) $(OBJDIR)/*.o
-	$(CLEANUP) $(OBJDIR)/*.d
-	$(CLEANUP) $(TARGET_BASE).map
-	$(CLEANUP) $(TARGET)
-	$(CLEANUP) $(TARGET_NATIVE)
+	@$(CLEANUP) $(OBJDIR)/*.asm
+	@$(CLEANUP) $(OBJDIR)/*.o
+	@$(CLEANUP) $(OBJDIR)/*.d
+	@$(CLEANUP) $(TARGET_BASE).map
+	@$(CLEANUP) $(TARGET)
+	@$(CLEANUP) $(TARGET_NATIVE)
 
 post-build:
 

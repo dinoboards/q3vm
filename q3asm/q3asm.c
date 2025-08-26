@@ -825,7 +825,7 @@ ParseExpression
 static int ParseExpression(void) {
   /* Hand optimization, PhaethonH */
   int  i, j;
-  char sym[MAX_LINE_LENGTH];
+  char sym[MAX_LINE_LENGTH + 1];
   int  v;
 
   /* Skip over a leading minus. */

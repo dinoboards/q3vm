@@ -3,6 +3,10 @@
 # Run 'make'
 #
 # Jan Zwiener 2018-2022
+# Dean Netherton 2025
+
+FADE:="\033[2m"
+NORMAL:="\033[0m"
 
 #We try to detect the OS we are running on, and adjust commands as needed
 ifeq ($(OS),Windows_NT)
@@ -55,24 +59,21 @@ LOCAL_LIBRARIES = -lm
 
 # flag -c: Compile without linking
 $(OBJDIR)/%.o: %.c
-	@echo 'CC: $<'
 	@$(CC) $(CFLAGS) $(C_INCLUDES) -c -o"$@" "$<"
 
 all: $(TARGET)
+	@echo $(FADE)q3asm_test: Compiled$(NORMAL)
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	@echo 'CFLAGS: '$(CFLAGS)
-	$(LINK) $(LINK_FLAGS) -o"$@" $(OBJS) $(LOCAL_LIBRARIES)
-	@echo 'Executable created: '$@
+	@$(LINK) $(LINK_FLAGS) -o"$@" $(OBJS) $(LOCAL_LIBRARIES)
 
 clean:
-	@echo 'Cleanup...'
-	$(CLEANUP) $(OBJDIR)/*.gcno
-	$(CLEANUP) $(OBJDIR)/*.gcda
-	$(CLEANUP) $(OBJDIR)/*.gcov
-	$(CLEANUP) $(OBJDIR)/*.d
-	$(CLEANUP) $(OBJDIR)/*.o
-	$(CLEANUP) $(TARGET)
+	@$(CLEANUP) $(OBJDIR)/*.gcno
+	@$(CLEANUP) $(OBJDIR)/*.gcda
+	@$(CLEANUP) $(OBJDIR)/*.gcov
+	@$(CLEANUP) $(OBJDIR)/*.d
+	@$(CLEANUP) $(OBJDIR)/*.o
+	@$(CLEANUP) $(TARGET)
 
 # Make sure that we recompile if a header file was changed
 -include $(C_DEPS)

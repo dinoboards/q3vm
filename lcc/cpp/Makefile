@@ -1,8 +1,11 @@
 # Makefile to build LCC
-# 
+#
 # Run 'make'
 #
 # Jan Zwiener 2018-2022
+
+FADE:="\033[2m"
+NORMAL:="\033[0m"
 
 #We try to detect the OS we are running on, and adjust commands as needed
 ifeq ($(OS),Windows_NT)
@@ -53,21 +56,21 @@ LOCAL_LIBRARIES = -lm
 
 # flag -c: Compile without linking
 $(OBJDIR)/%.o: %.c
-	@echo 'CC: $<'
 	@$(CC) $(CFLAGS) $(C_INCLUDES) -c -o"$@" "$<"
 
 default: $(TARGET)
+	@echo $(FADE)cpp: Compiled$(NORMAL)
 
 all: $(TARGET)
+	@echo > /dev/null
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	$(LINK) $(LINK_FLAGS) -o"$@" $(OBJS) $(LOCAL_LIBRARIES)
-	@echo 'LCC executable created: '$@
+	@$(LINK) $(LINK_FLAGS) -o"$@" $(OBJS) $(LOCAL_LIBRARIES)
 
 clean:
-	$(CLEANUP) $(OBJDIR)/*.d
-	$(CLEANUP) $(OBJDIR)/*.o
-	$(CLEANUP) $(TARGET)
+	@$(CLEANUP) $(OBJDIR)/*.d
+	@$(CLEANUP) $(OBJDIR)/*.o
+	@$(CLEANUP) $(TARGET)
 
 # Make sure that we recompile if a header file was changed
 -include $(C_DEPS)

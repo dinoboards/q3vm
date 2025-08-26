@@ -3,6 +3,10 @@
 # Run 'make'
 #
 # Jan Zwiener 2018-2022
+# Dean Netherton 2025
+
+FADE:="\033[2m"
+NORMAL:="\033[0m"
 
 #We try to detect the OS we are running on, and adjust commands as needed
 ifeq ($(OS),Windows_NT)
@@ -40,19 +44,18 @@ OBJ_NAMES        = $(notdir $(C_SRCS))
 OBJS             = $(addprefix $(OBJDIR)/,$(OBJ_NAMES:%.c=%.asm))
 
 $(OBJDIR)/%.asm: %.c
-	$(CC) $(CFLAGS) -o $@ $<
+	@$(CC) $(CFLAGS) -o $@ $<
 
 all: $(TARGET)
+	@echo -e $(FADE)example: Compiled$(NORMAL)
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	$(LINK) -l -v -m -f bytecode
-	@echo 'Bytecode created: '$@
+	@$(LINK) -l -m -f bytecode
 
 clean:
-	@echo 'Cleanup example bytecode.qvm...'
-	$(CLEANUP) $(OBJDIR)/*.asm
-	$(CLEANUP) $(TARGET_BASE).map
-	$(CLEANUP) $(TARGET)
+	@$(CLEANUP) $(OBJDIR)/*.asm
+	@$(CLEANUP) $(TARGET_BASE).map
+	@$(CLEANUP) $(TARGET)
 
 post-build:
 

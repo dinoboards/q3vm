@@ -13,7 +13,7 @@
    This file can be used as a template to integrate the VM in your application.
 */
 
-#include "vm.h"
+#include "vm/vm.h"
 #include <stdio.h>
 #include <stdlib.h>
 
