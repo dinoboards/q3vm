@@ -760,6 +760,11 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   PC = (R1_uint32(0) operation R0_uint32(0)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                                  \
   opStack8 -= 8;
 
+#define op_2_float_branch(operation)                                                                                               \
+  log3_3(FMT_FLT " " #operation " " FMT_FLT "\n", R1_float(0), R0_float(0));                                                       \
+  PC = (R1_float(0) operation R0_float(0)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                                    \
+  opStack8 -= 8;
+
 typedef union stack_entry_u {
   int8_t   int8;
   uint8_t  uint8;
@@ -1179,15 +1184,8 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_EQF4: {
-      opStack8 -= 8;
-
-      if (opStackFlt[1] == opStackFlt[2]) {
-        PC = codeBase + INT(R2.int24);
-        DISPATCH();
-      } else {
-        PC += INT_INCREMENT;
-        DISPATCH();
-      }
+      op_2_float_branch(==);
+      DISPATCH();
     }
 
     case OP_EQU3:
