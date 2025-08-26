@@ -378,8 +378,8 @@ ASMMultipleFn(CODE_CUxU2) {
   Parse();
   switch (token[0]) {
   case '3':
-    opcode = OP_CU3U2;
-    break;
+    WriteComment();
+    return;
 
   default:
     WriteComment();

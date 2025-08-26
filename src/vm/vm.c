@@ -1085,14 +1085,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-      /* reduce store from U3 to U2 */
-    /*TODO: optimse by just remove the high byte stored on stack*/
-    case OP_CU3U2: {
-      pop_1_uint24(R0);
-      push_1_uint16((uint16_t)UINT(R0.uint24));
-      DISPATCH();
-    }
-
     case OP_CU3U4: {
       pop_1_uint24(R0);
       push_1_uint32((uint32_t)UINT(R0.uint24));
