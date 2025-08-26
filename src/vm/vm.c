@@ -750,6 +750,11 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   R_float = R1_float(-4) operation R0_float(-4);                                                                                   \
   log3_2(FMT_FLT " PUSHED float\n", R_float);
 
+#define op_2_uint24_branch(operation)                                                                                              \
+  log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));                                     \
+  PC = (UINT(R1_uint24(0)) operation UINT(R0_uint24(0))) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;                      \
+  opStack8 -= 8;
+
 typedef union stack_entry_u {
   int8_t   int8;
   uint8_t  uint8;
@@ -1159,9 +1164,7 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
     }
 
     case OP_EQ3: {
-      pop_2_uint24();
-      log3_3(FMT_INT24 " == " FMT_INT24 "\n", UINT(R1.uint24), UINT(R0.uint24));
-      PC = (UINT(R1.uint24) == UINT(R0.uint24)) ? codeBase + UINT(R2.uint24) : PC + INT24_INCREMENT;
+      op_2_uint24_branch(==);
       DISPATCH();
     }
 
