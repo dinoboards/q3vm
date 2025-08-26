@@ -163,8 +163,9 @@ void testArguments(void) {
             dataSegment, sizeof(dataSegment), systemCalls);
 
   VM_Call(NULL, 0);
-
+#ifdef DEBUG_VM
   vm.callLevel = 1;
+#endif
 }
 
 int main(int argc, char **argv) {
@@ -249,8 +250,7 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
   case -3: /* MEMSET */
 #ifdef MEMORY_SAFE
     if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0) {
-      VM_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
-      return VM_DATA_OUT_OF_RANGE;
+      VM_AbortError(vm, VM_DATA_OUT_OF_RANGE, "Memory access out of range");
     }
 #endif
     memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
@@ -261,8 +261,7 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
 #ifdef MEMORY_SAFE
     if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0 ||
         VM_MemoryRangeValid(VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0) {
-      VM_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
-      return VM_DATA_OUT_OF_RANGE;
+      VM_AbortError(vm, VM_DATA_OUT_OF_RANGE, "Memory access out of range");
     }
 
 #endif

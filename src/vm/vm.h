@@ -174,10 +174,8 @@ typedef struct vm_s {
   vmSymbol_t *symbols;       /**< By VM_LoadSymbols: names for debugging */
   std_int     breakFunction; /**< For debugging: break at this function */
   std_int     breakCount;    /**< Used for breakpoints, triggered by OP_BREAK */
+  ustdint_t   callLevel;     /**< Counts recursive VM_Call */
 #endif
-
-  /* TODO: this probably can be changed to a uint16_t */
-  ustdint_t callLevel; /**< Counts recursive VM_Call */
 
   vmErrorCode_t lastError; /**< Last known error */
 
@@ -300,7 +298,7 @@ void Com_Error(vmErrorCode_t level, const char *error);
     return a;                                                                                                                      \
   }
 
-#define VM_Error(a, description) vm->lastError = a;
+#define VM_Error(a, description) ;
 
 #endif
 

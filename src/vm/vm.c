@@ -226,7 +226,8 @@ int VM_Create(vm_t                      *vm,
 #ifdef DEBUG_VM
 int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int debugStorageLength) {
   if (vm == NULL) {
-    VM_AbortError(VM_INVALID_POINTER, "Invalid vm pointer");
+    VM_Error(VM_INVALID_POINTER, "Invalid vm pointer");
+    return VM_INVALID_POINTER;
   }
   /* load the map file */
   VM_LoadSymbols(vm, mapfileImage, debugStorage, debugStorageLength);
@@ -301,6 +302,7 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
     uint8_t i;
     uint8_t _opStack[OPSTACK_SIZE + 4]; /* 256 4 byte double words + 4 safety bytes */
 
+    // TODO: for ez80 build, this can probably be a memcpy
     args[0] = INT24(command);
     va_start(ap, command);
     for (i = 1; i < (uint8_t)ARRAY_LEN(args); i++) {
@@ -308,9 +310,13 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
     }
     va_end(ap);
 
+#ifdef DEBUG_VM
     ++vm->callLevel;
+#endif
     r = VM_CallInterpreted(*vm, args, _opStack);
+#ifdef DEBUG_VM
     --vm->callLevel;
+#endif
   }
 
   return r;
@@ -865,9 +871,9 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
   programStack = stackOnEntry = _vm.programStack;
 
 #ifdef DEBUG_VM
-  profileSymbol = VM_ValueToFunctionSymbol(vm, 0);
+  profileSymbol = VM_ValueToFunctionSymbol(_vm.vm, 0);
   /* uncomment this for debugging breakpoints */
-  vm->breakFunction = 0;
+  _vm.vm->breakFunction = 0;
 #endif
 
   PC = _vm.codeBase;
@@ -909,8 +915,8 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(" FMT_INT8 " " FMT_INT24 ");\tSP=" FMT_INT24 ",  R0=" FMT_INT24 ", R1=" FMT_INT24 " \n", VM_Indent(vm),
-                 (int)(opStack8 - _opStack), opnames[*PC], *PC, R2.int32, programStack, R0.int32, R1.int32);
+      Com_Printf("%s%i %s\t(" FMT_INT8 " " FMT_INT24 ");\tSP=" FMT_INT24 ",  R0=" FMT_INT24 ", R1=" FMT_INT24 " \n",
+                 VM_Indent(_vm.vm), (int)(opStack8 - _opStack), opnames[*PC], *PC, R2.int32, programStack, R0.int32, R1.int32);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
@@ -927,7 +933,7 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_BREAK:
 #ifdef DEBUG_VM
-      vm->breakCount++;
+      _vm.vm->breakCount++;
 #endif
       DISPATCH();
 
@@ -1026,14 +1032,14 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
         uint32_t r;
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
-          Com_Printf("%s%i---> systemcall(%i)\n", VM_Indent(vm), (int)(opStack8 - _opStack), -1 - vPC);
+          Com_Printf("%s%i---> systemcall(%i)\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), -1 - vPC);
         }
 #endif
 
         _vm.vm->programStack = programStack - 3; /* save the stack to allow recursive VM entry */
 
 #ifdef DEBUG_VM
-        stomped = INT(*(int24_t *)&dataBase[programStack + 3]);
+        stomped = INT(*(int24_t *)&_vm.dataBase[programStack + 3]);
 #endif
         *(int24_t *)&_vm.dataBase[programStack + 3] = INT24(-1 - vPC); /*command*/
 
@@ -1042,14 +1048,14 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 #ifdef DEBUG_VM
         /* this is just our stack frame pointer, only needed
            for debugging */
-        *(int24_t *)&dataBase[programStack + 3] = INT24(stomped);
+        *(int24_t *)&_vm.dataBase[programStack + 3] = INT24(stomped);
 #endif
 
         push_1_uint32(r);
         PC = _vm.codeBase + INT(*(int24_t *)&_vm.dataBase[programStack]);
 #ifdef DEBUG_VM
         if (vm_debugLevel) {
-          Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, vPC));
+          Com_Printf("%s%i<--- %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC));
         }
 #endif
       }
@@ -1210,16 +1216,16 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       PC += INT16_INCREMENT;
 
 #ifdef DEBUG_VM
-      profileSymbol = VM_ValueToFunctionSymbol(vm, vPC - 3);
+      profileSymbol = VM_ValueToFunctionSymbol(_vm.vm, vPC - 3);
       /* save old stack frame for debugging traces */
-      *(int24_t *)&dataBase[programStack + 3] = INT24(programStack + localsAndArgsSize);
+      *(int24_t *)&_vm.dataBase[programStack + 3] = INT24(programStack + localsAndArgsSize);
       if (vm_debugLevel) {
-        Com_Printf("%s%i---> %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, vPC - 3));
+        Com_Printf("%s%i---> %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC - 3));
         {
           /* this is to allow setting breakpoints here in the
            * debugger */
-          vm->breakCount++;
-          VM_StackTrace(vm, vPC - 3, programStack);
+          _vm.vm->breakCount++;
+          VM_StackTrace(_vm.vm, vPC - 3, programStack);
         }
       }
 #endif
@@ -1311,9 +1317,9 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       /* grab the saved program counter */
       PC = _vm.codeBase + INT(*(int24_t *)&_vm.dataBase[programStack]);
 #ifdef DEBUG_VM
-      profileSymbol = VM_ValueToFunctionSymbol(vm, vPC);
+      profileSymbol = VM_ValueToFunctionSymbol(_vm.vm, vPC);
       if (vm_debugLevel) {
-        Com_Printf("%s%i<--- %s\n", VM_Indent(vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(vm, vPC));
+        Com_Printf("%s%i<--- %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC));
       }
 #endif
       /* check for leaving the VM */
