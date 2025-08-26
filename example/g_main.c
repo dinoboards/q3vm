@@ -785,6 +785,14 @@ int sub_test_OP_GEU4() {
   if (c)
     return 1;
 
+  a = 2;
+  b = 20;
+
+  c = a < b;
+
+  if (!c)
+    return 1;
+
   return 0;
 }
 
