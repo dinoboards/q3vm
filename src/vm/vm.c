@@ -1349,9 +1349,6 @@ static ustdint_t VM_CallInterpreted(vm_t *vm, int24_t *args, uint8_t *_opStack) 
       DISPATCH();
     }
 
-    case OP_LOADF4: /* OP_LOAD3 will work */
-      VM_AbortError(VM_BAD_INSTRUCTION, "Not implemented Yet");
-
     case OP_LOCAL: {
       log3_2("&PS[" FMT_INT16 "]", R2.uint16);
       push_1_uint24(UINT24(R2.uint16 + programStack));

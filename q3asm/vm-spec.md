@@ -59,7 +59,7 @@
 | OP_LOAD2          | INDIRI2, INDIRU2               | `*OS = *((int16_t*)R0)`                                       |
 | OP_LOAD3          | INDIRI3                        | `*OS = *((int24_t*)R0)`                                       |
 | OP_LOAD4          | INDIRI4, INDIRP4, INDIRU4      | `*OS = *((int32_t*)R0)`                                       |
-| OP_LOADF4         | INDIRF4                        | `*OS = *((float*)R0)`                                         |
+| OP_LOAD4         | INDIRF4                        | `*OS = *((float*)R0)`                                         |
 | OP_STORE1         | ASGNI1, ASGNU1                 | `OS - =2; *((uint8_t)R1) = R0`                                |
 | OP_STORE2         | ASGNI2, ASGNU2                 | `OS - =2; *((uint16_t)R1) = R0`                               |
 | OP_STORE4         | ASGNI4, ASGNP4, ASGNU4, ASGNF4 | `OS - =2; *((uint32_t)R1) = R0`                               |

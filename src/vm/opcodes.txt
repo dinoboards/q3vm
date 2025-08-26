@@ -62,7 +62,6 @@ OP_LOAD1                Load 1-byte from memory
 OP_LOAD2                Load 2-bytes from memory
 OP_LOAD3                Load 3-bytes from memory
 OP_LOAD4                Load 4-bytes from memory
-OP_LOADF4               Load 4 byte float from memory
 OP_LOCAL                Get local variable.
 OP_LSH3
 OP_LSH4                  Left-shift
