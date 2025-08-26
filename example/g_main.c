@@ -224,10 +224,14 @@ int sub_test_7() {
   aa = -12;
   bb = aa;
 
-  if (bb == -12)
-    return 0;
+  if (bb != -12)
+    return 1;
 
-  return 1;
+  aa = (int8_t)(int24_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_8() {
@@ -237,10 +241,14 @@ int sub_test_8() {
   aa = -12;
   bb = (int32_t)aa;
 
-  if (bb == -12)
-    return 0;
+  if (bb != -12)
+    return 1;
 
-  return 1;
+  aa = (int8_t)(int32_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_9() {
@@ -250,10 +258,14 @@ int sub_test_9() {
   aa = -12;
   bb = (int24_t)aa;
 
-  if (bb == -12)
-    return 0;
+  if (bb != -12)
+    return 1;
 
-  return 1;
+  aa = (int16_t)(int24_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_10() {
@@ -263,10 +275,14 @@ int sub_test_10() {
   aa = -12;
   bb = (int32_t)aa;
 
-  if (bb == -12)
-    return 0;
+  if (bb != -12)
+    return 1;
 
-  return 1;
+  aa = (int16_t)(int32_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_11() {
@@ -276,10 +292,14 @@ int sub_test_11() {
   aa = -12;
   bb = (float)aa;
 
-  if (bb == -12.0)
-    return 0;
+  if (bb != -12.0)
+    return 1;
 
-  return 1;
+  aa = (int24_t)(float)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_12() {
@@ -289,10 +309,14 @@ int sub_test_12() {
   aa = -12;
   bb = aa;
 
-  if (bb == -12)
-    return 0;
+  if (bb != -12)
+    return 1;
 
-  return 1;
+  aa = (int24_t)(int8_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_13() {
@@ -302,10 +326,14 @@ int sub_test_13() {
   aa = -12;
   bb = aa;
 
-  if (bb == -12)
-    return 0;
+  if (bb != -12)
+    return 1;
 
-  return 1;
+  aa = (int24_t)(int16_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_14() {
@@ -315,10 +343,14 @@ int sub_test_14() {
   aa = -12;
   bb = aa;
 
-  if (bb == -12)
-    return 0;
+  if (bb != -12)
+    return 1;
 
-  return 1;
+  aa = (int32_t)(int16_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_15() {
@@ -328,10 +360,14 @@ int sub_test_15() {
   aa = -12;
   bb = (uint24_t)aa;
 
-  if (bb == (uint24_t)-12)
-    return 0;
+  if (bb != (uint24_t)-12)
+    return 1;
 
-  return 1;
+  aa = (int16_t)(uint24_t)aa;
+  if (aa != -12)
+    return 1;
+
+  return 0;
 }
 
 int sub_test_OP_CI3s4() {
@@ -347,6 +383,14 @@ int sub_test_OP_CI3s4() {
     return 1;
 
   if (bs != -12L)
+    return 1;
+
+  a = (int24_t)(uint32_t)a;
+  if (a != -12)
+    return 1;
+
+  a = (int24_t)(int32_t)a;
+  if (a != -12)
     return 1;
 
   return 0;
@@ -367,6 +411,14 @@ int sub_test_OP_CI2s3() {
   if (bs != -12)
     return 1;
 
+  a = (int16_t)(uint24_t)a;
+  if (a != -12)
+    return 1;
+
+  a = (int16_t)(int24_t)a;
+  if (a != -12)
+    return 1;
+
   return 0;
 }
 
@@ -380,6 +432,10 @@ int sub_test_OP_CI4I3() {
   if (bs != -12)
     return 1;
 
+  a = (int32_t)(int24_t)a;
+  if (a != -12)
+    return 1;
+
   return 0;
 }
 
@@ -391,6 +447,10 @@ int sub_test_OP_CI4U3() {
   bs = a;
 
   if (bs != 16777204)
+    return 1;
+
+  a = (int32_t)(uint24_t)a;
+  if (a != -12)
     return 1;
 
   return 0;
@@ -480,6 +540,10 @@ int sub_test_OP_CU1I3() {
   if (bs != 244)
     return 1;
 
+  a = (uint8_t)(int24_t)a;
+  if (a != 244)
+    return 1;
+
   return 0;
 }
 
@@ -491,6 +555,10 @@ int sub_test_OP_CU2I3() {
   bs = a;
 
   if (bs != 65524)
+    return 1;
+
+  a = (uint16_t)(int24_t)a;
+  if (a != 65524)
     return 1;
 
   return 0;
@@ -506,6 +574,10 @@ int sub_test_OP_CU3U2() {
   if (bs != 0x8234)
     return 1;
 
+  a = (uint24_t)(uint16_t)a;
+  if (a != 0x8234)
+    return 1;
+
   return 0;
 }
 
@@ -519,6 +591,10 @@ int sub_test_OP_CU3U4() {
   if (bs != 0x823456)
     return 1;
 
+  a = (uint24_t)(uint32_t)a;
+  if (a != 0x823456)
+    return 1;
+
   return 0;
 }
 
@@ -530,6 +606,11 @@ int sub_test_OP_CU4I3() {
   bs = a;
 
   if (bs != 0x345678)
+    return 1;
+
+  a = (uint32_t)(int24_t)a;
+
+  if (a != 0x345678)
     return 1;
 
   return 0;

@@ -310,6 +310,7 @@ ASMMultipleFn(CODE_CIxI1) {
   Parse();
   switch (token[0]) {
   case '3':
+  case '4':
     WriteComment(); /* No operation needed for size reduction */
     return;
 
@@ -330,11 +331,11 @@ ASMMultipleFn(CODE_CIxI2) {
   Parse();
   switch (token[0]) {
   case '3':
-    WriteComment(); /* TODO should clear top bytes */
+    WriteComment(); /* NOP */
     return;
 
   case '4':
-    WriteComment(); /* TODO should clear top bytes */
+    WriteComment(); /* NOP */
     return;
 
   default:
