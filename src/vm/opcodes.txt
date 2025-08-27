@@ -23,7 +23,6 @@ OP_CI2I3                Convert int16 to int24
 OP_CI3F4                Convert int24 to float
 OP_CI3s4                Convert int24 to (u)int32
 OP_CI4F4                Convert int32 to float
-OP_CONSTGP3             Push address pointer to stack (duplicate?)
 OP_CONSTP3              Push address pointer to stack
 OP_CONSTs1              Push 1 byte constant
 OP_CONSTs2              Push 2 byte constant

@@ -9,7 +9,7 @@ assemblers_t assemblers[] = {
     {"ADDP3",   OP_ADD3,       assfn(CODE_OP)   },
     {"ADDRESS", DIRECTIVE,     assfn(ADDRESS)   },
     {"ADDRF",   OP_LOCAL,      assfn(ADDRF)     },
-    {"ADDRGP3", OP_CONSTGP3,   assfn(CODE_24BIT)},
+    {"ADDRGP3", OP_CONSTP3,    assfn(CODE_24BIT)},
     {"ADDRL",   OP_LOCAL,      assfn(ADDRL)     },
     {"ADDU3",   OP_ADD3,       assfn(CODE_OP)   },
     {"ADDU4",   OP_ADD4,       assfn(CODE_OP)   },

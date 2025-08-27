@@ -46,12 +46,11 @@
 | OP_CI3F4          | CVIF4 3                            | `*OS = (float)R0`                                       | int32              |
 | OP_CI3s4          | CVII4 3, CVIU4 3                   | `*OS = (int32)R0`                                       | int24              |
 | OP_CI4F4          | CVIF4 4                            | `*OS = (float)R0`                                       | int32              |
-| OP_CONSTGP3 v24   | ADDRGP3                            | `OS++; *OS = v24`                                       |
-| OP_CONSTP3 v24    | CNSTP4                             | `OS++; *OS = v24`                                       |
+| OP_CONSTP3 v24    | CNSTP4, ADDRGP3                    | `OS++; *OS = v24`                                       |
 | OP_CONSTs1 v8     | CNSTU1, CNSTU1                     | `OS++; *OS = v8`                                        |
-| OP_CONSTs2 v16    | CNSTU2, CNSTU2                     | `OS++; *OS = v`                                         |
-| OP_CONSTs3 v24    | CNSTU3, CNSTU3                     | `OS++; *OS = v`                                         |
-| OP_CONSTs4 v32    | CNSTU4, CNSTU4                     | `OS++; *OS = v`                                         |
+| OP_CONSTs2 v16    | CNSTU2, CNSTU2                     | `OS++; *OS = v16`                                       |
+| OP_CONSTs3 v24    | CNSTU3, CNSTU3                     | `OS++; *OS = v24`                                       |
+| OP_CONSTs4 v32    | CNSTU4, CNSTU4                     | `OS++; *OS = v32`                                       |
 | OP_CU1I3          | CVUI3 1                            | `*OS = (int24)R0`                                       | uint8              |
 | OP_CU2I3          | CVUI3 2                            | `*OS = (int24)R0`                                       | uint16             |
 | OP_CU3U4          | CVUI3 3                            | `*OS = (uint32)R0`:                                     | uint24             |
