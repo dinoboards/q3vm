@@ -7,11 +7,13 @@
 | ----------------- | ----------------------------------------------------------------------------------- |
 | B                 | block (sequence of octets, of arbitrary length (e.g. character strings or structs)) |
 | F4                | little-endian IEEE-754 32-bit single-precision floating point value.                |
-| P4                | Four-octet pointer (memory address) value.                                          |
-| I4                | Four-octet signed integer. Corresponds to Q3VM's C data type "signed int".          |
+| P3                | Three-octet pointer (memory address) value.                                         |
+| I4                | Four-octet signed integer. Corresponds to Q3VM's C data type "signed long".         |
+| I3                | Three-octet signed integer. Corresponds to Q3VM's C data type "signed int".         |
 | I2                | Two-octet signed integer. Corresponds to Q3VM's C data type "signed short".         |
 | I1                | One-octet signed integer. Corresponds to Q3VM's C data type "signed char".          |
-| U4                | Four-octet unsigned integer. Corresponds to Q3VM's C data type "unsigned int".      |
+| U4                | Four-octet unsigned integer. Corresponds to Q3VM's C data type "unsigned long".     |
+| U3                | Three-octet unsigned integer. Corresponds to Q3VM's C data type "unsigned int".     |
 | U2                | Two-octet unsigned integer. Corresponds to Q3VM's C data type "unsigned short".     |
 | U1                | One-octet unsigned integer. Corresponds to Q3VM's C data type "unsigned char".      |
 

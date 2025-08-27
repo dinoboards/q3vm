@@ -192,6 +192,10 @@ example: $(TARGET) q3asm lcc example/bytecode.qvm
 format:
 	@./clang-format.sh
 
+.PHONY: update-opcodes
+update-opcodes:
+	@(cd ./src/vm/ && ./generate-opcodes.sh)
+
 # Make sure that we recompile if a header file was changed
 -include $(C_DEPS)
 
