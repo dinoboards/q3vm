@@ -39,7 +39,6 @@ OP_DIVU4                Divide uint32
 OP_ENTER                Begin subroutine
 OP_EQ3                  Compare (u)int24, jump if ==
 OP_EQ4                  Compare (u)int32, jump if ==
-OP_EQF4                 Compare floats, jump if ==
 OP_GEF4                 Compare floats, jump if >=
 OP_GEI3                 Compare int24, jump if >
 OP_GEI4                 Compare int32, jump if >=

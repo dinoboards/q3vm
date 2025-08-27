@@ -90,7 +90,7 @@ assemblers_t assemblers[] = {
     {"DIVU3",   OP_DIVU3,      assfn(CODE_OP)   },
     {"DIVU4",   OP_DIVU4,      assfn(CODE_OP)   },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
-    {"EQF4",    OP_EQF4,       assfn(CODE_24BIT)},
+    {"EQF4",    OP_EQ4,        assfn(CODE_24BIT)},
     {"EQI3",    OP_EQ3,        assfn(CODE_24BIT)},
     {"EQI4",    OP_EQ4,        assfn(CODE_24BIT)},
     {"EQU3",    OP_EQ3,        assfn(CODE_24BIT)},

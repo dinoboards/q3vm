@@ -1232,11 +1232,6 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
-    case OP_EQF4: {
-      op_2_float_branch(==);
-      DISPATCH();
-    }
-
     case OP_GEF4: {
       op_2_float_branch(>=);
       DISPATCH();

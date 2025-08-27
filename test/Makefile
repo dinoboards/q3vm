@@ -62,7 +62,7 @@ default: $(TARGET)
 	@echo > /dev/null
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	@$(LINK) -m -f bytecode
+	@$(LINK) -l -m -f bytecode
 
 # Optional: build g_main.c as native application for benchmarks
 $(TARGET_NATIVE): $(OBJDIR)/g_main.o

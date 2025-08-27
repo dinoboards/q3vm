@@ -57,12 +57,11 @@
 | OP_DIVF4          | DIVF4                              | `OS--; *OS = R1 / R0`                                   | float              |
 | OP_DIVI3          | DIVI3                              | `OS--; *OS = R1 / R0`                                   | int24              |
 | OP_DIVI4          | DIVI4                              | `OS--; *OS = R1 / R0`                                   | int32              |
-| OP_DIVU3          | DIVU3                              | `OS--; *OS = R1) / R0`                                  | uint24             |
-| OP_DIVU4          | DIVU4                              | `OS--; *OS = R1) / R0`                                  | uint32             |
+| OP_DIVU3          | DIVU3                              | `OS--; *OS = R1 / R0`                                   | uint24             |
+| OP_DIVU4          | DIVU4                              | `OS--; *OS = R1 / R0`                                   | uint32             |
 | OP_ENTER v16      | PROC                               | `PS -= v16`                                             |                    |
 | OP_EQ3 v24        | EQI3, EQU3                         | `OS -= 2; PC = v24 if R1 == R0`                         | (u)int24           |
-| OP_EQ4 v24        | EQI4, EQU4                         | `OS -= 2; PC = v24 if R1 == R0 `                        | (u)int32           |
-| OP_EQF4 v24       | EQF4                               | `OS -= 2; PC = v24 if R1 == R0`                         | float              |
+| OP_EQ4 v24        | EQI4, EQU4, EQF4                   | `OS -= 2; PC = v24 if R1 == R0 `                        | (u)int32/float     |
 | OP_GEF4 v24       | GEF                                | `OS -= 2; PC = v24 if R1 >= R0 `                        | float              |
 | OP_GEI3 v24       | GEI3                               | `OS -= 2; PC = v24 if R1 >= R0 `                        | int24              |
 | OP_GEI4 v24       | GEI4                               | `OS -= 2; PC = v24 if R1 >= R0 `                        | int32              |
