@@ -5,28 +5,28 @@ Fork Objective: Explore possibility to convert to run on ez80 cpu
 
 ## Identified Issues:
 
-1. Converting vm.c to run on ZDS/ez80-clang requires adjusting all assumption that int is a 32 bit number
-2. Avoid need to 'translate' CODE binary image into large RAM int arrays - run direct from ROM
-3. Have the CODE and DATA sections stored in RAM - DATA and BSS copied to on-chip RAM
-4. also support running as application under OS
-5. All bytecode operands are 32 bits (for ints/bytes and floats) - be nice to convert this to 24 bits for int/bytes
-6. Maybe drop support for floats?
-7. Change operand for CALL to just 16bit (no need to support large bytecode images)
-8. Probably want to support the ZDS compiler (not ez80-clang) to enable it to be embedded in ROM
-9.  computed gotos not supported in ZDS - and in ez80-clang produces poorer code than a switch statement
+1. DONE. Converting vm.c to run on ZDS/ez80-clang requires adjusting all assumption that int is a 32 bit number
+2. DONE. Avoid need to 'translate' CODE binary image into large RAM int arrays - run direct from ROM
+3. DONE. Have the CODE and DATA sections stored in RAM - DATA and BSS copied to on-chip RAM
+4. DONE. also support running as application under OS
+5. MAINTAINED. All bytecode operands are 32 bits (for ints/bytes and floats) - be nice to convert this to 24 bits for int/bytes
+6. NO: Maybe drop support for floats?
+7. DONE: Change operand for CALL to just 16bit (no need to support large bytecode images)
+8. DONE: Probably want to support the ZDS compiler (not ez80-clang) to enable it to be embedded in ROM
+9. REMOVED: computed gotos not supported in ZDS - and in ez80-clang produces poorer code than a switch statement
 
 
 ## TODOs
 
-1. change opstack from using fixed 4 byte wide values to variable values (1 byte for int, 3 for int24 etc)
-2. complete migration of assembly lookup from opstrings.h to assembly.h
-3. complete refactor of all vm case statements to use pop/push pattern
-4. change programCounter and programStack to be pointers not array indexes
+1. MAINTAINED: change opstack from using fixed 4 byte wide values to variable values (1 byte for int, 3 for int24 etc)
+2. DONE: complete migration of assembly lookup from opstrings.h to assembly.h
+3. DONE: complete refactor of all vm case statements to use pop/push pattern
+4. MAINTAINED: change programCounter and programStack to be pointers not array indexes - is less efficient in ZDS
 5. extend vm interface to include error callback function - maybe
-6. optimise use of r0.. and r1.. variables - avoid need of many local vars
+6. DONE: optimise use of r0.. and r1.. variables - avoid need of many local vars
 7. move VM_ArgPtr, VM_IntToFloat and VM_FloatToInt out of vm.c
-8. optimise VM_CallInterpreted - splat out vm_t, optmise locals, ptrs
-9. ./ remove instructionCount - not needed now
+8. DONE: optimise VM_CallInterpreted - splat out vm_t, optmise locals, ptrs
+9. DONE: remove instructionCount - not needed now
 10. removed ignored verification tests
 11. add other verification tests
 
