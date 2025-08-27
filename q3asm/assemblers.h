@@ -158,7 +158,6 @@ assemblers_t assemblers[] = {
     {"NEU4",    OP_NE4,        assfn(CODE_24BIT)},
     {"POP",     OP_POP,        assfn(CODE_OP)   },
     {"PROC",    OP_ENTER,      assfn(PROC)      },
-    {"PUSH",    OP_PUSH,       assfn(CODE_OP)   },
     {"RET",     OP_LEAVE,      assfn(RET)       },
     {"RSHI3",   OP_RSHI3,      assfn(CODE_OP)   },
     {"RSHI4",   OP_RSHI4,      assfn(CODE_OP)   },

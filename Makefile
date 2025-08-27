@@ -143,13 +143,13 @@ analysis: clangcheck cppcheck
 
 .PHONY: example/bytecode.qvm # force rebuild
 example/bytecode.qvm: q3asm lcc
-	@$(MAKE) -C example
+	@$(MAKE) -C example -B
 
 # Test and code coverage firmware
 .PHONY: test/test.qvm
 test/test.qvm: q3asm lcc
 # 	@echo "Building "$@
-	@$(MAKE) -C test
+	@$(MAKE) -C test -B
 
 .PHONY: test/q3vm_test/q3vm_test
 test/q3vm_test/q3vm_test:
@@ -188,6 +188,9 @@ exportez80: all
 .PHONY:example
 example: $(TARGET) q3asm lcc example/bytecode.qvm
 	@cd ./example && ../q3vm bytecode.qvm; echo "Exit Code: $$?"
+
+format:
+	@./clang-format.sh
 
 # Make sure that we recompile if a header file was changed
 -include $(C_DEPS)

@@ -150,7 +150,7 @@ static void dumptree(Node p) {
     dumptree(p->kids[0]);
     print("%s\n", opname(p->op));
     if (!p->count) {
-      printf("pop\n");
+      printf("POP\n");
     }; // JDC
     return;
   case ASGN:
