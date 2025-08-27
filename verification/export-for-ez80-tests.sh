@@ -32,7 +32,7 @@ bssLength="${bssLengthH}${bssLengthM}${bssLengthL}"
 
 IMAGE_NAME=${QVM_NAME}
 IMAGE_NAME_UPCASE=${QVM_NAME^^}
-OUTPUT_FILE="./tests-byte-code"
+OUTPUT_FILE="./verifications-byte-code"
 
 cat <<EOT >> "${OUTPUT_FILE}.h"
 #define ${IMAGE_NAME_UPCASE}_SIZE ${bytecodeSize}

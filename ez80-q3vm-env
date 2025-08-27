@@ -1,0 +1,3 @@
+if [[ :$PATH: != *:/opt/ez80-q3vm/bin:* ]]; then
+    export PATH=${PATH}:/opt/ez80-q3vm/bin
+fi

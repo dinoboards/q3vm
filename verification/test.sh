@@ -65,7 +65,7 @@ if [[ $UPDATE_EZ80_IMAGES == 1 ]]; then
 
 echo "Generating test images for eZ80 ..."
 
-OUTPUT_FILE="./tests-byte-code"
+OUTPUT_FILE="./verifications-byte-code"
 
 cat <<EOT > "${OUTPUT_FILE}.h"
 #ifndef __TESTS_BYTE_CODE
