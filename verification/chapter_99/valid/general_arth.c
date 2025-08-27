@@ -14,6 +14,14 @@ typedef long          int32_t;
 float a;
 float b;
 
+static const uint8_t     init8     = 'A';
+static const uint16_t    init16    = 0x1234;
+static const uint24_t    init24    = 0x123456;
+static const uint32_t    init32    = 0x12345678;
+static const float       initfloat = 12345.123;
+static const char *const str       = "abc";
+static const char        str2[]    = "abc";
+
 int fn(int32_t d);
 int fnx(float);
 int sub_test_1();
@@ -79,6 +87,7 @@ int sub_test_OP_RSHI3();
 int sub_test_OP_RSHI4();
 int sub_test_OP_RSHU3();
 int sub_test_OP_RSHU4();
+int sub_test_static_init();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -275,6 +284,9 @@ int main(void) {
 
   if (sub_test_OP_RSHU4())
     return 63;
+
+  if (sub_test_static_init())
+    return 64;
 
   return 0;
 }
@@ -1344,4 +1356,30 @@ int sub_test_OP_RSHU4() {
     return 0;
 
   return 1;
+}
+
+int sub_test_static_init() {
+
+  if (init8 != 'A')
+    return 1;
+
+  if (init16 != 0x1234)
+    return 1;
+
+  if (init24 != 0x123456)
+    return 1;
+
+  if (init32 != 0x12345678)
+    return 1;
+
+  if (initfloat != 12345.123)
+    return 1;
+
+  if (str[0] != 'a' || str[1] != 'b' || str[2] != 'c' || str[3] != 0)
+    return 1;
+
+  if (str2[0] != 'a' || str2[1] != 'b' || str2[2] != 'c' || str2[3] != 0)
+    return 1;
+
+  return 0;
 }

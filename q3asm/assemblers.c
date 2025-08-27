@@ -136,11 +136,6 @@ DIRFn(BYTE) {
   const int v  = ParseValue();
   int       v2 = ParseValue();
 
-  if (v == 2) {
-    /* and 16-bit (2-byte) values will cause q3asm to barf. */
-    CodeError("16 bit initialized data not supported");
-  }
-
   for (i = 0; i < v; i++) {
     WriteDirectiveD8(v2);
     EmitByte(currentSegment, (v2 & 0xFF)); /* paranoid ANDing  -PH */
