@@ -24,6 +24,24 @@ ASMFn(CODE_24BIT) {
   EmitInt24(&segment[CODESEG], v);
 }
 
+ASMFn(CODE_PTR) {
+  Parse();
+  const int v = ParseExpression();
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+
+  int relative_offset = v - currentSegment->imageUsed;
+  if (relative_offset > 32767 || relative_offset < -32768) {
+    CodeError("branch to far. Relative jump outside range of 16 bit integer.\n");
+    return;
+  }
+
+  EmitInt16(&segment[CODESEG], v - currentSegment->imageUsed);
+
+  sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
+  WriteInt16Code(assembler.opcode, v - currentSegment->imageUsed);
+}
+
 ASMFn(CODE_FLOAT) {
   Parse();
   const int v = ParseExpression();

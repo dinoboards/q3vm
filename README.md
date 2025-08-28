@@ -13,7 +13,7 @@ Read the excellent introduction to the Q3VM by Fabien Sanglard:
 
  * http://fabiensanglard.net/quake3/qvm.php
 
-## Bytecode generation proces:
+## Bytecode generation process:
 
 1. Use `lcc` to compile C89 `.c` code files to IL text representation `.vmasm` files.
 2. Use `q3asm` to translate and link a set of `.vmasm` files to a binary bytecode `.qvm` file.
