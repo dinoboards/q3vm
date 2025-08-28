@@ -1,19 +1,17 @@
-## Op byte codes
-
+## "NotQ3VM" Opcodes
 
 ### Valid Opcode Param types:
 
- * v: int32_t
- * v24: uint24_t
- * v16: uint16_t
  * v8: uint8_t
- * iv8: int8_t
+ * v16: uint16_t
+ * v24: uint24_t
+ * v32: int32_t
  * ptr: 3 byte pointer
 
 ### Registers
 * PC => Program Counter
 * PS => Program Stack
-* OS => Operation Stack (stack of `int32_t` types)
+* OS => Operation Stack (stack of values - padded to 4 bytes)
 * R0: *OS
 * R1: *(OS - 1)
 
@@ -46,11 +44,11 @@
 | OP_CI3F4          | CVIF4 3                            | `*OS = (float)R0`                                       | int32              |
 | OP_CI3s4          | CVII4 3, CVIU4 3                   | `*OS = (int32)R0`                                       | int24              |
 | OP_CI4F4          | CVIF4 4                            | `*OS = (float)R0`                                       | int32              |
-| OP_CONSTP3 v24    | CNSTP4, ADDRGP3                    | `OS++; *OS = v24`                                       |
-| OP_CONSTs1 v8     | CNSTU1, CNSTU1                     | `OS++; *OS = v8`                                        |
-| OP_CONSTs2 v16    | CNSTU2, CNSTU2                     | `OS++; *OS = v16`                                       |
-| OP_CONSTs3 v24    | CNSTU3, CNSTU3                     | `OS++; *OS = v24`                                       |
-| OP_CONSTs4 v32    | CNSTU4, CNSTU4                     | `OS++; *OS = v32`                                       |
+| OP_CONSTP3 v24    | CNSTP4, ADDRGP3                    | `OS++; *OS = v24`                                       |                    |
+| OP_CONSTs1 v8     | CNSTU1, CNSTU1                     | `OS++; *OS = v8`                                        |                    |
+| OP_CONSTs2 v16    | CNSTU2, CNSTU2                     | `OS++; *OS = v16`                                       |                    |
+| OP_CONSTs3 v24    | CNSTU3, CNSTU3                     | `OS++; *OS = v24`                                       |                    |
+| OP_CONSTs4 v32    | CNSTU4, CNSTU4                     | `OS++; *OS = v32`                                       |                    |
 | OP_CU1I3          | CVUI3 1                            | `*OS = (int24)R0`                                       | uint8              |
 | OP_CU2I3          | CVUI3 2                            | `*OS = (int24)R0`                                       | uint16             |
 | OP_CU3U4          | CVUI3 3                            | `*OS = (uint32)R0`:                                     | uint24             |
@@ -119,8 +117,3 @@
 | OP_SUB3           | SUBI3, SUBU4                       | `OS--; *OS = R1 - R0`                                   | (u)int24           |
 | OP_SUB4           | SUBI4, SUBU4                       | `OS--; *OS = R1 - R0`                                   | (u)int32           |
 | OP_SUBF4          | SUBF4                              | `OS--; *OS = R1 - R0`                                   | float              |
-
-
-
-> int to float does not perform numerical conversion - assumes the int is actually a float representation
-
