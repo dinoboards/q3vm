@@ -164,6 +164,7 @@ typedef struct vm_s {
 #endif
 
 #ifdef MEMORY_SAFE
+  vm_size_t stackTop;    /**< If programStack < stackBottom, error */
   vm_size_t stackBottom; /**< If programStack < stackBottom, error */
 #endif
 
