@@ -90,11 +90,12 @@ int sub_test_OP_RSHU3(void);
 int sub_test_OP_RSHU4(void);
 int sub_test_static_init(void);
 int sub_test_struct_passing(void);
+int sub_test_struct_return(void);
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
 #define VDP_IO_DATA ((uint24_t)0xFFFF98)
-#define VDP_DATA (*((uint8_t *)VDP_IO_DATA))
+#define VDP_DATA    (*((uint8_t *)VDP_IO_DATA))
 
 int main(void) {
 
@@ -300,6 +301,9 @@ int main(void) {
 
   if (sub_test_struct_passing())
     return 65;
+
+  if (sub_test_struct_return())
+    return 66;
 
   return 0;
 }
@@ -1418,6 +1422,30 @@ int sub_test_struct_passing(void) {
     return 1;
 
   if (a.a != 1234)
+    return 1;
+
+  return 0;
+}
+
+typedef struct point_s {
+  int24_t x;
+  int24_t y;
+} point_t;
+
+point_t point_new(int24_t x, int24_t y) {
+  point_t t;
+  t.x = x;
+  t.y = y;
+
+  return t;
+}
+
+int sub_test_struct_return(void) {
+  point_t p;
+
+  p = point_new(44, 0x55);
+
+  if (p.x != 44 || p.y != 0x55)
     return 1;
 
   return 0;

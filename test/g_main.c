@@ -54,7 +54,7 @@ int vmMain(int command, int arg0, int arg1, int arg2) {
   static unsigned char    mem2[8]       = "Hello"; /* don't change this string */
   int                     doStupidStuff = 0;       /* misbehave and see if the interpreter deals correctly with that */
 
-  void (*fun_ptr)(int) = (void *)(unsigned int)0x7fffff;
+  void (*fun_ptr)(int) = (fun_ptr_t)(unsigned int)0x7fffff;
 
   // printf("cmd:   %i\n", command);
   // printf("arg0:  %i\n", arg0);

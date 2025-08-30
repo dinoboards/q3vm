@@ -95,13 +95,6 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
  * @return Return value of the function call. */
 static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opStack);
 
-/** Executes a block copy operation (memcpy) within currentVM data space.
- * @param[out] dest Pointer (in VM space).
- * @param[in] src Pointer (in VM space).
- * @param[in] n Number of bytes.
- * @param[in,out] vm Current VM */
-static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, vm_t *vm);
-
 /******************************************************************************
  * DEBUG FUNCTIONS (only used if DEBUG_VM is defined)
  ******************************************************************************/
@@ -367,6 +360,8 @@ bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, vm_t *cons
   if (!vmAddr || !vm)
     return -1;
 
+  printf("Checking memory %06X\n", vmAddr);
+
   if (vmAddr > vm->workingRAMLength || vmAddr + len > vm->workingRAMLength) {
     VM_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
     return -1;
@@ -375,45 +370,6 @@ bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, vm_t *cons
   return 0;
 }
 #endif
-
-static void VM_BlockCopy(vm_size_t dest, const vm_size_t src, const vm_size_t n, vm_t *vm) {
-
-#ifdef MEMORY_SAFE
-  if (VM_MemoryRangeValid(src, n, vm))
-    return;
-
-  if (VM_MemoryRangeValid(src, n, vm))
-    return;
-#endif
-
-  {
-    const uint8_t *true_src = (src < vm->litLength) ? &vm->codeBase[vm->codeLength + src] : &vm->dataBase[src];
-
-    Com_Memcpy(vm->dataBase + dest, true_src, n);
-  }
-}
-/*
-==============
-VM_CallInterpreted
-
-Upon a system call, the stack will look like:
-
-sp+32   parm1
-sp+28   parm0
-sp+24   return stack
-sp+20   return address
-sp+16   local1
-sp+14   local0
-sp+12   arg1
-sp+8    arg0
-sp+4    return stack
-sp      return address
-
-An interpreted function will immediately execute
-an OP_ENTER instruction, which will subtract space for
-locals from sp
-==============
-*/
 
 #define R2 (*((stack_entry_t *)PC))
 
@@ -869,6 +825,29 @@ typedef union stack_entry_u {
 
 typedef const uint8_t *PC_t;
 
+/*
+==============
+VM_CallInterpreted
+
+Upon a system call, the stack will look like:
+
+sp+32   parm1
+sp+28   parm0
+sp+24   return stack
+sp+20   return address
+sp+16   local1
+sp+14   local0
+sp+12   arg1
+sp+8    arg0
+sp+4    return stack
+sp      return address
+
+An interpreted function will immediately execute
+an OP_ENTER instruction, which will subtract space for
+locals from sp
+==============
+*/
+
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
 static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opStack) {
 #ifdef MEMORY_SAFE
@@ -1006,7 +985,22 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_BLOCK_COPY: {
       pop_2_uint24();
-      VM_BlockCopy(UINT(R1.uint24), UINT(R0.uint24), UINT(R2.uint24), _vm.vm);
+
+      log3_4("memcpy(" FMT_INT24 ", " FMT_INT24 ", " FMT_INT24 ")\n", UINT(R1.uint24), UINT(R0.uint24), UINT(R2.uint24));
+
+#ifdef MEMORY_SAFE
+      if (!VM_VerifyReadOK(_vm.vm, UINT(R0.uint24), UINT(R2.uint24)))
+        DISPATCH();
+
+      if (!VM_VerifyWriteOK(_vm.vm, UINT(R1.uint24), UINT(R2.uint24)))
+        DISPATCH();
+#endif
+
+      Com_Memcpy(_vm.dataBase + UINT(R1.uint24),
+                 (UINT(R0.uint24) < _vm.litLength) ? &_vm.codeBase[_vm.codeLength + UINT(R0.uint24)]
+                                                   : &_vm.dataBase[UINT(R0.uint24)],
+                 UINT(R2.uint24));
+
       PC += INT24_INCREMENT;
       DISPATCH();
     }
