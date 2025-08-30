@@ -93,7 +93,12 @@ int sub_test_struct_passing(void);
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
+#define VDP_IO_DATA ((uint24_t)0xFFFF98)
+#define VDP_DATA (*((uint8_t *)VDP_IO_DATA))
+
 int main(void) {
+
+  VDP_DATA = 23;
 
 #pragma asm DI
 #pragma asm EI
