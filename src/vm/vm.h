@@ -245,14 +245,10 @@ float VM_IntToFloat(int32_t x);
 int32_t VM_FloatToInt(float f);
 
 #ifdef MEMORY_SAFE
-/** Helper function for syscalls:
- * Check if address + range in in the valid VM memory range.
- * Use this function in the syscall callback to keep the VM in its sandbox.
- * @param[in] vmAddr Address in virtual machine memory
- * @param[in] len Length in bytes
- * @param[in] vm Current VM
- * @return 0 if valid (!), -1 if invalid. */
-bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, vm_t *const vm);
+
+bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size);
+bool VM_VerifyReadOK(vm_t *vm, vm_size_t vaddr, int size);
+
 #endif
 
 #ifdef DEBUG_VM

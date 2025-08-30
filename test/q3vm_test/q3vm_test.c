@@ -130,9 +130,6 @@ void testArguments(void) {
   VM_Call(&vm, 0);
   VM_ArgPtr(0, NULL);
 
-#ifdef MEMORY_SAFE
-  VM_MemoryRangeValid(0, 0, NULL);
-#endif
   loadImage(NULL, &imageSize);
 
   loadImage("invalidpathfoobar", &imageSize);
@@ -250,9 +247,8 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
 
   case -3: /* MEMSET */
 #ifdef MEMORY_SAFE
-    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0) {
+    if (!VM_VerifyWriteOK(vm, VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/))
       VM_AbortError(vm, VM_DATA_OUT_OF_RANGE, "Memory access out of range");
-    }
 #endif
     memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
 
@@ -260,11 +256,9 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
 
   case -4: /* MEMCPY */
 #ifdef MEMORY_SAFE
-    if (VM_MemoryRangeValid(VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0 ||
-        VM_MemoryRangeValid(VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/, vm) != 0) {
+    if (!VM_VerifyWriteOK(vm, VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/) ||
+        !VM_VerifyReadOK(vm, VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/))
       VM_AbortError(vm, VM_DATA_OUT_OF_RANGE, "Memory access out of range");
-    }
-
 #endif
     memcpy(VMA_PTR(3, vm), VMA_PTR(6, vm), VMA_UINT24(9));
     return VMA_UINT24(3);
