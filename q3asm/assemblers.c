@@ -123,29 +123,46 @@ ASMFn(ARG4) {
 }
 
 // address of a local is converted to OP_LOCAL
-ASMFn(ADDRL) {
+ASMMultipleFn(ADDRL) {
   int v;
+
   Parse();
   v = ParseExpression();
   v = 6 + currentArgs + v;
 
-  WriteInt8Code(assembler.opcode, v);
+  if (v >= 256) {
+    WriteInt16Code(OP_LOCAL_FAR, v);
 
-  EmitByte(&segment[CODESEG], assembler.opcode);
+    EmitByte(&segment[CODESEG], OP_LOCAL_FAR);
+    EmitInt16(&segment[CODESEG], v);
+    return;
+  }
+
+  WriteInt8Code(OP_LOCAL, v);
+
+  EmitByte(&segment[CODESEG], OP_LOCAL);
   EmitByte(&segment[CODESEG], v);
 }
 
 // address of a parameter is converted to OP_LOCAL
-ASMFn(ADDRF) {
+ASMMultipleFn(ADDRF) {
   int v;
 
   Parse();
   v = ParseExpression();
   v = 12 + currentArgs + currentLocals + v;
 
-  WriteInt8Code(assembler.opcode, v);
+  if (v >= 256) {
+    WriteInt16Code(OP_LOCAL_FAR, v);
 
-  EmitByte(&segment[CODESEG], assembler.opcode);
+    EmitByte(&segment[CODESEG], OP_LOCAL_FAR);
+    EmitInt16(&segment[CODESEG], v);
+    return;
+  }
+
+  WriteInt8Code(OP_LOCAL, v);
+
+  EmitByte(&segment[CODESEG], OP_LOCAL);
   EmitByte(&segment[CODESEG], v);
 }
 
@@ -426,8 +443,14 @@ ASMFn(PROC) {
 
   DefineSymbol(token, segment[CODESEG].imageUsed);
 
-  currentLocals    = ParseValue(); // locals
-  currentArgs      = ParseValue(); // arg marshalling
+  currentLocals = ParseValue(); // locals
+  currentArgs   = ParseValue(); // arg marshalling
+  sprintf(infoBuffer, "ARGS: %d", currentArgs);
+  WriteInfo();
+
+  sprintf(infoBuffer, "LOCALS: %d", currentLocals);
+  WriteInfo();
+
   const uint16_t v = (uint16_t)(6 + currentLocals + currentArgs);
 
   if (v >= 32767) {

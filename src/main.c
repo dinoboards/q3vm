@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 
   VM_Debug(4);
 
-#define DATA_SIZE 512
+#define DATA_SIZE 4096
   pData = malloc(DATA_SIZE); /* allocate 64k ram for data, bss and stack*/
 
   /* set-up virtual machine */

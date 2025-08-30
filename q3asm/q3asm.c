@@ -113,6 +113,7 @@ int currentArgOffset; // byte offset in currentArgs to store next arg, reset
 
 #define MAX_LINE_LENGTH 1024
 char lineBuffer[MAX_LINE_LENGTH];
+char infoBuffer[MAX_LINE_LENGTH];
 int  lineParseOffset;
 char token[MAX_LINE_LENGTH];
 
@@ -494,6 +495,14 @@ static void WriteComment() {
   if (passNumber == 1 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_4 - dis_columnpos, "");
     fprintf(fListFile, "; %s\n", lineBuffer);
+    dis_columnpos = 0;
+  }
+}
+
+static void WriteInfo() {
+  if (passNumber == 1 && options.writeListFile) {
+    dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_4 - dis_columnpos, "");
+    fprintf(fListFile, "; %s\n", infoBuffer);
     dis_columnpos = 0;
   }
 }

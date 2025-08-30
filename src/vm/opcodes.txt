@@ -60,7 +60,8 @@ OP_LOAD1                Load 1-byte from memory
 OP_LOAD2                Load 2-bytes from memory
 OP_LOAD3                Load 3-bytes from memory
 OP_LOAD4                Load 4-bytes from memory
-OP_LOCAL                Get local variable
+OP_LOCAL                Get local variable (8 bit offset)
+OP_LOCAL_FAR            Get local variable (16 bit offset)
 OP_LSH3                 left shift (u)int24
 OP_LSH4                 Left-shift (u)int32
 OP_LTF4                 Compare floats, jump if <

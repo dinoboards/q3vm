@@ -88,6 +88,7 @@ int sub_test_OP_RSHI4();
 int sub_test_OP_RSHU3();
 int sub_test_OP_RSHU4();
 int sub_test_static_init();
+int sub_test_struct_passing();
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -287,6 +288,9 @@ int main(void) {
 
   if (sub_test_static_init())
     return 64;
+
+  if (sub_test_struct_passing())
+    return 65;
 
   return 0;
 }
@@ -1379,6 +1383,32 @@ int sub_test_static_init() {
     return 1;
 
   if (str2[0] != 'a' || str2[1] != 'b' || str2[2] != 'c' || str2[3] != 0)
+    return 1;
+
+  return 0;
+}
+
+struct x_s {
+  uint24_t a;
+  uint8_t  b[700];
+};
+
+int spike_large_frame(int a, struct x_s b, int c, int d) {
+  if (a != 1 || b.a != 1234 || c != 3 || d != 4)
+    return 1;
+
+  b.a = 999;
+
+  return 0;
+}
+
+int sub_test_struct_passing(void) {
+  struct x_s a;
+  a.a = 1234;
+  if (spike_large_frame(1, a, 3, 4))
+    return 1;
+
+  if (a.a != 1234)
     return 1;
 
   return 0;

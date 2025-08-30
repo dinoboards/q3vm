@@ -1,12 +1,11 @@
 /*
-      ___   _______     ____  __
-     / _ \ |___ /\ \   / /  \/  |
-    | | | |  |_ \ \ \ / /| |\/| |
-    | |_| |____) | \ V / | |  | |
-     \__\_______/   \_/  |_|  |_|
+ __    _  ___  _____    ___   _______     ____  __
+|  \  | |/ _ \|_   _|  / _ \ |___ /\ \   / /  \/  |
+| | \ | | | | | | |   | | | |  |_ \ \ \ / /| |\/| |
+| |\ \| | |_| | | |   | |_| |____) | \ V / | |  | |
+|_| \___|\___/  |_|    \__\_______/   \_/  |_|  |_|
 
-
-   Quake III Arena Virtual Machine
+   NOT Quake III Arena Virtual Machine
 */
 
 /******************************************************************************
@@ -1421,6 +1420,13 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       log3_2("&PS[" FMT_INT8 "]", R2.uint8);
       push_1_uint24(UINT24(R2.uint8 + programStack));
       PC += INT8_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_LOCAL_FAR: {
+      log3_2("&PS[" FMT_INT16 "]", R2.uint16);
+      push_1_uint24(UINT24(R2.uint16 + programStack));
+      PC += INT16_INCREMENT;
       DISPATCH();
     }
 

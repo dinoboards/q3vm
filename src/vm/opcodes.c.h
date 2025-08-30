@@ -63,40 +63,41 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "LOAD2",      /*  59  Load 2-bytes from memory */
     "LOAD3",      /*  60  Load 3-bytes from memory */
     "LOAD4",      /*  61  Load 4-bytes from memory */
-    "LOCAL",      /*  62  Get local variable */
-    "LSH3",       /*  63  left shift (u)int24 */
-    "LSH4",       /*  64  Left-shift (u)int32 */
-    "LTF4",       /*  65  Compare floats, jump if < */
-    "LTI3",       /*  66  Compare int24, jump if < */
-    "LTI4",       /*  67  Compare int32, jump if < */
-    "LTU3",       /*  68  Compare uint24, jump if < */
-    "LTU4",       /*  69  Compare uint32, jump if < */
-    "MODI3",      /*  70  Modulus int24 */
-    "MODI4",      /*  71  Modulus int32 */
-    "MODU3",      /*  72  Modulus uint24 */
-    "MODU4",      /*  73  Modulus uint32 */
-    "MULF4",      /*  74  Multiply floats */
-    "MULI3",      /*  75  Multiple int24 */
-    "MULI4",      /*  76  Multiply int32 */
-    "MULU3",      /*  77  Multiply uint24 */
-    "MULU4",      /*  78  Multiply uint32 */
-    "NE3",        /*  79  Compare (u)int24, jump if != */
-    "NE4",        /*  80  Compare integers, jump if != */
-    "NEF4",       /*  81  Compare floats, jump if != */
-    "NEGF4",      /*  82  Negate float */
-    "NEGI3",      /*  83  Negate int24 */
-    "NEGI4",      /*  84  Negate int32 */
-    "POP",        /*  85  Discard top-of-stack */
-    "PUSH",       /*  86  Push no-value to stack */
-    "RSHI3",      /*  87  Right-shift int24 (preserve sign) */
-    "RSHI4",      /*  88  Right-shift int32 (preserve sign) */
-    "RSHU3",      /*  89  Right-shift uint24 */
-    "RSHU4",      /*  90  Right-shift uint32 */
-    "STORE1",     /*  91  Store 1-byte to memory */
-    "STORE2",     /*  92  Store 2-byte to memory */
-    "STORE3",     /*  93  Store 3-byte to memory */
-    "STORE4",     /*  94  Store 4-byte to memory */
-    "SUB3",       /*  95  Subtract (u)int24 (two's complement). */
-    "SUB4",       /*  96  Subtract (u)int32 (two's complement). */
-    "SUBF4",      /*  97  Subtract floats */
+    "LOCAL",      /*  62  Get local variable (8 bit offset) */
+    "LOCAL_FAR",  /*  63  Get local variable (16 bit offset) */
+    "LSH3",       /*  64  left shift (u)int24 */
+    "LSH4",       /*  65  Left-shift (u)int32 */
+    "LTF4",       /*  66  Compare floats, jump if < */
+    "LTI3",       /*  67  Compare int24, jump if < */
+    "LTI4",       /*  68  Compare int32, jump if < */
+    "LTU3",       /*  69  Compare uint24, jump if < */
+    "LTU4",       /*  70  Compare uint32, jump if < */
+    "MODI3",      /*  71  Modulus int24 */
+    "MODI4",      /*  72  Modulus int32 */
+    "MODU3",      /*  73  Modulus uint24 */
+    "MODU4",      /*  74  Modulus uint32 */
+    "MULF4",      /*  75  Multiply floats */
+    "MULI3",      /*  76  Multiple int24 */
+    "MULI4",      /*  77  Multiply int32 */
+    "MULU3",      /*  78  Multiply uint24 */
+    "MULU4",      /*  79  Multiply uint32 */
+    "NE3",        /*  80  Compare (u)int24, jump if != */
+    "NE4",        /*  81  Compare integers, jump if != */
+    "NEF4",       /*  82  Compare floats, jump if != */
+    "NEGF4",      /*  83  Negate float */
+    "NEGI3",      /*  84  Negate int24 */
+    "NEGI4",      /*  85  Negate int32 */
+    "POP",        /*  86  Discard top-of-stack */
+    "PUSH",       /*  87  Push no-value to stack */
+    "RSHI3",      /*  88  Right-shift int24 (preserve sign) */
+    "RSHI4",      /*  89  Right-shift int32 (preserve sign) */
+    "RSHU3",      /*  90  Right-shift uint24 */
+    "RSHU4",      /*  91  Right-shift uint32 */
+    "STORE1",     /*  92  Store 1-byte to memory */
+    "STORE2",     /*  93  Store 2-byte to memory */
+    "STORE3",     /*  94  Store 3-byte to memory */
+    "STORE4",     /*  95  Store 4-byte to memory */
+    "SUB3",       /*  96  Subtract (u)int24 (two's complement). */
+    "SUB4",       /*  97  Subtract (u)int32 (two's complement). */
+    "SUBF4",      /*  98  Subtract floats */
 };
