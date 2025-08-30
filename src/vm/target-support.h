@@ -56,4 +56,7 @@ extern int24_t  to_int24(ustdint_t x);
 #define MEMORY_SAFE
 // #define DEBUG_VM
 
+#define DI()
+#define EI()
+
 #endif

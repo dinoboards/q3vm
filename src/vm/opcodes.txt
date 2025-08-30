@@ -31,11 +31,13 @@ OP_CONSTs4              Push 4 byte constant
 OP_CU1I3                Convert uint8 to int24
 OP_CU2I3                Convert uint16 to int24
 OP_CU3U4                Convert uint24 to uint32
+OP_DI                      Disable Interrupts
 OP_DIVF4                Divide floats
 OP_DIVI3                Divide int24
 OP_DIVI4                Divide int32
 OP_DIVU3                Divide uint24
 OP_DIVU4                Divide uint32
+OP_EI                      Enable Interrupts
 OP_ENTER                Begin subroutine
 OP_EQ3                  Compare (u)int24, jump if ==
 OP_EQ4                  Compare (u)int32, jump if ==

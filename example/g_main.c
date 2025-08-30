@@ -94,6 +94,9 @@ int sub_test_struct_passing();
 
 int main(void) {
 
+#pragma asm DI
+#pragma asm EI
+
   if (sub_test_1())
     return 1;
 

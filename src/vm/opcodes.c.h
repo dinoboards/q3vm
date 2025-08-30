@@ -100,4 +100,6 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "SUB3",       /*  96  Subtract (u)int24 (two's complement). */
     "SUB4",       /*  97  Subtract (u)int32 (two's complement). */
     "SUBF4",      /*  98  Subtract floats */
+    "DI",         /*  99  Disable Interrupts */
+    "EI",         /* 100  Enable Interrupts */
 };

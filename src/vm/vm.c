@@ -1177,6 +1177,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
+    case OP_DI: {
+      DI();
+      DISPATCH();
+    }
+
     case OP_DIVF4:
       opStack8 -= 4;
       opStackFlt[0] = opStackFlt[0] / opStackFlt[1];
@@ -1207,6 +1212,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       // clang-format off
       op_2_uint32_to_1_uint32( / );
       // clang-format on
+      DISPATCH();
+    }
+
+    case OP_EI: {
+      EI();
       DISPATCH();
     }
 

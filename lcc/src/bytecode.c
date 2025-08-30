@@ -316,7 +316,11 @@ static void PrintToSourceLine(int line) {
     if (c == '\n') {
       sourcePtr[i] = 0;
     }
-    print(";%d:%s\n", sourceLine, sourcePtr);
+    if (strncmp(sourcePtr, "#pragma asm", 11) == 0)
+      print("%s   ;%s\n", &sourcePtr[12], sourcePtr);
+    else
+      print(";%d:%s %d\n", sourceLine, sourcePtr, strncmp(sourcePtr, "#pragma asm", 11));
+
     if (c == 0) {
       sourcePtr += i; // end of file
     } else {

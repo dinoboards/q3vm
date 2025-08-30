@@ -916,6 +916,7 @@ static void AssembleLine(void) {
   int i;
 
   Parse();
+
   if (!token[0]) {
     WriteComment();
     return;

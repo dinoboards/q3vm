@@ -8,7 +8,7 @@ assemblers_t assemblers[] = {
     {"ADDI4",   OP_ADD4,       assfn(CODE_OP)   },
     {"ADDP3",   OP_ADD3,       assfn(CODE_OP)   },
     {"ADDRESS", DIRECTIVE,     assfn(ADDRESS)   },
-    {"ADDRF",   OP_MULTIPLE,      assfn(ADDRF)     },
+    {"ADDRF",   OP_MULTIPLE,   assfn(ADDRF)     },
     {"ADDRGP3", OP_CONSTP3,    assfn(CODE_24BIT)},
     {"ADDRL",   OP_MULTIPLE,   assfn(ADDRL)     },
     {"ADDU3",   OP_ADD3,       assfn(CODE_OP)   },
@@ -89,13 +89,15 @@ assemblers_t assemblers[] = {
     {"DIVI4",   OP_DIVI4,      assfn(CODE_OP)   },
     {"DIVU3",   OP_DIVU3,      assfn(CODE_OP)   },
     {"DIVU4",   OP_DIVU4,      assfn(CODE_OP)   },
+    {"DI",      OP_DI,         assfn(CODE_OP)   },/* this must come after the DIxxx operations */
+    {"EI",      OP_EI,         assfn(CODE_OP)   },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
     {"EQF4",    OP_EQ4,        assfn(CODE_PTR)  },
     {"EQI3",    OP_EQ3,        assfn(CODE_PTR)  },
     {"EQI4",    OP_EQ4,        assfn(CODE_PTR)  },
     {"EQU3",    OP_EQ3,        assfn(CODE_PTR)  },
     {"EQU4",    OP_EQ4,        assfn(CODE_PTR)  },
-    {"EQU",     DIRECTIVE,     assfn(EQU)       }, /* this must come after the other EQ.. operations */
+    {"EQU",     DIRECTIVE,     assfn(EQU)       }, /* this must come after the EQxx operations */
     {"EXPORT",  DIRECTIVE,     assfn(COMMENT)   },
     {"FILE",    DIRECTIVE,     assfn(COMMENT)   },
     {"GEF4",    OP_GEF4,       assfn(CODE_PTR)  },

@@ -104,6 +104,8 @@ typedef enum {
   OP_SUB3,       /*  96  Subtract (u)int24 (two's complement). */
   OP_SUB4,       /*  97  Subtract (u)int32 (two's complement). */
   OP_SUBF4,      /*  98  Subtract floats */
+  OP_DI,         /*  99  Disable Interrupts */
+  OP_EI,         /* 100  Enable Interrupts */
   OP_MAX,        /* Make this the last item */
 
 } opcode_t;
