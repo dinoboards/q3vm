@@ -24,6 +24,58 @@ ASMFn(CODE_24BIT) {
   EmitInt24(&segment[CODESEG], v);
 }
 
+ASMMultipleFn(CODE_CONSTI_24BIT) {
+  Parse();
+  const int v = ParseExpression();
+
+  if (v <= 127 && v >= -128) {
+    WriteInt8Code(OP_CONSTI3_I1, v);
+
+    EmitByte(&segment[CODESEG], OP_CONSTI3_I1);
+    EmitByte(&segment[CODESEG], v);
+    return;
+  }
+
+  if (v <= 32767 && v >= -32768) {
+    WriteInt16Code(OP_CONSTI3_I2, v);
+
+    EmitByte(&segment[CODESEG], OP_CONSTI3_I2);
+    EmitInt16(&segment[CODESEG], v);
+    return;
+  }
+
+  WriteInt24Code(OP_CONSTs3, v);
+
+  EmitByte(&segment[CODESEG], OP_CONSTs3);
+  EmitInt24(&segment[CODESEG], v);
+}
+
+ASMMultipleFn(CODE_CONSTU_24BIT) {
+  Parse();
+  const unsigned int v = ParseExpression();
+
+  if (v <= 255) {
+    WriteInt8Code(OP_CONSTU3_U1, v);
+
+    EmitByte(&segment[CODESEG], OP_CONSTU3_U1);
+    EmitByte(&segment[CODESEG], v);
+    return;
+  }
+
+  if (v < 0x10000) {
+    WriteInt16Code(OP_CONSTU3_U2, v);
+
+    EmitByte(&segment[CODESEG], OP_CONSTU3_U2);
+    EmitInt16(&segment[CODESEG], v);
+    return;
+  }
+
+  WriteInt24Code(OP_CONSTs3, v);
+
+  EmitByte(&segment[CODESEG], OP_CONSTs3);
+  EmitInt24(&segment[CODESEG], v);
+}
+
 ASMFn(CODE_PTR) {
   Parse();
   const int v = ParseExpression();

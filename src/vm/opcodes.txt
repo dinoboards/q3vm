@@ -23,11 +23,15 @@ OP_CI2I3                Convert int16 to int24
 OP_CI3F4                Convert int24 to float
 OP_CI3s4                Convert int24 to (u)int32
 OP_CI4F4                Convert int32 to float
+OP_CONSTI3_I1
+OP_CONSTI3_I2
 OP_CONSTP3              Push address pointer to stack
 OP_CONSTs1              Push 1 byte constant
 OP_CONSTs2              Push 2 byte constant
 OP_CONSTs3              Push 3 byte constant
 OP_CONSTs4              Push 4 byte constant
+OP_CONSTU3_U1
+OP_CONSTU3_U2
 OP_CU1I3                Convert uint8 to int24
 OP_CU2I3                Convert uint16 to int24
 OP_CU3U4                Convert uint24 to uint32
