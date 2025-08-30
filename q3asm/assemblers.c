@@ -24,6 +24,32 @@ ASMFn(CODE_24BIT) {
   EmitInt24(&segment[CODESEG], v);
 }
 
+ASMMultipleFn(CODE_BLOCK_COPY) {
+  Parse();
+  const unsigned int v = ParseExpression();
+
+  if (v <= 255) {
+    WriteInt8Code(OP_BLK_CPY_U1, v);
+
+    EmitByte(&segment[CODESEG], OP_BLK_CPY_U1);
+    EmitByte(&segment[CODESEG], v);
+    return;
+  }
+
+  if (v < 0x10000) {
+    WriteInt16Code(OP_BLK_CPY_U2, v);
+
+    EmitByte(&segment[CODESEG], OP_BLK_CPY_U2);
+    EmitInt16(&segment[CODESEG], v);
+    return;
+  }
+
+  WriteInt24Code(OP_BLK_CPY, v);
+
+  EmitByte(&segment[CODESEG], OP_BLK_CPY);
+  EmitInt24(&segment[CODESEG], v);
+}
+
 ASMMultipleFn(CODE_CONSTI_24BIT) {
   Parse();
   const int v = ParseExpression();

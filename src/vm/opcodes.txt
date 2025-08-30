@@ -10,7 +10,9 @@ OP_BAND3                Bitwise AND int24
 OP_BAND4                Bitwise AND int32
 OP_BCOM3                Bitwise Complement int24
 OP_BCOM4                Bitwise COMplement int32
-OP_BLOCK_COPY           memcpy
+OP_BLK_CPY           memcpy
+OP_BLK_CPY_U1
+OP_BLK_CPY_U2
 OP_BOR3                 Bitwise OR int24
 OP_BOR4                 Bitwise OR int32
 OP_BXOR3                Bitwise eXclusive-OR int24

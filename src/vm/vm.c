@@ -983,7 +983,7 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
-    case OP_BLOCK_COPY: {
+    case OP_BLK_CPY: {
       pop_2_uint24();
 
       log3_4("memcpy(" FMT_INT24 ", " FMT_INT24 ", " FMT_INT24 ")\n", UINT(R1.uint24), UINT(R0.uint24), UINT(R2.uint24));
@@ -1002,6 +1002,50 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
                  UINT(R2.uint24));
 
       PC += INT24_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_BLK_CPY_U1: {
+      pop_2_uint24();
+
+      log3_4("memcpy(" FMT_INT24 ", " FMT_INT24 ", " FMT_INT24 ")\n", UINT(R1.uint24), UINT(R0.uint24), R2.uint8);
+
+#ifdef MEMORY_SAFE
+      if (!VM_VerifyReadOK(_vm.vm, UINT(R0.uint24), R2.uint8))
+        DISPATCH();
+
+      if (!VM_VerifyWriteOK(_vm.vm, UINT(R1.uint24), R2.uint8))
+        DISPATCH();
+#endif
+
+      Com_Memcpy(_vm.dataBase + UINT(R1.uint24),
+                 (UINT(R0.uint24) < _vm.litLength) ? &_vm.codeBase[_vm.codeLength + UINT(R0.uint24)]
+                                                   : &_vm.dataBase[UINT(R0.uint24)],
+                 R2.uint8);
+
+      PC += INT8_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_BLK_CPY_U2: {
+      pop_2_uint24();
+
+      log3_4("memcpy(" FMT_INT24 ", " FMT_INT24 ", " FMT_INT24 ")\n", UINT(R1.uint24), UINT(R0.uint24), R2.uint16);
+
+#ifdef MEMORY_SAFE
+      if (!VM_VerifyReadOK(_vm.vm, UINT(R0.uint24), R2.uint16))
+        DISPATCH();
+
+      if (!VM_VerifyWriteOK(_vm.vm, UINT(R1.uint24), R2.uint16))
+        DISPATCH();
+#endif
+
+      Com_Memcpy(_vm.dataBase + UINT(R1.uint24),
+                 (UINT(R0.uint24) < _vm.litLength) ? &_vm.codeBase[_vm.codeLength + UINT(R0.uint24)]
+                                                   : &_vm.dataBase[UINT(R0.uint24)],
+                 R2.uint16);
+
+      PC += INT16_INCREMENT;
       DISPATCH();
     }
 
