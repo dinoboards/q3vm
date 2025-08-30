@@ -89,7 +89,7 @@ assemblers_t assemblers[] = {
     {"DIVI4",   OP_DIVI4,      assfn(CODE_OP)   },
     {"DIVU3",   OP_DIVU3,      assfn(CODE_OP)   },
     {"DIVU4",   OP_DIVU4,      assfn(CODE_OP)   },
-    {"DI",      OP_DI,         assfn(CODE_OP)   },/* this must come after the DIxxx operations */
+    {"DI",      OP_DI,         assfn(CODE_OP)   }, /* this must come after the DIxxx operations */
     {"EI",      OP_EI,         assfn(CODE_OP)   },
     {"ENDPROC", OP_MULTIPLE,   assfn(ENDPROC)   },
     {"EQF4",    OP_EQ4,        assfn(CODE_PTR)  },

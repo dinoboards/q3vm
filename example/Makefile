@@ -44,7 +44,7 @@ OBJ_NAMES        = $(notdir $(C_SRCS))
 OBJS             = $(addprefix $(OBJDIR)/,$(OBJ_NAMES:%.c=%.asm))
 
 $(OBJDIR)/%.asm: %.c
-	@$(CC) $(CFLAGS) -o $@ $<
+	@$(CC) -A $(CFLAGS) -o $@ $<
 
 all: $(TARGET)
 	@echo -e $(FADE)example: Compiled$(NORMAL)
