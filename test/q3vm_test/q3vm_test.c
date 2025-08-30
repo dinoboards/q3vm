@@ -74,7 +74,7 @@ int testNominal(const char *filepath) {
 
     COM_StripExtension(filepath, mapFilepath);
     sprintf(symbols, "%s.map", mapFilepath);
-    Com_Printf("Loading symbol file: %s...\n", symbols);
+    printf("Loading symbol file: %s...\n", symbols);
 
     char *mapFileImage = (char *)loadImage(symbols, &mapFileImageSize);
     VM_LoadDebugInfo(&vm, mapFileImage, pDebugInfo, 0x10000);

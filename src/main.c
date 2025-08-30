@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 
     COM_StripExtension(filepath, filepath);
     sprintf(symbols, "%s.map", filepath);
-    Com_Printf("Loading symbol file: %s...\n", symbols);
+    printf("Loading symbol file: %s...\n", symbols);
 
     char *mapFileImage = (char *)loadImage(symbols, &mapFileImageSize);
     VM_LoadDebugInfo(&vm, mapFileImage, pDebugInfo, 0x10000);

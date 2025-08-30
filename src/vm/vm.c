@@ -25,7 +25,26 @@
 #define FADE   "\033[2m"
 #define NORMAL "\033[0m"
 
+/* debug and tracing logging */
 #ifdef DEBUG_VM
+#define log_1(a)                                  printf(a)
+#define log_2(a, b)                               printf(a, b)
+#define log_2(a, b)                               printf(a, b)
+#define log_3(a, b, c)                            printf(a, b, c)
+#define log_4(a, b, c, d)                         printf(a, b, c, d)
+#define log_5(a, b, c, d, e)                      printf(a, b, c, d, e)
+#define log_6(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6)
+#define log_7(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6, a7)
+#define log_8(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6, a7, a8)
+#define log_9(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+
+#define log1_2(a, b)                                                                                                               \
+  if (vm_debugLevel > 1)                                                                                                           \
+  printf(a, b)
+
+#define log1_9(a1, a2, a3, a4, a5, a6, a7, a8, a9)                                                                                 \
+  if (vm_debugLevel > 1)                                                                                                           \
+  printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
 
 #define log3_2(a, b)                                                                                                               \
   if (vm_debugLevel > 3)                                                                                                           \
@@ -40,10 +59,46 @@
   printf(FADE "\t" a NORMAL, b, c, d)
 
 #else
+
+#define log_1(a)
+#define log_2(a, b)
+#define log_3(a, b, c)
+#define log_4(a, b, c, d)
+#define log_5(a, b, c, d, e)
+#define log_6(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define log_7(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define log_8(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define log_9(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+
+#define log1_2(a, b)
+
 #define log3_2(a, b)
 #define log3_3(a, b, c)
 #define log3_4(a, b, c, d)
 
+#endif
+
+/** Error console reporting */
+#ifdef LOGGING_ENABLED
+#define Com_Printf_1(a)                                  printf(a)
+#define Com_Printf_2(a, b)                               printf(a, b)
+#define Com_Printf_3(a, b, c)                            printf(a, b, c)
+#define Com_Printf_4(a, b, c, d)                         printf(a, b, c, d)
+#define Com_Printf_5(a, b, c, d, e)                      printf(a, b, c, d, e)
+#define Com_Printf_6(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6)
+#define Com_Printf_7(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6, a7)
+#define Com_Printf_8(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6, a7, a8)
+#define Com_Printf_9(a1, a2, a3, a4, a5, a6, a7, a8, a9) printf(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#else
+#define Com_Printf_1(a)
+#define Com_Printf_2(a, b)
+#define Com_Printf_3(a, b, c)
+#define Com_Printf_4(a, b, c, d)
+#define Com_Printf_5(a, b, c, d, e)
+#define Com_Printf_6(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define Com_Printf_7(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define Com_Printf_8(a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#define Com_Printf_9(a1, a2, a3, a4, a5, a6, a7, a8, a9)
 #endif
 
 /******************************************************************************
@@ -229,13 +284,13 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
   /* load the map file */
   VM_LoadSymbols(vm, mapfileImage, debugStorage, debugStorageLength);
 
-  Com_Printf("VM:\n");
-  Com_Printf(".code length: %6i bytes\n", vm->codeLength);
+  log_1("VM:\n");
+  log_2(".code length: %6i bytes\n", vm->codeLength);
   /*Com_Printf(".data length: %6i bytes\n", vm->workingRAMLength);
   Com_Printf(".lit  length: %6i bytes\n", vm->litLength);
   Com_Printf(".bss  length: %6i bytes\n", vm->bssLength);*/
-  Com_Printf("Stack size:   %6i bytes\n", VM_PROGRAM_STACK_SIZE);
-  Com_Printf("Allocated memory: %6i bytes\n", vm->workingRAMLength);
+  log_2("Stack size:   %6i bytes\n", VM_PROGRAM_STACK_SIZE);
+  log_2("Allocated memory: %6i bytes\n", vm->workingRAMLength);
   return 0;
 }
 #endif
@@ -244,20 +299,20 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, const vm_size_t bytecodeLength) {
 
   if (!header || bytecodeLength <= vm_sizeof(vmHeader_t) || bytecodeLength > VM_MAX_IMAGE_SIZE) {
-    Com_Printf("Failed.\n");
+    Com_Printf_1("Failed.\n");
     return -1;
   }
 
   if (header->vmMagic == VM_MAGIC) {
     if (UINT(header->codeLength) == 0 || UINT(header->bssLength) > VM_MAX_BSS_LENGTH ||
         UINT(header->codeLength) + UINT(header->litLength) + UINT(header->dataLength) > bytecodeLength) {
-      Com_Printf("Warning: bad header\n");
+      Com_Printf_1("Warning: bad header\n");
       VM_AbortError(vm, VM_MALFORMED_HEADER, "Malformed bytecode image\n");
     }
   } else {
-    Com_Printf("Warning: Invalid magic number in header "
-               "Read: 0x%x, expected: 0x%x\n",
-               header->vmMagic, VM_MAGIC);
+    Com_Printf_3("Warning: Invalid magic number in header "
+                 "Read: 0x%x, expected: 0x%x\n",
+                 header->vmMagic, VM_MAGIC);
     VM_AbortError(vm, VM_MALFORMED_HEADER, "Invalid magic number in header\n");
   }
 
@@ -268,8 +323,8 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
     const vm_size_t dataLength = UINT(header->dataLength) + UINT(header->bssLength);
 
     if (dataLength > vm->workingRAMLength) {
-      Com_Printf("Error: Insufficient ram allocated for VM.  Granted " FMT_INT24 ", image requires " FMT_INT24 "\n",
-                 vm->workingRAMLength, dataLength);
+      Com_Printf_3("Error: Insufficient ram allocated for VM.  Granted " FMT_INT24 ", image requires " FMT_INT24 "\n",
+                   vm->workingRAMLength, dataLength);
       VM_AbortError(vm, VM_NOT_ENOUGH_RAM, "Insufficient ram allocated for VM\n");
     }
   }
@@ -360,7 +415,7 @@ bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, vm_t *cons
   if (!vmAddr || !vm)
     return -1;
 
-  printf("Checking memory %06X\n", vmAddr);
+  Com_Printf_2("Checking memory %06X\n", vmAddr);
 
   if (vmAddr > vm->workingRAMLength || vmAddr + len > vm->workingRAMLength) {
     VM_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
@@ -410,8 +465,8 @@ bool VM_VerifyReadOK(vm_t *vm, vm_size_t vaddr, int size) {
   }
 
   if (vaddr + size > vm->workingRAMLength + vm->litLength) {
-    Com_Printf("Attempted to read at " FMT_INT24 "+(" FMT_INT24 ") -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, size,
-               vm->workingRAMLength, vm->litLength);
+    Com_Printf_5("Attempted to read at " FMT_INT24 "+(" FMT_INT24 ") -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, size,
+                 vm->workingRAMLength, vm->litLength);
     vm->lastError = VM_RAM_ACCESS_ERROR;
     Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Read Error - attempt read beyond RAM");
     return false;
@@ -422,13 +477,13 @@ bool VM_VerifyReadOK(vm_t *vm, vm_size_t vaddr, int size) {
 
 bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   if (vaddr > 0xFF0000 && size == 1) {
-    printf("mocking I/O Access\n");
+    Com_Printf_1("mocking I/O Access\n");
     return true;
   }
 
   if (vaddr < vm->litLength) {
-    Com_Printf("Attempted to write at " FMT_INT24 " -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, vm->workingRAMLength,
-               vm->litLength);
+    Com_Printf_4("Attempted to write at " FMT_INT24 " -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, vm->workingRAMLength,
+                 vm->litLength);
 
     vm->lastError = VM_LIT_ACCESS_ERROR;
     Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Write Error - attempt to write to LIT segment");
@@ -436,8 +491,8 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
   }
 
   if (vaddr + size > vm->workingRAMLength + vm->litLength) {
-    Com_Printf("Attempted to write at " FMT_INT24 " -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, vm->workingRAMLength,
-               vm->litLength);
+    Com_Printf_4("Attempted to write at " FMT_INT24 " -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, vm->workingRAMLength,
+                 vm->litLength);
     vm->lastError = VM_RAM_ACCESS_ERROR;
     Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Write Error - attempt to write beyond RAM");
     return false;
@@ -895,19 +950,15 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       goto done;
     }
 
-#ifdef DEBUG_VM
-    if (vm_debugLevel > 1) {
-      Com_Printf(FMT_INT24 ":\t", vPC);
-    }
-#endif
+    log1_2(FMT_INT24 ":\t", vPC);
 
     check_pc_overflow();
     check_stack_overflow();
 
 #ifdef DEBUG_VM
     if (vm_debugLevel > 1) {
-      Com_Printf("%s%i %s\t(" FMT_INT8 " " FMT_INT24 ");\tSP=" FMT_INT24 ",  R0=" FMT_INT24 ", R1=" FMT_INT24 " \n",
-                 VM_Indent(_vm.vm), (int)(opStack8 - _opStack), opnames[*PC], *PC, R2.int32, programStack, R0.int32, R1.int32);
+      log1_9("%s%i %s\t(" FMT_INT8 " " FMT_INT24 ");\tSP=" FMT_INT24 ",  R0=" FMT_INT24 ", R1=" FMT_INT24 " \n", VM_Indent(_vm.vm),
+             (int)(opStack8 - _opStack), opnames[*PC], *PC, R2.int32, programStack, R0.int32, R1.int32);
     }
     profileSymbol->profileCount++;
 #endif /* DEBUG_VM */
@@ -943,10 +994,9 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_ARG3: {
       pop_1_uint24(R0);
-#ifdef DEBUG_VM
-      printf("  ARG3 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
-             programStack + R2.int8, UINT(R0.uint24));
-#endif
+
+      log_5("  ARG3 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
+            programStack + R2.int8, UINT(R0.uint24));
       *(uint24_t *)&_vm.dataBase[programStack + R2.int8] = R0.uint24;
       PC++;
       DISPATCH();
@@ -954,10 +1004,8 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_ARG4: {
       pop_1_uint32(R0);
-#ifdef DEBUG_VM
-      printf("  ARG4 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
-             programStack + R2.int8, R0.uint32);
-#endif
+      log_5("  ARG4 *[" FMT_INT24 " + " FMT_INT8 " (" FMT_INT24 ")] = " FMT_INT24 "\n", programStack, R2.int8,
+            programStack + R2.int8, R0.uint32);
       *(uint32_t *)&_vm.dataBase[programStack + R2.int8] = R0.uint32;
       PC++;
       DISPATCH();
@@ -1078,11 +1126,7 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       if (INT(R0.int24) < 0) /* system call */
       {
         uint32_t r;
-#ifdef DEBUG_VM
-        if (vm_debugLevel) {
-          Com_Printf("%s%i---> systemcall(%i)\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), -1 - vPC);
-        }
-#endif
+        log_4("%s%i---> systemcall(%i)\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), -1 - vPC);
 
         _vm.vm->programStack = programStack - 3; /* save the stack to allow recursive VM entry */
 
@@ -1101,11 +1145,7 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
         push_1_uint32(r);
         PC = _vm.codeBase + INT(*(int24_t *)&_vm.dataBase[programStack]);
-#ifdef DEBUG_VM
-        if (vm_debugLevel) {
-          Com_Printf("%s%i<--- %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC));
-        }
-#endif
+        log_4("%s%i<--- %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC));
       }
 #ifdef MEMORY_SAFE
       else if (PC >= PC_end)
@@ -1297,8 +1337,9 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       profileSymbol = VM_ValueToFunctionSymbol(_vm.vm, vPC - 3);
       /* save old stack frame for debugging traces */
       *(int24_t *)&_vm.dataBase[programStack + 3] = INT24(programStack + localsAndArgsSize);
+      log_4("%s%i---> %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC - 3));
+
       if (vm_debugLevel) {
-        Com_Printf("%s%i---> %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC - 3));
         {
           /* this is to allow setting breakpoints here in the
            * debugger */
@@ -1391,10 +1432,8 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       PC = _vm.codeBase + INT(*(int24_t *)&_vm.dataBase[programStack]);
 #ifdef DEBUG_VM
       profileSymbol = VM_ValueToFunctionSymbol(_vm.vm, vPC);
-      if (vm_debugLevel) {
-        Com_Printf("%s%i<--- %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC));
-      }
 #endif
+      log_4("%s%i<--- %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC));
       /* check for leaving the VM */
       if (vPC == -1)
         goto done;
@@ -1959,14 +1998,14 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
 
     token = COM_Parse(&text_p);
     if (!token[0]) {
-      Com_Printf("WARNING: incomplete line at end of file\n");
+      log_1("WARNING: incomplete line at end of file\n");
       break;
     }
     value = ParseHex(token);
 
     token = COM_Parse(&text_p);
     if (!token[0]) {
-      Com_Printf("WARNING: incomplete line at end of file\n");
+      log_1("WARNING: incomplete line at end of file\n");
       break;
     }
     chars = strlen(token);
@@ -1993,7 +2032,7 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
   }
 
   vm->numSymbols = count;
-  Com_Printf("%i symbols parsed\n", count);
+  log_2("%i symbols parsed\n", count);
 }
 
 static void VM_StackTrace(vm_t *vm, int _program_counter, int programStack) {
@@ -2001,14 +2040,14 @@ static void VM_StackTrace(vm_t *vm, int _program_counter, int programStack) {
 
   count = 0;
   do {
-    Com_Printf("STACK: %s " FMT_INT24 " " FMT_INT24 "\n", VM_ValueToSymbol(vm, _program_counter), _program_counter, programStack);
+    log_4("STACK: %s " FMT_INT24 " " FMT_INT24 "\n", VM_ValueToSymbol(vm, _program_counter), _program_counter, programStack);
     programStack     = INT(*(int24_t *)&vm->dataBase[programStack + 3]);
     _program_counter = INT(*(int24_t *)&vm->dataBase[programStack]);
   } while (_program_counter != -1 && ++count < 5);
 
   if (_program_counter == 0) {
-    Com_Printf("STACK: %s " FMT_INT24 " " FMT_INT24 "\n", VM_ValueToSymbol(vm, _program_counter), _program_counter, programStack);
-    printf(FMT_INT24 "\n", INT(*(int24_t *)&vm->dataBase[programStack - 6]));
+    log_4("STACK: %s " FMT_INT24 " " FMT_INT24 "\n", VM_ValueToSymbol(vm, _program_counter), _program_counter, programStack);
+    log_2(FMT_INT24 "\n", INT(*(int24_t *)&vm->dataBase[programStack - 6]));
   }
 }
 
@@ -2065,10 +2104,10 @@ void VM_VmProfile_f(vm_t *vm) {
     sym = sorted[i];
 
     perc = (int)(100 * (float)sym->profileCount / total);
-    Com_Printf("%2i%% %9i %s\n", perc, sym->profileCount, sym->symName);
+    log_4("%2i%% %9i %s\n", perc, sym->profileCount, sym->symName);
     sym->profileCount = 0;
   }
 
-  Com_Printf("    %9.0f total\n", total);
+  log_2("    %9.0f total\n", total);
 }
 #endif
