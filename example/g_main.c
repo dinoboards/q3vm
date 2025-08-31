@@ -91,15 +91,14 @@ int sub_test_OP_RSHU4(void);
 int sub_test_static_init(void);
 int sub_test_struct_passing(void);
 int sub_test_struct_return(void);
+int sub_test_io_access(void);
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
-#define VDP_IO_DATA ((uint24_t)0xFFFF98)
-#define VDP_DATA    (*((uint8_t *)VDP_IO_DATA))
+#define VDP_IO_LEDS ((uint24_t)0xFFFF00)
+#define VDP_LEDS    (*((uint8_t *)VDP_IO_LEDS))
 
 int main(void) {
-
-  VDP_DATA = 23;
 
 #pragma asm DI
 #pragma asm EI
@@ -304,6 +303,9 @@ int main(void) {
 
   if (sub_test_struct_return())
     return 66;
+
+  if (sub_test_io_access())
+    return 67;
 
   return 0;
 }
@@ -1446,6 +1448,15 @@ int sub_test_struct_return(void) {
   p = point_new(44, 0x55);
 
   if (p.x != 44 || p.y != 0x55)
+    return 1;
+
+  return 0;
+}
+
+int sub_test_io_access(void) {
+
+  VDP_LEDS = 0x5A;
+  if (VDP_LEDS != 0x5A)
     return 1;
 
   return 0;

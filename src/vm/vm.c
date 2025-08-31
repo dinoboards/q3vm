@@ -503,7 +503,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
       ;                                                                                                                            \
     } else {                                                                                                                       \
                                                                                                                                    \
-      if (((vm_size_t)(vaddr) > 0xFF0000)) {                                                                                       \
+      if (((vm_size_t)(vaddr) >= 0xFF0000)) {                                                                                      \
         io_write(vaddr, value);                                                                                                    \
       } else {                                                                                                                     \
         _vm.dataBase[(vm_size_t)(vaddr)] = value;                                                                                  \
@@ -1456,7 +1456,9 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       if (!VM_VerifyReadOK(_vm.vm, UINT(R0_uint24(0)), 1))
         R_uint8 = 0;
       else {
-        if (UINT(R0_uint24(0)) < _vm.litLength)
+        if (UINT(R0_uint24(0)) >= 0xFF0000)
+          R_uint8 = io_read(UINT(R0_uint24(0)));
+        else if (UINT(R0_uint24(0)) < _vm.litLength)
           R_uint8 = *(uint8_t *)&_vm.litBase[UINT(R0_uint24(0))];
         else
           R_uint8 = *(uint8_t *)&_vm.dataBase[UINT(R0_uint24(0))];
