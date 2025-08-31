@@ -100,8 +100,32 @@ int sub_test_io_access(void);
 
 int main(void) {
 
+  trap_Printf("BOB\r\n");
+
+  trap_7("BOB:7\n");
+
 #pragma asm DI
 #pragma asm EI
+
+  VDP_LEDS = 0;
+
+  switch (VDP_LEDS) {
+  case 108:
+    return sub_test_1();
+
+  case 109:
+    return sub_test_2();
+
+  case 110:
+    return sub_test_3();
+  case 111:
+    return sub_test_4();
+
+  case 112:
+    return sub_test_5();
+  case 113:
+    return sub_test_6();
+  }
 
   if (sub_test_1())
     return 1;

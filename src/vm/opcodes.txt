@@ -1,6 +1,5 @@
 OP_UNDEF                Error: VM halt
 OP_IGNORE               No operation
-OP_BREAK                vm->breakCount++
 OP_ADD3                 Add int24 (two's complement)
 OP_ADD4                 Add int32 (two's complement)
 OP_ADDF4                Add floats
@@ -15,6 +14,7 @@ OP_BLK_CPY_U1
 OP_BLK_CPY_U2
 OP_BOR3                 Bitwise OR int24
 OP_BOR4                 Bitwise OR int32
+OP_BREAK                vm->breakCount++
 OP_BXOR3                Bitwise eXclusive-OR int24
 OP_BXOR4                Bitwise eXclusive-OR int32
 OP_CALL                 Call subroutine.
@@ -30,6 +30,22 @@ OP_CONSTI3_I2
 OP_CONSTP3              Push address pointer to stack
 OP_CONSTP3_1
 OP_CONSTP3_2
+OP_CONSTP3_SC1
+OP_CONSTP3_SC2
+OP_CONSTP3_SC3
+OP_CONSTP3_SC4
+OP_CONSTP3_SC5
+OP_CONSTP3_SC6
+OP_CONSTP3_SC7
+OP_CONSTP3_SC8
+OP_CONSTP3_SC9
+OP_CONSTP3_SC10
+OP_CONSTP3_SC11
+OP_CONSTP3_SC12
+OP_CONSTP3_SC13
+OP_CONSTP3_SC14
+OP_CONSTP3_SC15
+OP_CONSTP3_SCn
 OP_CONSTs1              Push 1 byte constant
 OP_CONSTs2              Push 2 byte constant
 OP_CONSTs3              Push 3 byte constant

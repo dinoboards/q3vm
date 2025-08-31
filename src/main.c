@@ -139,6 +139,7 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
 
   switch (id) {
   case -1: /* PRINTF */
+  case -7: /* PRINTF */
     return printf("%s", (const char *)VMA_PTR(3, vm));
 
   case -2: /* ERROR */

@@ -1229,16 +1229,96 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
     }
 
     case OP_CONSTP3_1: {
-      unsigned int addr = vPC + R2.int8;
-      push_1_uint24(UINT24(addr));
+      push_1_uint24(UINT24(vPC + R2.int8));
       PC += INT8_INCREMENT;
       DISPATCH();
     }
 
     case OP_CONSTP3_2: {
-      unsigned int addr = vPC + R2.int16;
-      push_1_uint24(UINT24(addr));
+      push_1_uint24(UINT24(vPC + R2.int16));
       PC += INT16_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC1: {
+      push_1_int24(INT24(-1));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC2: {
+      push_1_int24(INT24(-2));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC3: {
+      push_1_int24(INT24(-3));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC4: {
+      push_1_int24(INT24(-4));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC5: {
+      push_1_int24(INT24(-5));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC6: {
+      push_1_int24(INT24(-6));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC7: {
+      push_1_int24(INT24(-7));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC8: {
+      push_1_int24(INT24(-8));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC9: {
+      push_1_int24(INT24(-9));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC10: {
+      push_1_int24(INT24(-10));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC11: {
+      push_1_int24(INT24(-11));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC12: {
+      push_1_int24(INT24(-12));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC13: {
+      push_1_int24(INT24(-13));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC14: {
+      push_1_int24(INT24(-14));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SC15: {
+      push_1_int24(INT24(-15));
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_SCn: {
+      log3_2(FMT_INT8 " POP uint8\n", R2.uint8 & 0xFF);
+      push_1_int24(INT24(0 - R2.uint8));
+      PC += INT8_INCREMENT;
       DISPATCH();
     }
 

@@ -26,10 +26,23 @@ ASMFn(CODE_24BIT) {
   EmitInt24(&segment[CODESEG], v);
 }
 
-ASMFn(CODE_ADDRG) {
+ASMMultipleFn(CODE_ADDRG) {
   Parse();
-  symbol_t *s;
+  symbol_t *s = NULL;
   const int v = ParseExpression2(&s);
+
+  if (s && s->segment->index == CODESEG && v < 0) {
+    if (v >= -15) {
+      WriteCode(OP_CONSTP3_SC1 + abs(v) - 1);
+      EmitByte(&segment[CODESEG], OP_CONSTP3_SC1 + abs(v) - 1);
+      return;
+    }
+
+    WriteInt8Code(OP_CONSTP3_SCn, -v);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_SCn);
+    EmitByte(&segment[CODESEG], -v);
+    return;
+  }
 
   int relative_offset = v - (currentSegment->imageUsed + 1);
 
@@ -38,8 +51,8 @@ ASMFn(CODE_ADDRG) {
     if (relative_offset <= 127 && relative_offset >= -128) {
       jump_optimisation_count++;
       sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
-      WriteInt8Code(assembler.secondary_opcode, relative_offset);
-      EmitByte(&segment[CODESEG], assembler.secondary_opcode);
+      WriteInt8Code(OP_CONSTP3_1, relative_offset);
+      EmitByte(&segment[CODESEG], OP_CONSTP3_1);
       EmitByte(&segment[CODESEG], relative_offset);
       return;
     }
@@ -54,9 +67,9 @@ ASMFn(CODE_ADDRG) {
     }
   }
 
-  WriteInt24Code(assembler.opcode, v);
+  WriteInt24Code(OP_CONSTP3, v);
 
-  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitByte(&segment[CODESEG], OP_CONSTP3);
   EmitInt24(&segment[CODESEG], v);
 }
 
