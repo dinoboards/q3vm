@@ -808,6 +808,14 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
     PC += INT16_INCREMENT;                                                                                                         \
   opStack8 -= 8;
 
+#define op_2_uint24_1_branch(operation)                                                                                            \
+  log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));                                     \
+  if ((UINT(R1_uint24(0)) operation UINT(R0_uint24(0))))                                                                           \
+    PC += R2.int8;                                                                                                                 \
+  else                                                                                                                             \
+    PC += INT8_INCREMENT;                                                                                                          \
+  opStack8 -= 8;
+
 #define op_2_int32_branch(operation)                                                                                               \
   log3_3(FMT_INT32 " " #operation " " FMT_INT32 "\n", R1_int32(0), R0_int32(0));                                                   \
   if ((R1_int32(0) operation R0_int32(0)))                                                                                         \
@@ -1343,6 +1351,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_EQ3: {
       op_2_uint24_branch(==);
+      DISPATCH();
+    }
+
+    case OP_EQ3_1: {
+      op_2_uint24_1_branch(==);
       DISPATCH();
     }
 

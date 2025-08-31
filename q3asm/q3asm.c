@@ -382,7 +382,7 @@ static FILE *fListFile;
 #define COLWIDTH_4 (COLWIDTH_3 + 24) /* Value */
 
 static int WriteString(const char *str) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     return fprintf(fListFile, "%s", str);
   }
 
@@ -390,14 +390,14 @@ static int WriteString(const char *str) {
 }
 
 static int WriteChar(const char ch) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     return fprintf(fListFile, "%c", ch);
   }
 
   return 0;
 }
 static void WritePC() {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     int v = 0;
     switch (currentSegment->index) {
 
@@ -418,63 +418,63 @@ static void WritePC() {
 }
 
 static void WriteSymbol(const char *const token) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_1 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%s:", token);
   }
 }
 
 static void WriteOpcode(const uint8_t v) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_2 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%s", opnames[v]);
   }
 }
 
 static void WriteDirective(const char *directive) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_2 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%s", directive);
   }
 }
 
 static void WriteValue(const char *str) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%s", str);
   }
 }
 
 static void WriteInt8(const int v) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%%%02X", (uint32_t)v & 0xFF);
   }
 }
 
 static void WriteInt16(const int v) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%%%04X", (uint32_t)v & 0xFFFF);
   }
 }
 
 static void WriteInt24(const int v) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%%%06X", (uint32_t)v & 0xFFFFFF);
   }
 }
 
 static void WriteInt32(const int v) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%%%08X", (uint32_t)v);
   }
 }
 
 static void WriteNumber(const int v) {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%d", (uint32_t)v);
   }
@@ -485,14 +485,14 @@ static void WriteFloat(int v) {
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
   const float as_float = *((float *)&v);
 #pragma GCC diagnostic pop
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_3 - dis_columnpos, "");
     dis_columnpos += fprintf(fListFile, "%f", as_float);
   }
 }
 
 static void WriteComment() {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_4 - dis_columnpos, "");
     fprintf(fListFile, "; %s\n", lineBuffer);
     dis_columnpos = 0;
@@ -500,7 +500,7 @@ static void WriteComment() {
 }
 
 static void WriteInfo() {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     dis_columnpos += fprintf(fListFile, "%*s", COLWIDTH_4 - dis_columnpos, "");
     fprintf(fListFile, "; %s\n", infoBuffer);
     dis_columnpos = 0;
@@ -508,7 +508,7 @@ static void WriteInfo() {
 }
 
 static void WriteNewLine() {
-  if (passNumber == 1 && options.writeListFile) {
+  if (passNumber == 2 && options.writeListFile) {
     fprintf(fListFile, "\n");
     dis_columnpos = 0;
   }
@@ -643,7 +643,7 @@ static void DefineSymbol(char *sym, int value) {
   char      expanded[MAX_LINE_LENGTH * 2];
   int       hash;
 
-  if (passNumber == 1) {
+  if (passNumber != 0) {
     return;
   }
 
@@ -725,9 +725,10 @@ static int LookupSymbol(char *sym) {
   }
 
   CodeError("error: symbol '%s' undefined\n", sym);
+  int pn     = passNumber;
   passNumber = 0;
   DefineSymbol(sym, 0); // so more errors aren't printed
-  passNumber = 1;
+  passNumber = pn;
   return 0;
 }
 
@@ -894,7 +895,7 @@ static int ParseExpression(void) {
   return v;
 }
 
-#define assfn(a) TryNewAssemble_##a
+#define assfn(a)        TryNewAssemble_##a
 
 #include "assemblers.c"
 #include "assemblers.h"
@@ -1076,7 +1077,7 @@ static void Assemble(void) {
   segment[LITSEG].index  = LITSEG;
 
   // assemble
-  for (passNumber = 0; passNumber < 2; passNumber++) {
+  for (passNumber = 0; passNumber < 3; passNumber++) {
     segment[LITSEG].segmentBase  = 0;
     segment[DATASEG].segmentBase = segment[LITSEG].imageUsed;
     segment[BSSSEG].segmentBase  = segment[DATASEG].segmentBase + segment[DATASEG].imageUsed;
@@ -1093,7 +1094,7 @@ static void Assemble(void) {
       currentFileLine  = 0;
       report("pass %i: %s\n", passNumber, currentFileName);
 
-      if (passNumber == 1 && options.writeListFile) {
+      if (passNumber == 2 && options.writeListFile) {
         strcpy(filename, currentFileName);
         StripExtension(filename);
         strcat(filename, ".lst");
@@ -1108,7 +1109,7 @@ static void Assemble(void) {
         AssembleLine();
       }
 
-      if (passNumber == 1 && options.writeListFile) {
+      if (passNumber == 2 && options.writeListFile) {
         fclose(fListFile);
       }
     }

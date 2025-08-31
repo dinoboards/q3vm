@@ -5,7 +5,9 @@ typedef void (*assemblerFn)(const struct assemblers_s assembler);
 typedef struct assemblers_s {
   const char *const prefix;
   const opcode_t    opcode;
+  const opcode_t    secondary_opcode;
   assemblerFn       emit;
+
 } assemblers_t;
 
 #define ASMFn(O) void TryNewAssemble_##O(const assemblers_t assembler)
@@ -105,19 +107,42 @@ ASMMultipleFn(CODE_CONSTU_24BIT) {
 ASMFn(CODE_PTR) {
   Parse();
   const int v = ParseExpression();
+  symbol_t *s;
+
+  int relative_offset = v - (currentSegment->imageUsed + 1); // 25
+
+  if (passNumber >= 1 && assembler.secondary_opcode != OP_UNDEF) {
+
+    // if we switch to 8 bit, then all labels after us need to be adjusted
+    if (relative_offset <= 127 && relative_offset >= -128) {
+
+      if (passNumber == 1) {
+        for (s = symbols; s; s = s->next) {
+          if (&segment[CODESEG] == s->segment && s->value >= currentSegment->imageUsed) {
+            s->value--;
+          }
+        }
+      }
+
+      sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
+      WriteInt8Code(assembler.secondary_opcode, relative_offset);
+      EmitByte(&segment[CODESEG], assembler.secondary_opcode);
+      EmitByte(&segment[CODESEG], relative_offset);
+      return;
+    }
+  }
+
+  sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
+  WriteInt16Code(assembler.opcode, relative_offset);
 
   EmitByte(&segment[CODESEG], assembler.opcode);
 
-  int relative_offset = v - currentSegment->imageUsed;
   if (relative_offset > 32767 || relative_offset < -32768) {
     CodeError("branch to far. Relative jump outside range of 16 bit integer.\n");
     return;
   }
 
-  EmitInt16(&segment[CODESEG], v - currentSegment->imageUsed);
-
-  sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
-  WriteInt16Code(assembler.opcode, v - currentSegment->imageUsed);
+  EmitInt16(&segment[CODESEG], relative_offset);
 }
 
 ASMFn(CODE_FLOAT) {
