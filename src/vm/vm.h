@@ -117,6 +117,8 @@ typedef struct vmSymbol_s {
 } vmSymbol_t;
 #endif
 
+typedef void (*vm_aborted_t)(vmErrorCode_t);
+
 /** Main struct (think of a kind of a main class) to keep all information of
  * the virtual machine together. Has pointer to the bytecode, the stack and
  * everything. Call VM_Create(...) to initialize this struct. */
@@ -131,6 +133,7 @@ typedef struct vm_s {
    * and so on. You can convert it back to -1, -2, -3, but the 0 based
    * index might help a lookup table. */
   uint32_t (*systemCall)(struct vm_s *vm, uint8_t *parms);
+  vm_aborted_t vm_aborted;
 
   /*------------------------------------*/
 
@@ -150,14 +153,9 @@ typedef struct vm_s {
 
   vm_size_t workingRAMLength; /**< Number of bytes allocated for dataBase */
 
-  /*
-  stackBottom = workingRamLength - (dataLength + bssLength)
+  vmErrorCode_t lastError; /**< Last known error */
 
-  */
-#ifdef DEBUG_VM
-  uint8_t *debugStorage;
-  stdint_t debugStorageLength;
-#endif
+  struct vm_s *vm;
 
 #ifdef MEMORY_SAFE
   vm_size_t stackTop;    /**< If programStack < stackBottom, error */
@@ -167,6 +165,8 @@ typedef struct vm_s {
   /*------------------------------------*/
 
 #ifdef DEBUG_VM
+  uint8_t    *debugStorage;
+  stdint_t    debugStorageLength;
   std_int     numSymbols;    /**< Number of symbols from VM_LoadSymbols */
   vmSymbol_t *symbols;       /**< By VM_LoadSymbols: names for debugging */
   std_int     breakFunction; /**< For debugging: break at this function */
@@ -174,10 +174,9 @@ typedef struct vm_s {
   ustdint_t   callLevel;     /**< Counts recursive VM_Call */
 #endif
 
-  vmErrorCode_t lastError; /**< Last known error */
-
-  struct vm_s *vm;
 } vm_t;
+
+typedef uint32_t (*systemCalls_t)(vm_t *, uint8_t *);
 
 /******************************************************************************
  * FUNCTION PROTOTYPES
@@ -202,7 +201,8 @@ int VM_Create(vm_t                *vm,
               const vm_size_t      length,
               uint8_t *const       dataSegment,
               const vm_size_t      dataSegmentLength,
-              uint32_t (*systemCalls)(vm_t *, uint8_t *));
+              systemCalls_t        systemCalls,
+              vm_aborted_t         vm_aborted);
 
 #ifdef DEBUG_VM
 int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int debugStorageLength);
@@ -218,8 +218,6 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...);
 
 /** Helper function for syscalls VMA(x) macro:
  * Translate from virtual machine memory to real machine memory.
- * If this is a memory range, use the VM_MemoryRangeValid() function to
- * make sure that this syscall does not escape from the sandbox.
  * @param[in] vmAddr Address in virtual machine memory
  * @param[in,out] vm Current VM
  * @return translated address. */
@@ -258,41 +256,9 @@ void VM_VmProfile_f(vm_t *vm);
  * Set to 1 for general informations and 2 to output every opcode name.
  * @param[in] level If level is 0: be quiet (default). */
 void VM_Debug(uint8_t level);
-
-/******************************************************************************
- * CALLBACK FUNCTIONS (USER DEFINED IN HOST APPLICATION)
- ******************************************************************************/
-
-/** Implement this error callback function for error callbacks in the host
- * application.
- * @param[in] level Error identifier, see vmErrorCode_t.
- * @param[in] error Human readable error text. */
-void Com_Error(vmErrorCode_t level, const char *error);
-#define VM_AbortError(vm, a, description)                                                                                          \
-  {                                                                                                                                \
-    vm->lastError = a;                                                                                                             \
-    Com_Error(a, description);                                                                                                     \
-    return a;                                                                                                                      \
-  }
-
-#define VM_Error(a, description)                                                                                                   \
-  {                                                                                                                                \
-    Com_Error(a, description);                                                                                                     \
-  }
-
 #else
-#define VM_VmProfile_f(a)
 #define VM_Debug(a)
-#define Com_Error(level, error)
-
-#define VM_AbortError(vm, a, description)                                                                                          \
-  {                                                                                                                                \
-    vm->lastError = a;                                                                                                             \
-    return a;                                                                                                                      \
-  }
-
-#define VM_Error(a, description)
-
+#define VM_VmProfile_f(vm)
 #endif
 
 #endif /* __Q3VM_H */

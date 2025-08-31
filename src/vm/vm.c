@@ -197,19 +197,19 @@ int VM_Create(vm_t                      *vm,
               const vm_size_t UNUSED_ARG length,
               uint8_t *const             workingRAM,
               const vm_size_t            workingRAMLength,
-              uint32_t (*systemCalls)(vm_t *, uint8_t *)) {
+              uint32_t (*systemCalls)(vm_t *, uint8_t *),
+              vm_aborted_t vm_aborted) {
 
 #ifdef MEMORY_SAFE
   if (vm == NULL) {
-    Com_Error(VM_INVALID_POINTER, "Missing VM");
     return VM_INVALID_POINTER;
   }
 
   if (!systemCalls)
-    VM_AbortError(vm, VM_NO_SYSCALL_CALLBACK, "No systemcalls provided");
+    return VM_NO_SYSCALL_CALLBACK;
 
   if (!bytecode)
-    VM_AbortError(vm, VM_INVALID_POINTER, "bytecode is NULL");
+    return VM_INVALID_POINTER;
 #endif
 
   {
@@ -217,6 +217,7 @@ int VM_Create(vm_t                      *vm,
 
     Com_Memset(vm, 0, sizeof(vm_t));
     vm->systemCall       = systemCalls;
+    vm->vm_aborted       = vm_aborted;
     vm->codeBase         = &bytecode[sizeof(vmHeader_t)];
     vm->codeLength       = UINT(header->codeLength);
     vm->litBase          = vm->codeBase + vm->codeLength;
@@ -278,7 +279,7 @@ int VM_Create(vm_t                      *vm,
 #ifdef DEBUG_VM
 int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int debugStorageLength) {
   if (vm == NULL) {
-    VM_Error(VM_INVALID_POINTER, "Invalid vm pointer");
+    log_1("Invalid vm pointer\n");
     return VM_INVALID_POINTER;
   }
   /* load the map file */
@@ -286,9 +287,6 @@ int VM_LoadDebugInfo(vm_t *vm, char *mapfileImage, uint8_t *debugStorage, int de
 
   log_1("VM:\n");
   log_2(".code length: %6i bytes\n", vm->codeLength);
-  /*Com_Printf(".data length: %6i bytes\n", vm->workingRAMLength);
-  Com_Printf(".lit  length: %6i bytes\n", vm->litLength);
-  Com_Printf(".bss  length: %6i bytes\n", vm->bssLength);*/
   log_2("Stack size:   %6i bytes\n", VM_PROGRAM_STACK_SIZE);
   log_2("Allocated memory: %6i bytes\n", vm->workingRAMLength);
   return 0;
@@ -307,13 +305,15 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
     if (UINT(header->codeLength) == 0 || UINT(header->bssLength) > VM_MAX_BSS_LENGTH ||
         UINT(header->codeLength) + UINT(header->litLength) + UINT(header->dataLength) > bytecodeLength) {
       Com_Printf_1("Warning: bad header\n");
-      VM_AbortError(vm, VM_MALFORMED_HEADER, "Malformed bytecode image\n");
+      vm->lastError = VM_MALFORMED_HEADER;
+      return -1;
     }
   } else {
     Com_Printf_3("Warning: Invalid magic number in header "
                  "Read: 0x%x, expected: 0x%x\n",
                  header->vmMagic, VM_MAGIC);
-    VM_AbortError(vm, VM_MALFORMED_HEADER, "Invalid magic number in header\n");
+    vm->lastError = VM_MALFORMED_HEADER;
+    return -1;
   }
 
   {
@@ -325,7 +325,8 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
     if (dataLength > vm->workingRAMLength) {
       Com_Printf_3("Error: Insufficient ram allocated for VM.  Granted " FMT_INT24 ", image requires " FMT_INT24 "\n",
                    vm->workingRAMLength, dataLength);
-      VM_AbortError(vm, VM_NOT_ENOUGH_RAM, "Insufficient ram allocated for VM\n");
+      vm->lastError = VM_NOT_ENOUGH_RAM;
+      return -1;
     }
   }
 
@@ -338,13 +339,12 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
   intptr_t r;
 
 #ifdef MEMORY_SAFE
-  if (vm == NULL) {
-    Com_Error(VM_INVALID_POINTER, "Missing VM Pointe");
+  if (vm == NULL)
     return VM_INVALID_POINTER;
-  }
 
   if (vm->codeLength < 1)
-    VM_AbortError(vm, VM_NOT_LOADED, "VM not loaded");
+    return VM_NOT_LOADED;
+
 #endif
 
   vm->lastError = 0;
@@ -378,10 +378,11 @@ void *VM_ArgPtr(intptr_t vmAddr, vm_t *const vm) {
   if (!vmAddr)
     return NULL;
 
+#ifdef MEMORY_SAFE
   if (vm == NULL) {
-    VM_Error(VM_INVALID_POINTER, "Invalid VM pointer");
     return NULL;
   }
+#endif
 
   if (vmAddr < vm->litLength)
     return (void *)(&vm->codeBase[vm->codeLength + vmAddr]);
@@ -409,22 +410,6 @@ int32_t VM_FloatToInt(float f) {
   fi.f = f;
   return fi.i;
 }
-
-#ifdef MEMORY_SAFE
-bool VM_MemoryRangeValid(const vm_size_t vmAddr, const vm_size_t len, vm_t *const vm) {
-  if (!vmAddr || !vm)
-    return -1;
-
-  Com_Printf_2("Checking memory %06X\n", vmAddr);
-
-  if (vmAddr > vm->workingRAMLength || vmAddr + len > vm->workingRAMLength) {
-    VM_Error(VM_DATA_OUT_OF_RANGE, "Memory access out of range");
-    return -1;
-  }
-
-  return 0;
-}
-#endif
 
 #define R2 (*((stack_entry_t *)PC))
 
@@ -458,7 +443,7 @@ bool VM_VerifyReadOK(vm_t *vm, vm_size_t vaddr, int size) {
   if (vaddr < vm->litLength) {
     if (vaddr + size > vm->litLength) {
       vm->lastError = VM_LIT_ACCESS_ERROR;
-      Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Read Error - attempt read beyond LIT segment");
+      Com_Printf_1("Memory Access Read Error - attempt read beyond LIT segment\n");
       return false;
     }
     return true;
@@ -468,7 +453,6 @@ bool VM_VerifyReadOK(vm_t *vm, vm_size_t vaddr, int size) {
     Com_Printf_5("Attempted to read at " FMT_INT24 "+(" FMT_INT24 ") -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, size,
                  vm->workingRAMLength, vm->litLength);
     vm->lastError = VM_RAM_ACCESS_ERROR;
-    Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Read Error - attempt read beyond RAM");
     return false;
   }
 
@@ -486,7 +470,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
                  vm->litLength);
 
     vm->lastError = VM_LIT_ACCESS_ERROR;
-    Com_Error(VM_LIT_ACCESS_ERROR, "Memory Access Write Error - attempt to write to LIT segment");
+    Com_Printf_1("Memory Access Write Error - attempt to write to LIT segment\n");
     return false;
   }
 
@@ -494,7 +478,7 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
     Com_Printf_4("Attempted to write at " FMT_INT24 " -- (" FMT_INT24 " " FMT_INT24 ")\n", vaddr, vm->workingRAMLength,
                  vm->litLength);
     vm->lastError = VM_RAM_ACCESS_ERROR;
-    Com_Error(VM_RAM_ACCESS_ERROR, "Memory Access Write Error - attempt to write beyond RAM");
+    Com_Printf_1("Memory Access Write Error - attempt to write beyond RAM\n");
     return false;
   }
 
@@ -850,16 +834,24 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
 
 #ifdef MEMORY_SAFE
 #define check_stack_overflow()                                                                                                     \
-  if (programStack <= _vm.vm->stackBottom || programStack > _vm.vm->stackTop)                                                      \
-    VM_AbortError(_vm.vm, VM_STACK_OVERFLOW, "VM stack overflow");
+  if (programStack <= _vm.vm->stackBottom || programStack > _vm.vm->stackTop) {                                                    \
+    Com_Printf_1("VM stack overflow\n");                                                                                           \
+    _vm.vm->lastError = VM_STACK_OVERFLOW;                                                                                         \
+    goto done;                                                                                                                     \
+  }
+
 #else
 #define check_stack_overflow()
 #endif
 
 #ifdef MEMORY_SAFE
 #define check_pc_overflow()                                                                                                        \
-  if (PC >= PC_end)                                                                                                                \
-    VM_AbortError(_vm.vm, VM_PC_OUT_OF_RANGE, "VM pc out of range");
+  if (PC >= PC_end) {                                                                                                              \
+    Com_Printf_1("VM pc out of range\n");                                                                                          \
+    _vm.vm->lastError = VM_PC_OUT_OF_RANGE;                                                                                        \
+    goto done;                                                                                                                     \
+  }
+
 #else
 #define check_pc_overflow()
 #endif
@@ -966,7 +958,9 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 #if defined(DEBUG_VM) || defined(MEMORY_SAFE)
     default: /* fall through */
     case OP_UNDEF:
-      VM_AbortError(_vm.vm, VM_BAD_INSTRUCTION, "Bad VM instruction");
+      Com_Printf_1("Bad VM instruction\n");
+      _vm.vm->lastError = VM_BAD_INSTRUCTION;
+      goto done;
 #endif
 #ifdef DEBUG_VM
     case OP_IGNORE:
@@ -1147,10 +1141,6 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
         PC = _vm.codeBase + INT(*(int24_t *)&_vm.dataBase[programStack]);
         log_4("%s%i<--- %s\n", VM_Indent(_vm.vm), (int)(opStack8 - _opStack), VM_ValueToSymbol(_vm.vm, vPC));
       }
-#ifdef MEMORY_SAFE
-      else if (PC >= PC_end)
-        VM_AbortError(_vm.vm, VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_CALL");
-#endif
       DISPATCH();
     }
 
@@ -1412,14 +1402,9 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
     }
 
     case OP_JUMP: {
-#ifdef MEMORY_SAFE
-      if (UINT(R0_uint24(0)) >= MAX_PROGRAM_COUNTER)
-        VM_AbortError(_vm.vm, VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_JUMP");
-#endif
-
       opStack8 -= 4;
-      log3_2("JUMP " FMT_INT24 "\n", UINT(R0_uint24(-4)));
       PC = _vm.codeBase + INT(R0_int24(-4));
+      log3_3("JUMP by " FMT_INT24 " to " FMT_INT24 "\n", UINT(R0_uint24(-4)), vPC);
       DISPATCH();
     }
 
@@ -1437,11 +1422,6 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       /* check for leaving the VM */
       if (vPC == -1)
         goto done;
-
-#ifdef MEMORY_SAFE
-      if (PC >= PC_end)
-        VM_AbortError(_vm.vm, VM_PC_OUT_OF_RANGE, "VM program counter out of range in OP_LEAVE");
-#endif
 
       DISPATCH();
     }
@@ -1750,8 +1730,14 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
 done:
 #ifdef MEMORY_SAFE
-  if (opStack32[-1] != 0x0000BEEF)
-    VM_AbortError(_vm.vm, VM_STACK_ERROR, "Operation stack error");
+  if (!_vm.vm->lastError && opStack32[-1] != 0x0000BEEF) {
+    Com_Printf_1("Operation stack error\n");
+    _vm.vm->lastError = VM_STACK_ERROR;
+  }
+
+  if (_vm.vm->lastError && _vm.vm_aborted)
+    _vm.vm_aborted(_vm.vm->lastError);
+
 #endif
   _vm.vm->programStack = stackOnEntry;
 
@@ -2012,7 +1998,7 @@ static void VM_LoadSymbols(vm_t *vm, char *mapfile, uint8_t *debugStorage, int d
     vm->debugStorageLength -= sizeof(vmSymbol_t) + chars;
     if (vm->debugStorageLength < 0) {
       vm->lastError = VM_MALLOC_FAILED;
-      Com_Error(VM_MALLOC_FAILED, "Sym. pointer malloc failed: out of memory?");
+      log_1("Sym. pointer malloc failed: out of memory?\n");
       return;
     }
 
@@ -2082,7 +2068,7 @@ void VM_VmProfile_f(vm_t *vm) {
   vm->debugStorageLength -= (vm->numSymbols * sizeof(*sorted));
   if (vm->debugStorageLength < 0) {
     vm->lastError = VM_MALLOC_FAILED;
-    Com_Error(VM_MALLOC_FAILED, "Symbol pointer malloc failed: out of memory?");
+    log_1("Symbol pointer malloc failed: out of memory?");
     return;
   }
 

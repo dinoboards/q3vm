@@ -36,7 +36,7 @@ int testInject(const char *filepath, int offset, int opcode) {
 
   fprintf(stderr, "Injecting wrong OP code %s at %i: %i\n", filepath, offset, opcode);
   memcpy(&image[offset], &opcode, sizeof(opcode)); /* INJECT */
-  retVal = VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls);
+  retVal = VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls, NULL);
   free(image);
 
   return (retVal == -1) ? 0 : -1;
@@ -64,7 +64,7 @@ int testNominal(const char *filepath) {
   }
 
   VM_Debug(4);
-  if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls) == 0) {
+  if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls, NULL) == 0) {
 
 #ifdef DEBUG_VM
     void *pDebugInfo = malloc(0x10000);
@@ -96,7 +96,7 @@ int testNominal(const char *filepath) {
 
 #ifdef MEMORY_SAFE
     retVal = VM_Call(&vm, 5);
-    if (vm.lastError != VM_DATA_OUT_OF_RANGE) {
+    if (vm.lastError != VM_RAM_ACCESS_ERROR) {
       printf("Test RUN invoked at " __FILE__ " on line %d : failed.  retVal: %d, lastError: %d\n", __LINE__, retVal, vm.lastError);
       failedTests++;
     }
@@ -134,19 +134,18 @@ void testArguments(void) {
 
   loadImage("invalidpathfoobar", &imageSize);
 
-  VM_Create(NULL, NULL, 0, dataSegment, sizeof(dataSegment), NULL);
-  printf("3\r\n");
-  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL);
-  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls);
-  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls);
+  VM_Create(NULL, NULL, 0, dataSegment, sizeof(dataSegment), NULL, NULL);
+  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL, NULL);
+  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls, NULL);
+  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls, NULL);
 
   uint8_t bogus[] = "bogusbogusbogubogusbogus"
                     "bogusbogusbogubogusbogus"
                     "bogusbogusbogubogusbogus"
                     "bogusbogusbogubogusbogus";
-  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), NULL);
-  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), systemCalls);
-  VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, dataSegment, sizeof(dataSegment), systemCalls);
+  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), NULL, NULL);
+  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), systemCalls, NULL);
+  VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, dataSegment, sizeof(dataSegment), systemCalls, NULL);
 
   vmHeader_t vmHeader = {0};
   vmHeader.vmMagic    = VM_MAGIC;
@@ -158,7 +157,7 @@ void testArguments(void) {
   VM_Create(&vm, (uint8_t *)&vmHeader,
             sizeof(vmHeader_t) + to_ustdint(vmHeader.codeLength) + to_ustdint(vmHeader.dataLength) +
                 to_ustdint(vmHeader.litLength) - 1,
-            dataSegment, sizeof(dataSegment), systemCalls);
+            dataSegment, sizeof(dataSegment), systemCalls, NULL);
 
   VM_Call(NULL, 0);
 #ifdef DEBUG_VM
@@ -247,18 +246,21 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
 
   case -3: /* MEMSET */
 #ifdef MEMORY_SAFE
-    if (!VM_VerifyWriteOK(vm, VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/))
-      VM_AbortError(vm, VM_DATA_OUT_OF_RANGE, "Memory access out of range");
+    if (!VM_VerifyWriteOK(vm, VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/)) {
+      printf("Memory access out of range\n");
+      return 0;
+    }
 #endif
     memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
-
     return VMA_UINT24(3);
 
   case -4: /* MEMCPY */
 #ifdef MEMORY_SAFE
     if (!VM_VerifyWriteOK(vm, VMA_UINT24(3) /*addr*/, VMA_UINT24(9) /*len*/) ||
-        !VM_VerifyReadOK(vm, VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/))
-      VM_AbortError(vm, VM_DATA_OUT_OF_RANGE, "Memory access out of range");
+        !VM_VerifyReadOK(vm, VMA_UINT24(6) /*addr*/, VMA_UINT24(9) /*len*/)) {
+      printf("\n\nMemory access out of range\n");
+      return 0;
+    }
 #endif
     memcpy(VMA_PTR(3, vm), VMA_PTR(6, vm), VMA_UINT24(9));
     return VMA_UINT24(3);

@@ -41,6 +41,11 @@ static void COM_StripExtension(const char *in, char *out) {
 }
 #endif
 
+/* Callback from the VM that something went wrong
+ * @param[in] level Error id, see vmErrorCode_t definition.
+ * @param[in] error Human readable error text. */
+void vm_aborted_event(vmErrorCode_t level) { fprintf(stderr, "Err (%i)\n", level); }
+
 int main(int argc, char **argv) {
   vm_t  vm;
   int   retVal = -1;
@@ -65,7 +70,7 @@ int main(int argc, char **argv) {
   pData = malloc(DATA_SIZE); /* allocate 64k ram for data, bss and stack*/
 
   /* set-up virtual machine */
-  if (VM_Create(&vm, image, imageSize, pData, DATA_SIZE, systemCalls) == 0) {
+  if (VM_Create(&vm, image, imageSize, pData, DATA_SIZE, systemCalls, vm_aborted_event) == 0) {
 #ifdef DEBUG_VM
     void *pDebugInfo = malloc(0x10000);
     int   mapFileImageSize;
@@ -91,13 +96,6 @@ int main(int argc, char **argv) {
 
   return retVal;
 }
-
-#ifdef DEBUG_VM
-/* Callback from the VM that something went wrong
- * @param[in] level Error id, see vmErrorCode_t definition.
- * @param[in] error Human readable error text. */
-void Com_Error(vmErrorCode_t level, const char *error) { fprintf(stderr, "Err (%i): %s\n", level, error); }
-#endif
 
 uint8_t *loadImage(const char *filepath, int *size) {
   FILE    *f;            /* bytecode input file */
