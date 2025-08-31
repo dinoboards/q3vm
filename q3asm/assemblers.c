@@ -107,23 +107,13 @@ ASMMultipleFn(CODE_CONSTU_24BIT) {
 ASMFn(CODE_PTR) {
   Parse();
   const int v = ParseExpression();
-  symbol_t *s;
 
-  int relative_offset = v - (currentSegment->imageUsed + 1); // 25
+  int relative_offset = v - (currentSegment->imageUsed + 1);
 
   if (passNumber >= 1 && assembler.secondary_opcode != OP_UNDEF) {
 
-    // if we switch to 8 bit, then all labels after us need to be adjusted
     if (relative_offset <= 127 && relative_offset >= -128) {
-
-      if (passNumber == 1) {
-        for (s = symbols; s; s = s->next) {
-          if (&segment[CODESEG] == s->segment && s->value >= currentSegment->imageUsed) {
-            s->value--;
-          }
-        }
-      }
-
+      jump_optimisation_count++;
       sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
       WriteInt8Code(assembler.secondary_opcode, relative_offset);
       EmitByte(&segment[CODESEG], assembler.secondary_opcode);

@@ -79,7 +79,7 @@ segment_t  segment[NUM_SEGMENTS];
 segment_t *currentSegment;
 
 int passNumber;
-
+int jump_optimisation_count;
 int numSymbols;
 int errorCount;
 
@@ -221,7 +221,7 @@ static void hashtable_stats(hashtable_t *H) {
 /* Kludge. */
 /* Check if symbol already exists. */
 /* Returns 0 if symbol does NOT already exist, non-zero otherwise. */
-static int hashtable_symbol_exists(hashtable_t *H, int hash, char *sym) {
+static int hashtable_symbol_exists(hashtable_t *H, int hash, char *sym, symbol_t ** found) {
   hashchain_t *hc;
   symbol_t    *s;
 
@@ -237,6 +237,7 @@ static int hashtable_symbol_exists(hashtable_t *H, int hash, char *sym) {
     /* We _already_ know the hash is the same.  That's why we're probing! */
     if (strcmp(sym, s->name) == 0) {
       /* Symbol collisions -- symbol already exists. */
+      *found = s;
       return 1;
     }
   }
@@ -643,9 +644,9 @@ static void DefineSymbol(char *sym, int value) {
   char      expanded[MAX_LINE_LENGTH * 2];
   int       hash;
 
-  if (passNumber != 0) {
-    return;
-  }
+  // if (passNumber == 0) {
+  //   return;
+  // }
 
   // add the file prefix to local symbols to guarantee unique
   if (sym[0] == '$') {
@@ -655,8 +656,15 @@ static void DefineSymbol(char *sym, int value) {
 
   hash = HashString(sym);
 
-  if (hashtable_symbol_exists(symtable, hash, sym)) {
-    CodeError("Multiple definitions for %s\n", sym);
+  if (hashtable_symbol_exists(symtable, hash, sym, &s)) {
+
+    if (passNumber == 0) {
+      CodeError("Multiple definitions for %s\n", sym);
+      return;
+    }
+    // if (s->value != value )
+    //   printf("%d: Updating %s from %04X to %04X\n", passNumber, sym, s->value, value);
+    s->value   = value;
     return;
   }
 
@@ -1077,6 +1085,8 @@ static void Assemble(void) {
   segment[LITSEG].index  = LITSEG;
 
   // assemble
+  jump_optimisation_count = 0;
+  int previous_jump_optimisation_count = 0;
   for (passNumber = 0; passNumber < 3; passNumber++) {
     segment[LITSEG].segmentBase  = 0;
     segment[DATASEG].segmentBase = segment[LITSEG].imageUsed;
@@ -1117,6 +1127,12 @@ static void Assemble(void) {
     if (passNumber == 0) {
       sort_symbols();
     }
+
+    if (passNumber == 1 && jump_optimisation_count != previous_jump_optimisation_count) {
+      passNumber = 0;
+    }
+    previous_jump_optimisation_count = jump_optimisation_count;
+    jump_optimisation_count = 0;
   }
 
   // reserve the stack in bss
