@@ -50,20 +50,26 @@ OP_EQ3_1                Compare (u)int24, jump if ==
 OP_EQ4                  Compare (u)int32, jump if ==
 OP_GEF4                 Compare floats, jump if >=
 OP_GEI3                 Compare int24, jump if >
+OP_GEI3_1
 OP_GEI4                 Compare int32, jump if >=
 OP_GEU3                 Compare uint24, jump if >=
+OP_GEU3_1
 OP_GEU4                 Compare uint24, jump if >=
 OP_GTF4                 Compare floats, jump if >
 OP_GTI3                 Compare int24, jump if >
+OP_GTI3_1
 OP_GTI4                 Compare int32, jump if >
 OP_GTU3                 Compare uint24, jump if >
+OP_GTU3_1
 OP_GTU4                 Compare uint32, jump if >
 OP_JUMP                 Unconditional jump
 OP_LEAVE                End subroutine
 OP_LEF4                 Compare floats, jump if <=
 OP_LEI3                 Compare int24, jump if <=
+OP_LEI3_1
 OP_LEI4                 Compare int32, jump if <=
 OP_LEU3                 Compare uint24, jump if <=
+OP_LEU3_1
 OP_LEU4                 Compare uint32, jump if <=
 OP_LOAD1                Load 1-byte from memory
 OP_LOAD2                Load 2-bytes from memory
@@ -75,8 +81,10 @@ OP_LSH3                 left shift (u)int24
 OP_LSH4                 Left-shift (u)int32
 OP_LTF4                 Compare floats, jump if <
 OP_LTI3                 Compare int24, jump if <
+OP_LTI3_1
 OP_LTI4                 Compare int32, jump if <
 OP_LTU3                 Compare uint24, jump if <
+OP_LTU3_1
 OP_LTU4                 Compare uint32, jump if <
 OP_MODI3                Modulus int24
 OP_MODI4                Modulus int32
@@ -88,6 +96,7 @@ OP_MULI4                Multiply int32
 OP_MULU3                Multiply uint24
 OP_MULU4                Multiply uint32
 OP_NE3                  Compare (u)int24, jump if !=
+OP_NE3_1
 OP_NE4                  Compare integers, jump if !=
 OP_NEF4                 Compare floats, jump if !=
 OP_NEGF4                Negate float

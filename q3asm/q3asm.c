@@ -895,7 +895,7 @@ static int ParseExpression(void) {
   return v;
 }
 
-#define assfn(a)        TryNewAssemble_##a
+#define assfn(a) TryNewAssemble_##a
 
 #include "assemblers.c"
 #include "assemblers.h"

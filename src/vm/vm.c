@@ -800,6 +800,14 @@ bool VM_VerifyWriteOK(vm_t *vm, vm_size_t vaddr, int size) {
     PC += INT16_INCREMENT;                                                                                                         \
   opStack8 -= 8;
 
+#define op_2_int24_1_branch(operation)                                                                                             \
+  log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", INT(R1_int24(0)), INT(R0_int24(0)));                                         \
+  if ((INT(R1_int24(0)) operation INT(R0_int24(0))))                                                                               \
+    PC += R2.int8;                                                                                                                 \
+  else                                                                                                                             \
+    PC += INT8_INCREMENT;                                                                                                          \
+  opStack8 -= 8;
+
 #define op_2_uint24_branch(operation)                                                                                              \
   log3_3(FMT_INT24 " " #operation " " FMT_INT24 "\n", UINT(R1_uint24(0)), UINT(R0_uint24(0)));                                     \
   if ((UINT(R1_uint24(0)) operation UINT(R0_uint24(0))))                                                                           \
@@ -1374,6 +1382,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
+    case OP_GEI3_1: {
+      op_2_int24_1_branch(>=);
+      DISPATCH();
+    }
+
     case OP_GEI4: {
       op_2_int32_branch(>=);
       DISPATCH();
@@ -1381,6 +1394,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_GEU3: {
       op_2_uint24_branch(>=);
+      DISPATCH();
+    }
+
+    case OP_GEU3_1: {
+      op_2_uint24_1_branch(>=);
       DISPATCH();
     }
 
@@ -1399,6 +1417,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
+    case OP_GTI3_1: {
+      op_2_int24_1_branch(>);
+      DISPATCH();
+    }
+
     case OP_GTI4: {
       op_2_int32_branch(>);
       DISPATCH();
@@ -1406,6 +1429,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_GTU3: {
       op_2_uint24_branch(>);
+      DISPATCH();
+    }
+
+    case OP_GTU3_1: {
+      op_2_uint24_1_branch(>);
       DISPATCH();
     }
 
@@ -1449,6 +1477,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
+    case OP_LEI3_1: {
+      op_2_int24_1_branch(<=);
+      DISPATCH();
+    }
+
     case OP_LEI4: {
       op_2_int32_branch(<=);
       DISPATCH();
@@ -1456,6 +1489,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_LEU3: {
       op_2_uint24_branch(<=);
+      DISPATCH();
+    }
+
+    case OP_LEU3_1: {
+      op_2_uint24_1_branch(<=);
       DISPATCH();
     }
 
@@ -1556,6 +1594,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
+    case OP_LTI3_1: {
+      op_2_int24_1_branch(<);
+      DISPATCH();
+    }
+
     case OP_LTI4: {
       op_2_int32_branch(<);
       DISPATCH();
@@ -1563,6 +1606,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_LTU3: {
       op_2_uint24_branch(<);
+      DISPATCH();
+    }
+
+    case OP_LTU3_1: {
+      op_2_uint24_1_branch(<);
       DISPATCH();
     }
 
@@ -1638,6 +1686,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
 
     case OP_NE3: {
       op_2_uint24_branch(!=);
+      DISPATCH();
+    }
+
+    case OP_NE3_1: {
+      op_2_uint24_1_branch(!=);
       DISPATCH();
     }
 

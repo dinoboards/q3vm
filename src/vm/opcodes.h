@@ -57,62 +57,71 @@ typedef enum {
   OP_EQ4,        /*  49  Compare (u)int32, jump if == */
   OP_GEF4,       /*  50  Compare floats, jump if >= */
   OP_GEI3,       /*  51  Compare int24, jump if > */
-  OP_GEI4,       /*  52  Compare int32, jump if >= */
-  OP_GEU3,       /*  53  Compare uint24, jump if >= */
-  OP_GEU4,       /*  54  Compare uint24, jump if >= */
-  OP_GTF4,       /*  55  Compare floats, jump if > */
-  OP_GTI3,       /*  56  Compare int24, jump if > */
-  OP_GTI4,       /*  57  Compare int32, jump if > */
-  OP_GTU3,       /*  58  Compare uint24, jump if > */
-  OP_GTU4,       /*  59  Compare uint32, jump if > */
-  OP_JUMP,       /*  60  Unconditional jump */
-  OP_LEAVE,      /*  61  End subroutine */
-  OP_LEF4,       /*  62  Compare floats, jump if <= */
-  OP_LEI3,       /*  63  Compare int24, jump if <= */
-  OP_LEI4,       /*  64  Compare int32, jump if <= */
-  OP_LEU3,       /*  65  Compare uint24, jump if <= */
-  OP_LEU4,       /*  66  Compare uint32, jump if <= */
-  OP_LOAD1,      /*  67  Load 1-byte from memory */
-  OP_LOAD2,      /*  68  Load 2-bytes from memory */
-  OP_LOAD3,      /*  69  Load 3-bytes from memory */
-  OP_LOAD4,      /*  70  Load 4-bytes from memory */
-  OP_LOCAL,      /*  71  Get local variable (8 bit offset) */
-  OP_LOCAL_FAR,  /*  72  Get local variable (16 bit offset) */
-  OP_LSH3,       /*  73  left shift (u)int24 */
-  OP_LSH4,       /*  74  Left-shift (u)int32 */
-  OP_LTF4,       /*  75  Compare floats, jump if < */
-  OP_LTI3,       /*  76  Compare int24, jump if < */
-  OP_LTI4,       /*  77  Compare int32, jump if < */
-  OP_LTU3,       /*  78  Compare uint24, jump if < */
-  OP_LTU4,       /*  79  Compare uint32, jump if < */
-  OP_MODI3,      /*  80  Modulus int24 */
-  OP_MODI4,      /*  81  Modulus int32 */
-  OP_MODU3,      /*  82  Modulus uint24 */
-  OP_MODU4,      /*  83  Modulus uint32 */
-  OP_MULF4,      /*  84  Multiply floats */
-  OP_MULI3,      /*  85  Multiple int24 */
-  OP_MULI4,      /*  86  Multiply int32 */
-  OP_MULU3,      /*  87  Multiply uint24 */
-  OP_MULU4,      /*  88  Multiply uint32 */
-  OP_NE3,        /*  89  Compare (u)int24, jump if != */
-  OP_NE4,        /*  90  Compare integers, jump if != */
-  OP_NEF4,       /*  91  Compare floats, jump if != */
-  OP_NEGF4,      /*  92  Negate float */
-  OP_NEGI3,      /*  93  Negate int24 */
-  OP_NEGI4,      /*  94  Negate int32 */
-  OP_POP,        /*  95  Discard top-of-stack */
-  OP_PUSH,       /*  96  Push no-value to stack */
-  OP_RSHI3,      /*  97  Right-shift int24 (preserve sign) */
-  OP_RSHI4,      /*  98  Right-shift int32 (preserve sign) */
-  OP_RSHU3,      /*  99  Right-shift uint24 */
-  OP_RSHU4,      /* 100  Right-shift uint32 */
-  OP_STORE1,     /* 101  Store 1-byte to memory */
-  OP_STORE2,     /* 102  Store 2-byte to memory */
-  OP_STORE3,     /* 103  Store 3-byte to memory */
-  OP_STORE4,     /* 104  Store 4-byte to memory */
-  OP_SUB3,       /* 105  Subtract (u)int24 (two's complement). */
-  OP_SUB4,       /* 106  Subtract (u)int32 (two's complement). */
-  OP_SUBF4,      /* 107  Subtract floats */
+  OP_GEI3_1,     /*  52  */
+  OP_GEI4,       /*  53  Compare int32, jump if >= */
+  OP_GEU3,       /*  54  Compare uint24, jump if >= */
+  OP_GEU3_1,     /*  55  */
+  OP_GEU4,       /*  56  Compare uint24, jump if >= */
+  OP_GTF4,       /*  57  Compare floats, jump if > */
+  OP_GTI3,       /*  58  Compare int24, jump if > */
+  OP_GTI3_1,     /*  59  */
+  OP_GTI4,       /*  60  Compare int32, jump if > */
+  OP_GTU3,       /*  61  Compare uint24, jump if > */
+  OP_GTU3_1,     /*  62  */
+  OP_GTU4,       /*  63  Compare uint32, jump if > */
+  OP_JUMP,       /*  64  Unconditional jump */
+  OP_LEAVE,      /*  65  End subroutine */
+  OP_LEF4,       /*  66  Compare floats, jump if <= */
+  OP_LEI3,       /*  67  Compare int24, jump if <= */
+  OP_LEI3_1,     /*  68  */
+  OP_LEI4,       /*  69  Compare int32, jump if <= */
+  OP_LEU3,       /*  70  Compare uint24, jump if <= */
+  OP_LEU3_1,     /*  71  */
+  OP_LEU4,       /*  72  Compare uint32, jump if <= */
+  OP_LOAD1,      /*  73  Load 1-byte from memory */
+  OP_LOAD2,      /*  74  Load 2-bytes from memory */
+  OP_LOAD3,      /*  75  Load 3-bytes from memory */
+  OP_LOAD4,      /*  76  Load 4-bytes from memory */
+  OP_LOCAL,      /*  77  Get local variable (8 bit offset) */
+  OP_LOCAL_FAR,  /*  78  Get local variable (16 bit offset) */
+  OP_LSH3,       /*  79  left shift (u)int24 */
+  OP_LSH4,       /*  80  Left-shift (u)int32 */
+  OP_LTF4,       /*  81  Compare floats, jump if < */
+  OP_LTI3,       /*  82  Compare int24, jump if < */
+  OP_LTI3_1,     /*  83  */
+  OP_LTI4,       /*  84  Compare int32, jump if < */
+  OP_LTU3,       /*  85  Compare uint24, jump if < */
+  OP_LTU3_1,     /*  86  */
+  OP_LTU4,       /*  87  Compare uint32, jump if < */
+  OP_MODI3,      /*  88  Modulus int24 */
+  OP_MODI4,      /*  89  Modulus int32 */
+  OP_MODU3,      /*  90  Modulus uint24 */
+  OP_MODU4,      /*  91  Modulus uint32 */
+  OP_MULF4,      /*  92  Multiply floats */
+  OP_MULI3,      /*  93  Multiple int24 */
+  OP_MULI4,      /*  94  Multiply int32 */
+  OP_MULU3,      /*  95  Multiply uint24 */
+  OP_MULU4,      /*  96  Multiply uint32 */
+  OP_NE3,        /*  97  Compare (u)int24, jump if != */
+  OP_NE3_1,      /*  98  */
+  OP_NE4,        /*  99  Compare integers, jump if != */
+  OP_NEF4,       /* 100  Compare floats, jump if != */
+  OP_NEGF4,      /* 101  Negate float */
+  OP_NEGI3,      /* 102  Negate int24 */
+  OP_NEGI4,      /* 103  Negate int32 */
+  OP_POP,        /* 104  Discard top-of-stack */
+  OP_PUSH,       /* 105  Push no-value to stack */
+  OP_RSHI3,      /* 106  Right-shift int24 (preserve sign) */
+  OP_RSHI4,      /* 107  Right-shift int32 (preserve sign) */
+  OP_RSHU3,      /* 108  Right-shift uint24 */
+  OP_RSHU4,      /* 109  Right-shift uint32 */
+  OP_STORE1,     /* 110  Store 1-byte to memory */
+  OP_STORE2,     /* 111  Store 2-byte to memory */
+  OP_STORE3,     /* 112  Store 3-byte to memory */
+  OP_STORE4,     /* 113  Store 4-byte to memory */
+  OP_SUB3,       /* 114  Subtract (u)int24 (two's complement). */
+  OP_SUB4,       /* 115  Subtract (u)int32 (two's complement). */
+  OP_SUBF4,      /* 116  Subtract floats */
   OP_MAX,        /* Make this the last item */
 
 } opcode_t;
