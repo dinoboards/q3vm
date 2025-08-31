@@ -221,7 +221,7 @@ static void hashtable_stats(hashtable_t *H) {
 /* Kludge. */
 /* Check if symbol already exists. */
 /* Returns 0 if symbol does NOT already exist, non-zero otherwise. */
-static int hashtable_symbol_exists(hashtable_t *H, int hash, char *sym, symbol_t ** found) {
+static int hashtable_symbol_exists(hashtable_t *H, int hash, char *sym, symbol_t **found) {
   hashchain_t *hc;
   symbol_t    *s;
 
@@ -664,7 +664,7 @@ static void DefineSymbol(char *sym, int value) {
     }
     // if (s->value != value )
     //   printf("%d: Updating %s from %04X to %04X\n", passNumber, sym, s->value, value);
-    s->value   = value;
+    s->value = value;
     return;
   }
 
@@ -700,7 +700,7 @@ LookupSymbol
 Symbols can only be evaluated on pass 1
 ============
 */
-static int LookupSymbol(char *sym) {
+static int LookupSymbol(char *sym, symbol_t **found) {
   symbol_t    *s;
   char         expanded[MAX_LINE_LENGTH + 16];
   int          hash;
@@ -728,6 +728,8 @@ static int LookupSymbol(char *sym) {
   for (hc = hashtable_get(symtable, hash); hc; hc = hc->next) {
     s = (symbol_t *)hc->data; /* ugly typecasting, but it's fast! */
     if ((hash == s->hash) && !strcmp(sym, s->name)) {
+      if (found)
+        *found = s;
       return s->segment->segmentBase + s->value;
     }
   }
@@ -840,7 +842,7 @@ static int ParseValue(void) {
 ParseExpression
 ==============
 */
-static int ParseExpression(void) {
+static int ParseExpression2(symbol_t **s) {
   /* Hand optimization, PhaethonH */
   int  i, j;
   char sym[MAX_LINE_LENGTH + 1];
@@ -873,7 +875,7 @@ static int ParseExpression(void) {
     v = atoiNoCap(sym);
     break;
   default:
-    v = LookupSymbol(sym);
+    v = LookupSymbol(sym, s);
     break;
   }
 
@@ -902,6 +904,8 @@ static int ParseExpression(void) {
 
   return v;
 }
+
+static int ParseExpression(void) { return ParseExpression2(NULL); }
 
 #define assfn(a) TryNewAssemble_##a
 
@@ -1085,7 +1089,7 @@ static void Assemble(void) {
   segment[LITSEG].index  = LITSEG;
 
   // assemble
-  jump_optimisation_count = 0;
+  jump_optimisation_count              = 0;
   int previous_jump_optimisation_count = 0;
   for (passNumber = 0; passNumber < 3; passNumber++) {
     segment[LITSEG].segmentBase  = 0;
@@ -1132,7 +1136,7 @@ static void Assemble(void) {
       passNumber = 0;
     }
     previous_jump_optimisation_count = jump_optimisation_count;
-    jump_optimisation_count = 0;
+    jump_optimisation_count          = 0;
   }
 
   // reserve the stack in bss

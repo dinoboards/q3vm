@@ -26,6 +26,40 @@ ASMFn(CODE_24BIT) {
   EmitInt24(&segment[CODESEG], v);
 }
 
+ASMFn(CODE_ADDRG) {
+  Parse();
+  symbol_t *s;
+  const int v = ParseExpression2(&s);
+
+  int relative_offset = v - (currentSegment->imageUsed + 1);
+
+  if (passNumber >= 1 && s->segment->index == CODESEG) {
+
+    if (relative_offset <= 127 && relative_offset >= -128) {
+      jump_optimisation_count++;
+      sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
+      WriteInt8Code(assembler.secondary_opcode, relative_offset);
+      EmitByte(&segment[CODESEG], assembler.secondary_opcode);
+      EmitByte(&segment[CODESEG], relative_offset);
+      return;
+    }
+
+    if (relative_offset <= 32767 && relative_offset >= -32768) {
+      jump_optimisation_count += 2;
+      sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
+      WriteInt16Code(OP_CONSTP3_2, relative_offset);
+      EmitByte(&segment[CODESEG], OP_CONSTP3_2);
+      EmitInt16(&segment[CODESEG], relative_offset);
+      return;
+    }
+  }
+
+  WriteInt24Code(assembler.opcode, v);
+
+  EmitByte(&segment[CODESEG], assembler.opcode);
+  EmitInt24(&segment[CODESEG], v);
+}
+
 ASMMultipleFn(CODE_BLOCK_COPY) {
   Parse();
   const unsigned int v = ParseExpression();

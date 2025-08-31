@@ -28,6 +28,8 @@ OP_CI4F4                Convert int32 to float
 OP_CONSTI3_I1
 OP_CONSTI3_I2
 OP_CONSTP3              Push address pointer to stack
+OP_CONSTP3_1
+OP_CONSTP3_2
 OP_CONSTs1              Push 1 byte constant
 OP_CONSTs2              Push 2 byte constant
 OP_CONSTs3              Push 3 byte constant

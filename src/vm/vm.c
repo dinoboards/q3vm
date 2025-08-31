@@ -1228,6 +1228,20 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint8_t *_opS
       DISPATCH();
     }
 
+    case OP_CONSTP3_1: {
+      unsigned int addr = vPC + R2.int8;
+      push_1_uint24(UINT24(addr));
+      PC += INT8_INCREMENT;
+      DISPATCH();
+    }
+
+    case OP_CONSTP3_2: {
+      unsigned int addr = vPC + R2.int16;
+      push_1_uint24(UINT24(addr));
+      PC += INT16_INCREMENT;
+      DISPATCH();
+    }
+
     case OP_CONSTs1: {
       push_1_int8(R2.int8);
       PC += INT8_INCREMENT;
