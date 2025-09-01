@@ -315,6 +315,21 @@ DIRFn(BYTE) {
   }
 }
 
+DIRFn(DB) {
+  int v2 = ParseValue();
+
+  WriteComment();
+
+  while (token[0]) {
+    WritePC();
+    WriteDirective("DATA8");
+    WriteInt8(v2);
+    WriteNewLine();
+    EmitByte(currentSegment, (v2 & 0xFF)); /* paranoid ANDing  -PH */
+    v2 = ParseValue();
+  }
+}
+
 // ret just leaves something on the op stack
 ASMFn(RET) {
   const int v = 6 + currentLocals + currentArgs;

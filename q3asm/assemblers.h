@@ -84,6 +84,7 @@ assemblers_t assemblers[] = {
     {"CVUU3",   OP_IGNORE,   OP_UNDEF,  assfn(CODE_CUxU3)       },
     {"CVUU4",   OP_IGNORE,   OP_UNDEF,  assfn(CODE_CUxU4)       },
     {"DATA",    DIRECTIVE,   OP_UNDEF,  assfn(DATA)             },
+    {"DB",      DIRECTIVE,   OP_UNDEF,  assfn(DB)               },
     {"DIVF4",   OP_DIVF4,    OP_UNDEF,  assfn(CODE_OP)          },
     {"DIVI3",   OP_DIVI3,    OP_UNDEF,  assfn(CODE_OP)          },
     {"DIVI4",   OP_DIVI4,    OP_UNDEF,  assfn(CODE_OP)          },

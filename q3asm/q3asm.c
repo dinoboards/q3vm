@@ -357,13 +357,14 @@ static int atoiNoCap(const char *s) {
     signed int   i;
   } retval;
 
-  l = atoi64(s);
+  l = strtoul(s, NULL, 0);
   /* Now smash to signed 32 bits accordingly. */
   if (l < 0) {
     retval.i = (int)l;
   } else {
     retval.u = (unsigned int)l;
   }
+
   return retval.i; /* <- union hackage.  I feel dirty with this.  -PH */
 }
 
@@ -1132,7 +1133,7 @@ static void Assemble(void) {
   segment[LITSEG].index  = LITSEG;
 
   // assemble
-  jump_optimisation_crc = 0xFFFFFFFF;
+  jump_optimisation_crc              = 0xFFFFFFFF;
   int previous_jump_optimisation_crc = 0;
   for (passNumber = 0; passNumber < 3; passNumber++) {
     segment[LITSEG].segmentBase  = 0;
