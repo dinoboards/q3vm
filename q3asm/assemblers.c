@@ -49,7 +49,6 @@ ASMMultipleFn(CODE_ADDRG) {
   if (passNumber >= 1 && s->segment->index == CODESEG) {
 
     if (relative_offset <= 127 && relative_offset >= -128) {
-      jump_optimisation_count++;
       sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
       WriteInt8Code(OP_CONSTP3_1, relative_offset);
       EmitByte(&segment[CODESEG], OP_CONSTP3_1);
@@ -58,7 +57,6 @@ ASMMultipleFn(CODE_ADDRG) {
     }
 
     if (relative_offset <= 32767 && relative_offset >= -32768) {
-      jump_optimisation_count += 2;
       sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
       WriteInt16Code(OP_CONSTP3_2, relative_offset);
       EmitByte(&segment[CODESEG], OP_CONSTP3_2);
@@ -160,7 +158,6 @@ ASMFn(CODE_PTR) {
   if (passNumber >= 1 && assembler.secondary_opcode != OP_UNDEF) {
 
     if (relative_offset <= 127 && relative_offset >= -128) {
-      jump_optimisation_count++;
       sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
       WriteInt8Code(assembler.secondary_opcode, relative_offset);
       EmitByte(&segment[CODESEG], assembler.secondary_opcode);
