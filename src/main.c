@@ -66,11 +66,15 @@ int main(int argc, char **argv) {
 
   VM_Debug(4);
 
-#define DATA_SIZE 4096
-  pData = malloc(DATA_SIZE); /* allocate 64k ram for data, bss and stack*/
-
+  const vmHeader_t *const header   = (const vmHeader_t *const)image;
+  vm_size_t               ram_size = UINT(header->bssLength) + UINT(header->dataLength);
+  pData                            = malloc(ram_size); /* allocate 64k ram for data, bss and stack*/
   /* set-up virtual machine */
-  if (VM_Create(&vm, image, imageSize, pData, DATA_SIZE, systemCalls, vm_aborted_event) == 0) {
+  if (VM_Create(&vm, image, imageSize, pData, ram_size, systemCalls, vm_aborted_event) == 0) {
+
+    uint8_t stack[4096];
+    VM_SetStackStore(&vm, stack, 4096);
+
 #ifdef DEBUG_VM
     void *pDebugInfo = malloc(0x10000);
     int   mapFileImageSize;

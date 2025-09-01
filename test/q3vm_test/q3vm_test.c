@@ -39,6 +39,8 @@ int testInject(const char *filepath, int offset, int opcode) {
   retVal = VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls, NULL);
   free(image);
 
+  printf("  RetVal = %d\n", retVal);
+
   return (retVal == -1) ? 0 : -1;
 }
 
@@ -50,6 +52,8 @@ static void COM_StripExtension(const char *in, char *out) {
   *out = 0;
 }
 #endif
+
+uint8_t stackStore[4096];
 
 int testNominal(const char *filepath) {
   vm_t     vm;
@@ -63,8 +67,11 @@ int testNominal(const char *filepath) {
     return retVal;
   }
 
+  memset(&vm, 0, sizeof(vm));
   VM_Debug(4);
   if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls, NULL) == 0) {
+
+    VM_SetStackStore(&vm, stackStore, sizeof(stackStore));
 
 #ifdef DEBUG_VM
     void *pDebugInfo = malloc(0x10000);
@@ -185,6 +192,8 @@ int main(int argc, char **argv) {
 
   /* finally: test the normal case */
   return testNominal(file);
+
+  return 0;
 }
 
 #ifdef DEBUG_VM
