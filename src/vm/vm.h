@@ -92,7 +92,8 @@ typedef enum {
   VM_ILLEGAL_OPCODE              = -18,
   VM_LIT_ACCESS_ERROR            = -19,
   VM_RAM_ACCESS_ERROR            = -20,
-  VM_NO_STACK_ASSIGNED           = -21
+  VM_NO_STACK_ASSIGNED           = -21,
+  VM_OPSTACK_OVERFLOW            = -22
 } vmErrorCode_t;
 
 /** File header of a bytecode .qvm file. Can be directly mapped to the start of

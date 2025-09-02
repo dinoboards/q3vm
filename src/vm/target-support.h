@@ -60,4 +60,6 @@ extern int24_t  to_int24(ustdint_t x);
 #define DI()
 #define EI()
 
+#define OPSTACK_SIZE 32
+
 #endif
