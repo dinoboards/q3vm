@@ -50,7 +50,7 @@ all: $(TARGET)
 	@echo -e $(FADE)example: Compiled$(NORMAL)
 
 $(TARGET): $(OBJDIR) $(OBJS)
-	@$(LINK) -l -m -f bytecode
+	@$(LINK) -v -l -m -f bytecode
 
 clean:
 	@$(CLEANUP) $(OBJDIR)/*.asm

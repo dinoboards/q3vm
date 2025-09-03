@@ -1027,7 +1027,7 @@ static void writeFunctionsHeader(FILE *f) {
       continue;
 
     if (s->value < 0)
-    continue;
+      continue;
 
     strupr(s->name);
     fprintf(f, "#define Q3VM_FN_%-40s (0x%06X)\n", s->name, s->segment->segmentBase + s->value);
@@ -1045,7 +1045,7 @@ static void writeGlobalsHeader(FILE *f) {
       continue;
 
     if (s->value < 0)
-    continue;
+      continue;
 
     strupr(s->name);
     fprintf(f, "#define Q3VM_DATA_%-38s (0x%06X)\n", s->name, s->segment->segmentBase + s->value);
@@ -1093,9 +1093,7 @@ static void WriteMapFile(void) {
 
   fprintf(f, "\n#endif\n");
 
-
   fclose(f);
-
 }
 
 /*
@@ -1195,15 +1193,15 @@ static void Assemble(void) {
   jump_optimisation_crc              = 0xFFFFFFFF;
   int previous_jump_optimisation_crc = 0;
   for (passNumber = 0; passNumber < 3; passNumber++) {
-    segment[LITSEG].segmentBase  = 0;
-    segment[DATASEG].segmentBase = segment[LITSEG].imageUsed;
+    segment[LITSEG].segmentBase  = 0x800000;
+    segment[DATASEG].segmentBase = 0x000000;
     segment[BSSSEG].segmentBase  = segment[DATASEG].segmentBase + segment[DATASEG].imageUsed;
 
     for (i = 0; i < NUM_SEGMENTS; i++) {
       segment[i].segmentLength = segment[i].imageUsed;
       segment[i].imageUsed     = 0;
     }
-    segment[LITSEG].imageUsed = 1; // skip the 0 byte, so NULL pointers are fixed up properly
+    segment[DATASEG].imageUsed = 1; // skip the 0 byte, so NULL pointers are fixed up properly
 
     for (i = 0; i < numAsmFiles; i++) {
       currentFileIndex = i;
@@ -1244,7 +1242,7 @@ static void Assemble(void) {
 
   // reserve the stack in bss
   currentSegment = &segment[BSSSEG];
-  DefineSymbol("_stackBottom", segment[BSSSEG].imageUsed);
+  // DefineSymbol("_stackBottom", segment[BSSSEG].imageUsed);
   // write the image
   WriteVmFile();
 

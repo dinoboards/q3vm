@@ -341,3 +341,5 @@ ASALocalRun/
 
 *.lst
 *.qvm
+*.map
+*.header

@@ -15,13 +15,15 @@ function cleanup_function() {
   rm $fname.asm
   mv $fname.qvm $(dirname $full)/
   mv $fname.lst $(dirname $full)/
+  mv $fname.map $(dirname $full)/
+  mv $fname.h $(dirname $full)/$fname.header
 }
 
 trap cleanup_function EXIT
 
 expected=$(cat ./expected_results.json | jq -r ".\"${full}.c\".return_code")
 
-trace=$(lcc ./${full}.c  2>&1)
+trace=$(lcc -DQ3_VM -S -Wf-target=bytecode -Wf-g ./${full}.c  2>&1)
 errored=$(echo $?)
 
 if [[ ${errored} != "0" ]]; then
@@ -35,7 +37,7 @@ if [[ ${errored} != "0" ]]; then
 fi
 
 
-q3asm -l -o $fname.qvm $fname.asm g_syscalls.asm
+q3asm -m -l -o $fname.qvm $fname.asm g_syscalls.asm
 output=$(../q3vm $fname.qvm)
 result=$(echo $?)
 

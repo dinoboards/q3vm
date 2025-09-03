@@ -153,9 +153,10 @@ uint32_t systemCalls(vm_t *vm, uint8_t *args) {
     memset(VMA_PTR(3, vm), VMA_UINT24(6), VMA_UINT24(9));
     return VMA_UINT24(3);
 
-  case -4: /* MEMCPY */
+  case -4: /* MEMCPY */ {
     memcpy(VMA_PTR(3, vm), VMA_PTR(6, vm), VMA_UINT24(9));
     return VMA_UINT24(3);
+  }
 
   case -6: /* FLOATFF */
     return VM_FloatToInt(VMA_F4(3) * 2.0f);
