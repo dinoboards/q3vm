@@ -1015,6 +1015,43 @@ static void writeMapFileForSegment(FILE *f, int seg) {
     fprintf(f, "%i %8x %s\n", seg, s->segment->segmentBase + s->value, s->name);
   }
 }
+
+static void writeFunctionsHeader(FILE *f) {
+  symbol_t *s;
+
+  for (s = symbols; s; s = s->next) {
+    if (s->name[0] == '$')
+      continue; // skip locals
+
+    if (s->segment->index != CODESEG)
+      continue;
+
+    if (s->value < 0)
+    continue;
+
+    strupr(s->name);
+    fprintf(f, "#define Q3VM_FN_%-40s (0x%06X)\n", s->name, s->segment->segmentBase + s->value);
+  }
+}
+
+static void writeGlobalsHeader(FILE *f) {
+  symbol_t *s;
+
+  for (s = symbols; s; s = s->next) {
+    if (s->name[0] == '$')
+      continue; // skip locals
+
+    if (s->segment->index == CODESEG)
+      continue;
+
+    if (s->value < 0)
+    continue;
+
+    strupr(s->name);
+    fprintf(f, "#define Q3VM_DATA_%-38s (0x%06X)\n", s->name, s->segment->segmentBase + s->value);
+  }
+}
+
 /*
 ==============
 WriteMapFile
@@ -1037,6 +1074,28 @@ static void WriteMapFile(void) {
   writeMapFileForSegment(f, BSSSEG);
 
   fclose(f);
+
+  imageName[0] = 0;
+  strcpy(imageName, outputFilename);
+  StripExtension(imageName);
+  strcat(imageName, ".h");
+
+  report("Writing %s...\n", imageName);
+
+  f = SafeOpenWrite(imageName);
+
+  fprintf(f, "#ifndef __NOTQ3VM_SYMBOLS__\n");
+  fprintf(f, "#define __NOTQ3VM_SYMBOLS__\n\n");
+
+  writeFunctionsHeader(f);
+  fprintf(f, "\n");
+  writeGlobalsHeader(f);
+
+  fprintf(f, "\n#endif\n");
+
+
+  fclose(f);
+
 }
 
 /*

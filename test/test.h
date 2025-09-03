@@ -1,0 +1,38 @@
+#ifndef __NOTQ3VM_SYMBOLS__
+#define __NOTQ3VM_SYMBOLS__
+
+#define Q3VM_FN_VMMAIN                                   (0x000000)
+#define Q3VM_FN_FIB                                      (0x0006AE)
+#define Q3VM_FN_PRINTF                                   (0x0006EA)
+#define Q3VM_FN_SWAPFUNC                                 (0x000719)
+#define Q3VM_FN_MED3                                     (0x0007F5)
+#define Q3VM_FN_QSORT                                    (0x0008C5)
+#define Q3VM_FN_STRLEN                                   (0x000E94)
+#define Q3VM_FN_STRCAT                                   (0x000EC0)
+#define Q3VM_FN_STRCPY                                   (0x000F27)
+#define Q3VM_FN_STRCMP                                   (0x000F79)
+#define Q3VM_FN_STRCHR                                   (0x000FD0)
+#define Q3VM_FN_STRSTR                                   (0x001006)
+#define Q3VM_FN_TOLOWER                                  (0x001074)
+#define Q3VM_FN_TOUPPER                                  (0x00109E)
+#define Q3VM_FN_MEMMOVE                                  (0x0010C8)
+#define Q3VM_FN_SRAND                                    (0x001135)
+#define Q3VM_FN_RAND                                     (0x001144)
+#define Q3VM_FN_ATOF                                     (0x00116E)
+#define Q3VM_FN__ATOF                                    (0x0012B8)
+#define Q3VM_FN_ATOI                                     (0x00140A)
+#define Q3VM_FN__ATOI                                    (0x0014C8)
+#define Q3VM_FN_ABS                                      (0x001594)
+#define Q3VM_FN_FABS                                     (0x0015B8)
+#define Q3VM_FN_ADDINT                                   (0x0015E0)
+#define Q3VM_FN_ADDFLOAT                                 (0x001735)
+#define Q3VM_FN_ADDSTRING                                (0x0018D9)
+#define Q3VM_FN_VSPRINTF                                 (0x0019C4)
+#define Q3VM_FN_SSCANF                                   (0x001C46)
+
+#define Q3VM_DATA_DATATEST                               (0x0001CD)
+#define Q3VM_DATA_BSSTEST                                (0x0001E3)
+#define Q3VM_DATA_RANDSEED                               (0x0001D8)
+#define Q3VM_DATA__STACKBOTTOM                           (0x0001E6)
+
+#endif

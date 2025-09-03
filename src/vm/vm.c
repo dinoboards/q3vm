@@ -170,7 +170,7 @@ static bool VM_ValidateHeader(vm_t *const vm, const vmHeader_t *const header, co
  * @param[in] vm Pointer to initialized virtual machine.
  * @param[in] args Arguments for function call.
  * @return Return value of the function call. */
-static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint32_t *opStack);
+static ustdint_t VM_CallInterpreted(const vm_t _vm, ustdint_t pc, int24_t *args, uint32_t *opStack);
 
 /******************************************************************************
  * DEBUG FUNCTIONS (only used if DEBUG_VM is defined)
@@ -410,7 +410,7 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
 #ifdef DEBUG_VM
     ++vm->callLevel;
 #endif
-    r = VM_CallInterpreted(*vm, args, _opStack);
+    r = VM_CallInterpreted(*vm, 0, args, _opStack);
 #ifdef DEBUG_VM
     --vm->callLevel;
 #endif
@@ -419,6 +419,46 @@ intptr_t VM_Call(vm_t *vm, ustdint_t command, ...) {
   return r;
 }
 
+
+intptr_t VM_Call2(vm_t *vm, ustdint_t pc, ustdint_t command, ...) {
+  intptr_t r;
+#ifdef MEMORY_SAFE
+  if (vm == NULL)
+    return VM_INVALID_POINTER;
+
+  if (vm->codeLength < 1)
+    return VM_NOT_LOADED;
+
+  if (vm->stackBottom == 0)
+    return VM_NO_STACK_ASSIGNED;
+#endif
+
+  vm->lastError = 0;
+  {
+    int24_t  args[MAX_VMMAIN_ARGS];
+    va_list  ap;
+    uint8_t  i;
+    uint32_t _opStack[OPSTACK_SIZE];
+
+    // TODO: for ez80 build, this can probably be a memcpy
+    args[0] = INT24(command);
+    va_start(ap, command);
+    for (i = 1; i < (uint8_t)ARRAY_LEN(args); i++) {
+      args[i] = va_arg(ap, int24_t);
+    }
+    va_end(ap);
+
+#ifdef DEBUG_VM
+    ++vm->callLevel;
+#endif
+    r = VM_CallInterpreted(*vm, pc, args, _opStack);
+#ifdef DEBUG_VM
+    --vm->callLevel;
+#endif
+  }
+
+  return r;
+}
 void *VM_ArgPtr(intptr_t vmAddr, vm_t *const vm) {
   if (!vmAddr)
     return NULL;
@@ -997,7 +1037,7 @@ locals from sp
 */
 
 /* FIXME: this needs to be locked to uint24_t to ensure platform agnostic */
-static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint32_t *opStackBase) {
+static ustdint_t VM_CallInterpreted(const vm_t _vm, ustdint_t pc, int24_t *args, uint32_t *opStackBase) {
 #ifdef MEMORY_SAFE
   const uint8_t *const PC_end = &_vm.codeBase[_vm.codeLength];
 #endif
@@ -1022,7 +1062,7 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, int24_t *args, uint32_t *opS
   _vm.vm->breakFunction = 0;
 #endif
 
-  PC = _vm.codeBase;
+  PC = _vm.codeBase + pc;
   programStack -= (6 + 3 * MAX_VMMAIN_ARGS);
 
   memcpy(&_vm.stackBase[programStack + 6], args, MAX_VMMAIN_ARGS * 3);

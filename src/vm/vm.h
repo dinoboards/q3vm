@@ -221,6 +221,7 @@ void VM_SetStackStore(vm_t *const vm, uint8_t *const stack, const vm_size_t stac
  * @param[in] command Basic parameter passed to the bytecode.
  * @return Return value of the function call by the VM. */
 intptr_t VM_Call(vm_t *vm, ustdint_t command, ...);
+intptr_t VM_Call2(vm_t *vm, ustdint_t pc, ustdint_t command, ...);
 
 /** Helper function for syscalls VMA(x) macro:
  * Translate from virtual machine memory to real machine memory.

@@ -334,6 +334,10 @@ int main(void) {
   return 0;
 }
 
+void spike(void) {
+  printf("SPIKE\n");
+}
+
 int sub_test_1(void) {
   float c;
   a = 1.2f;
