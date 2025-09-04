@@ -36,7 +36,7 @@ int testInject(const char *filepath, int offset, int opcode) {
 
   fprintf(stderr, "Injecting wrong OP code %s at %i: %i\n", filepath, offset, opcode);
   memcpy(&image[offset], &opcode, sizeof(opcode)); /* INJECT */
-  retVal = VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls, NULL);
+  retVal = VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), NULL, 0, systemCalls, NULL);
   free(image);
 
   printf("  RetVal = %d\n", retVal);
@@ -69,7 +69,7 @@ int testNominal(const char *filepath) {
 
   memset(&vm, 0, sizeof(vm));
   VM_Debug(4);
-  if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), systemCalls, NULL) == 0) {
+  if (VM_Create(&vm, image, imageSize, dataSegment, sizeof(dataSegment), NULL, 0, systemCalls, NULL) == 0) {
 
     VM_SetStackStore(&vm, stackStore, sizeof(stackStore));
 
@@ -141,18 +141,18 @@ void testArguments(void) {
 
   loadImage("invalidpathfoobar", &imageSize);
 
-  VM_Create(NULL, NULL, 0, dataSegment, sizeof(dataSegment), NULL, NULL);
-  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL, NULL);
-  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls, NULL);
-  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), systemCalls, NULL);
+  VM_Create(NULL, NULL, 0, dataSegment, sizeof(dataSegment), NULL, 0, NULL, NULL);
+  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL, 0, NULL, NULL);
+  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL, 0, systemCalls, NULL);
+  VM_Create(&vm, NULL, 0, dataSegment, sizeof(dataSegment), NULL, 0, systemCalls, NULL);
 
   uint8_t bogus[] = "bogusbogusbogubogusbogus"
                     "bogusbogusbogubogusbogus"
                     "bogusbogusbogubogusbogus"
                     "bogusbogusbogubogusbogus";
-  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), NULL, NULL);
-  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), systemCalls, NULL);
-  VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, dataSegment, sizeof(dataSegment), systemCalls, NULL);
+  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), NULL, 0, NULL, NULL);
+  VM_Create(&vm, bogus, sizeof(bogus), dataSegment, sizeof(dataSegment), NULL, 0, systemCalls, NULL);
+  VM_Create(&vm, bogus, sizeof(vmHeader_t) - 4, dataSegment, sizeof(dataSegment), NULL, 0, systemCalls, NULL);
 
   vmHeader_t vmHeader = {0};
   vmHeader.vmMagic    = VM_MAGIC;
@@ -164,7 +164,7 @@ void testArguments(void) {
   VM_Create(&vm, (uint8_t *)&vmHeader,
             sizeof(vmHeader_t) + to_ustdint(vmHeader.codeLength) + to_ustdint(vmHeader.dataLength) +
                 to_ustdint(vmHeader.litLength) - 1,
-            dataSegment, sizeof(dataSegment), systemCalls, NULL);
+            dataSegment, sizeof(dataSegment), NULL, 0, systemCalls, NULL);
 
   VM_Call(NULL, 0);
 #ifdef DEBUG_VM

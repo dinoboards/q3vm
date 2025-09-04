@@ -91,15 +91,11 @@ int sub_test_OP_RSHU4(void);
 int sub_test_static_init(void);
 int sub_test_struct_passing(void);
 int sub_test_struct_return(void);
+int test_shared_memory_access(void);
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
-#define VDP_IO_DATA ((uint24_t)0xFFFF98)
-#define VDP_DATA    (*((uint8_t *)VDP_IO_DATA))
-
 int main(void) {
-
-  VDP_DATA = 23;
 
 #pragma asm DI
 #pragma asm EI
@@ -304,6 +300,9 @@ int main(void) {
 
   if (sub_test_struct_return())
     return 66;
+
+  if (test_shared_memory_access())
+    return 68;
 
   return 0;
 }
@@ -1446,6 +1445,36 @@ int sub_test_struct_return(void) {
   p = point_new(44, 0x55);
 
   if (p.x != 44 || p.y != 0x55)
+    return 1;
+
+  return 0;
+}
+
+typedef struct shared_data_s {
+  uint8_t  count1;
+  uint24_t counter2;
+} shared_data_t;
+
+extern shared_data_t shared_data;
+
+shared_data_t mirror;
+
+int test_shared_memory_access(void) {
+  // printf("%d\r\n", shared_data.counter2);
+
+  mirror.count1 = 45;
+
+  mirror.counter2 = 11122;
+
+  shared_data = mirror;
+
+  shared_data.count1++;
+  shared_data.counter2++;
+
+  if (shared_data.count1 != 46)
+    return 1;
+
+  if (shared_data.counter2 != 11123)
     return 1;
 
   return 0;

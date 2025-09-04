@@ -8,7 +8,7 @@ equ	floatff					-6
 equ	trap_7					-7
 equ	putchar					-254
 
-
+equ	shared_data	0xFD0000
 lit
 align 1
 LABELV sysfont

@@ -46,6 +46,13 @@ static void COM_StripExtension(const char *in, char *out) {
  * @param[in] error Human readable error text. */
 void vm_aborted_event(vmErrorCode_t level) { fprintf(stderr, "Err (%i)\n", level); }
 
+typedef struct shared_data_s {
+  uint8_t  count1;
+  uint24_t counter2;
+} shared_data_t;
+
+shared_data_t shared_data;
+
 int main(int argc, char **argv) {
   vm_t  vm;
   int   retVal = -1;
@@ -70,7 +77,8 @@ int main(int argc, char **argv) {
   vm_size_t               ram_size = UINT(header->bssLength) + UINT(header->dataLength);
   pData                            = malloc(ram_size); /* allocate 64k ram for data, bss and stack*/
   /* set-up virtual machine */
-  if (VM_Create(&vm, image, imageSize, pData, ram_size, systemCalls, vm_aborted_event) == 0) {
+  if (VM_Create(&vm, image, imageSize, pData, ram_size, (uint8_t *)&shared_data, sizeof(shared_data_t), systemCalls,
+                vm_aborted_event) == 0) {
 
     uint8_t stack[4096];
     VM_SetStackStore(&vm, stack, 4096);
@@ -88,6 +96,10 @@ int main(int argc, char **argv) {
     VM_LoadDebugInfo(&vm, mapFileImage, pDebugInfo, 0x10000);
 #endif
     /* call virtual machine vmMain() with integer argument (here 0) */
+
+    shared_data.count1   = 16;
+    shared_data.counter2 = UINT24(99);
+
     retVal = VM_Call(&vm, 0, 1, 2, 3);
 
     if (vm.lastError) {

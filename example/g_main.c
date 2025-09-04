@@ -92,6 +92,7 @@ int sub_test_static_init(void);
 int sub_test_struct_passing(void);
 int sub_test_struct_return(void);
 int sub_test_io_access(void);
+int test_shared_memory_access(void);
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -330,6 +331,9 @@ int main(void) {
 
   if (sub_test_io_access())
     return 67;
+
+  if (test_shared_memory_access())
+    return 68;
 
   return 0;
 }
@@ -1481,6 +1485,36 @@ int sub_test_io_access(void) {
 
   VDP_LEDS = 0x5A;
   if (VDP_LEDS != 0x5A)
+    return 1;
+
+  return 0;
+}
+
+typedef struct shared_data_s {
+  uint8_t  count1;
+  uint24_t counter2;
+} shared_data_t;
+
+extern shared_data_t shared_data;
+
+shared_data_t mirror;
+
+int test_shared_memory_access(void) {
+  // printf("%d\r\n", shared_data.counter2);
+
+  mirror.count1 = 45;
+
+  mirror.counter2 = 11122;
+
+  shared_data = mirror;
+
+  shared_data.count1++;
+  shared_data.counter2++;
+
+  if (shared_data.count1 != 46)
+    return 1;
+
+  if (shared_data.counter2 != 11123)
     return 1;
 
   return 0;
