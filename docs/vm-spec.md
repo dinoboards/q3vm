@@ -15,6 +15,25 @@
 * R0: *OS
 * R1: *(OS - 1)
 
+## Memory Mapping
+
+### CODE SEGMENT
+
+| Address Range        | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| 0x000000 to 0x7FFFFF | reserved for readonly executable code           |
+| 0x800000 to 0xFFFFFF | negative numbers directed to host `systemCalls` |
+
+### DATA SEGMENTS
+
+| Address Range        | Segment  | Description                                                           |
+| -------------------- | -------- | --------------------------------------------------------------------- |
+| 0x000000 to 0x7FFFFF | LIT      | reserved for readonly initialised data                                |
+| 0x800000 to 0xFCFFFF | DATA/BSS | reserved for writable initialised (DATA) and uninitialised (BSS) data |
+| 0xFD0000 to 0xFDFFFF | SHARED   | reserved for mapping to host shared memory                            |
+| 0xFE0000 to 0xFEFFFF | STACK    | reserved for PS (program stack)                                       |
+| 0xFF0000 to 0xFFFFFF | IO       | reserved for mapping to host I/O ports                                |
+
 ### Implemented Opcode functions
 
 | Op Code           | LCC Code                           | Description                                             | Stack Type         |
@@ -45,6 +64,7 @@
 | OP_CI3s4          | CVII4 3, CVIU4 3                   | `*OS = (int32)R0`                                       | int24              |
 | OP_CI4F4          | CVIF4 4                            | `*OS = (float)R0`                                       | int32              |
 | OP_CONSTP3 v24    | CNSTP4, ADDRGP3                    | `OS++; *OS = v24`                                       |                    |
+| OP_CONSTFD v16    | ADDRGP3                            | `OS++; *OS = v16 \| 0xFD0000`                           | int24              |
 | OP_CONSTs1 v8     | CNSTU1, CNSTU1                     | `OS++; *OS = v8`                                        |                    |
 | OP_CONSTs2 v16    | CNSTU2, CNSTU2                     | `OS++; *OS = v16`                                       |                    |
 | OP_CONSTs3 v24    | CNSTU3, CNSTU3                     | `OS++; *OS = v24`                                       |                    |
@@ -58,25 +78,25 @@
 | OP_DIVU3          | DIVU3                              | `OS--; *OS = R1 / R0`                                   | uint24             |
 | OP_DIVU4          | DIVU4                              | `OS--; *OS = R1 / R0`                                   | uint32             |
 | OP_ENTER v16      | PROC                               | `PS -= v16`                                             |                    |
-| OP_EQ3 v16        | EQI3, EQU3                         | `OS -= 2; PC += v16 if R1 == R0`                         | (u)int24           |
-| OP_EQ4 v16        | EQI4, EQU4, EQF4                   | `OS -= 2; PC += v16 if R1 == R0 `                        | (u)int32/float     |
-| OP_GEF4 v16       | GEF                                | `OS -= 2; PC += v16 if R1 >= R0 `                        | float              |
-| OP_GEI3 v16       | GEI3                               | `OS -= 2; PC += v16 if R1 >= R0 `                        | int24              |
-| OP_GEI4 v16       | GEI4                               | `OS -= 2; PC += v16 if R1 >= R0 `                        | int32              |
-| OP_GEU3 v16       | GEU3                               | `OS -= 2; PC += v16 if R1 >= R0`                         | uint23             |
-| OP_GEU4 v16       | GEU4                               | `OS -= 2; PC += v16 if R1 >= R0`                         | uint24             |
-| OP_GTF4 v16       | GTF4                               | `OS -= 2; PC += v16 if R1 > R0`                          | float              |
-| OP_GTI3 v16       | GTI3                               | `OS -= 2; PC += v16 if R1 > R0`                          | int23              |
-| OP_GTI4 v16       | GTI4                               | `OS -= 2; PC += v16 if R1 > R0`                          | int24              |
-| OP_GTU3 v16       | GTU3                               | `OS -= 2; pc += v16 if R1 > R0`                          | uint23             |
-| OP_GTU4 v16       | GTU4                               | `OS -= 2; pc += v16 if R1 > R0`                          | uint24             |
+| OP_EQ3 v16        | EQI3, EQU3                         | `OS -= 2; PC += v16 if R1 == R0`                        | (u)int24           |
+| OP_EQ4 v16        | EQI4, EQU4, EQF4                   | `OS -= 2; PC += v16 if R1 == R0 `                       | (u)int32/float     |
+| OP_GEF4 v16       | GEF                                | `OS -= 2; PC += v16 if R1 >= R0 `                       | float              |
+| OP_GEI3 v16       | GEI3                               | `OS -= 2; PC += v16 if R1 >= R0 `                       | int24              |
+| OP_GEI4 v16       | GEI4                               | `OS -= 2; PC += v16 if R1 >= R0 `                       | int32              |
+| OP_GEU3 v16       | GEU3                               | `OS -= 2; PC += v16 if R1 >= R0`                        | uint23             |
+| OP_GEU4 v16       | GEU4                               | `OS -= 2; PC += v16 if R1 >= R0`                        | uint24             |
+| OP_GTF4 v16       | GTF4                               | `OS -= 2; PC += v16 if R1 > R0`                         | float              |
+| OP_GTI3 v16       | GTI3                               | `OS -= 2; PC += v16 if R1 > R0`                         | int23              |
+| OP_GTI4 v16       | GTI4                               | `OS -= 2; PC += v16 if R1 > R0`                         | int24              |
+| OP_GTU3 v16       | GTU3                               | `OS -= 2; pc += v16 if R1 > R0`                         | uint23             |
+| OP_GTU4 v16       | GTU4                               | `OS -= 2; pc += v16 if R1 > R0`                         | uint24             |
 | OP_JUMP           | JUMPV                              | `PC = R0; OS--;`                                        | ptr                |
 | OP_LEAVE v16      | RET, ENDPROC                       | `PS += v16`                                             |                    |
-| OP_LEF4 v16       | LEF4                               | `OS -= 2; PC += v16 if R1 <= R0`                         | float              |
-| OP_LEI3 v16       | LEI3                               | `OS -= 2; PC += v16 if R1 <= R0`                         | int24              |
-| OP_LEI4 v16       | LEI4                               | `OS -= 2; PC += v16 if R1 <= R0`                         | int32              |
-| OP_LEU3 v16       | LEU3                               | `OS -= 2; PC += v16 if R1 <= R0`                         | uint24             |
-| OP_LEU4 v16       | LEU4                               | `OS -= 2; PC += v16 if R1 <= R0`                         | uint32             |
+| OP_LEF4 v16       | LEF4                               | `OS -= 2; PC += v16 if R1 <= R0`                        | float              |
+| OP_LEI3 v16       | LEI3                               | `OS -= 2; PC += v16 if R1 <= R0`                        | int24              |
+| OP_LEI4 v16       | LEI4                               | `OS -= 2; PC += v16 if R1 <= R0`                        | int32              |
+| OP_LEU3 v16       | LEU3                               | `OS -= 2; PC += v16 if R1 <= R0`                        | uint24             |
+| OP_LEU4 v16       | LEU4                               | `OS -= 2; PC += v16 if R1 <= R0`                        | uint32             |
 | OP_LOAD1          | INDIRI1, INDIRU1                   | `*OS = *R0`                                             | (u)int8            |
 | OP_LOAD2          | INDIRI2, INDIRU2                   | `*OS = *R0`                                             | (u)int16           |
 | OP_LOAD3          | INDIRI3                            | `*OS = *R0`                                             | (u)int24           |
@@ -84,11 +104,11 @@
 | OP_LOCAL v16      | ADDRFP4, ADDRLP4                   | `OS++; *OS = &PS[v16]`                                  | ptr                |
 | OP_LSH3           | LSHI3, LSHU3                       | `OS--; *OS = R1 << R0`                                  | (u)int24           |
 | OP_LSH4           | LSHI4, LSHU4                       | `OS--; *OS = R1 << R0`                                  | (u)int32           |
-| OP_LTF4 v16       | LTF4                               | `OS -= 2; PC += v16 if R1 < R0`                          | float              |
-| OP_LTI3 v16       | LTI3                               | `OS -= 2; PC += v16 if R1 < R0 `                         | int24              |
-| OP_LTI3 v16       | LTI3                               | `OS -= 2; PC += v16 if R1 < R0 `                         | int32              |
-| OP_LTU3 v16       | LTU3                               | `OS -= 2; PC += v16 if R1 >= R0 `                        | uint23             |
-| OP_LTU4 v16       | LTU4                               | `OS -= 2; PC += v16 if R1 >= R0 `                        | uint32             |
+| OP_LTF4 v16       | LTF4                               | `OS -= 2; PC += v16 if R1 < R0`                         | float              |
+| OP_LTI3 v16       | LTI3                               | `OS -= 2; PC += v16 if R1 < R0 `                        | int24              |
+| OP_LTI3 v16       | LTI3                               | `OS -= 2; PC += v16 if R1 < R0 `                        | int32              |
+| OP_LTU3 v16       | LTU3                               | `OS -= 2; PC += v16 if R1 >= R0 `                       | uint23             |
+| OP_LTU4 v16       | LTU4                               | `OS -= 2; PC += v16 if R1 >= R0 `                       | uint32             |
 | OP_MODI3          | MODI3                              | `OS--; *OS = R1 % R0`                                   | int24              |
 | OP_MODI4          | MODI4                              | `OS--; *OS = R1 % R0`                                   | int32              |
 | OP_MODU3          | MODU3                              | `OS--; *OS = R1 % R0;`                                  | uint24             |
@@ -98,9 +118,9 @@
 | OP_MULI4          | MULI4                              | `OS--; *OS = R1 * R0`                                   | int32              |
 | OP_MULU3          | MULU3                              | `OS--; *OS = R1 * R0`                                   | uint24             |
 | OP_MULU4          | MULU4                              | `OS--; *OS = R1 * R0`                                   | uint32             |
-| OP_NE3 v16        | NEI3, NEU3                         | `OS -= 2; PC += v16 if R1 != R0`                         | (u)int24           |
-| OP_NE4 v16        | NEI4, NEU4                         | `OS -= 2; PC += v16 if R1 != R0`                         | (u)int32           |
-| OP_NEF4 v16       | NEF4                               | `OS -= 2; PC += v16 if R1 != R0`                         | float              |
+| OP_NE3 v16        | NEI3, NEU3                         | `OS -= 2; PC += v16 if R1 != R0`                        | (u)int24           |
+| OP_NE4 v16        | NEI4, NEU4                         | `OS -= 2; PC += v16 if R1 != R0`                        | (u)int32           |
+| OP_NEF4 v16       | NEF4                               | `OS -= 2; PC += v16 if R1 != R0`                        | float              |
 | OP_NEGF4          | NEGF4                              | `*OS = -R0`                                             | float              |
 | OP_NEGI3          | NEGI3                              | `*OS = -R0`                                             | int24              |
 | OP_NEGI4          | NEGI4                              | `*OS = -R0`                                             | int32              |

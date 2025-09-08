@@ -142,24 +142,6 @@
 /** Max. size of BSS section */
 #define VM_MAX_BSS_LENGTH 10485760
 
-/** The 64K segment that data/bss starts at */
-#define VM_VADDR_DATA_START 0x800000
-#define VM_VADDR_DATA_SEG   ((uint8_t)(VM_VADDR_DATA_START >> 16))
-
-/** the 64K segment that lit starts at */
-#define VM_VADDR_LIT_START 0x000000
-
-/** the 64K segment that stack is mapped to */
-#define VM_VADDR_STACK_START 0xFE0000
-#define VM_VADDR_STACK_SEG   ((uint8_t)(VM_VADDR_STACK_START >> 16))
-
-/** the 64K segment that i/o mapping starts at */
-#define VM_VADDR_IO_START 0xFF0000
-#define VM_VADDR_IO_SEG   ((uint8_t)(VM_VADDR_IO_START >> 16))
-
-#define VM_VADDR_MEMAP_START 0xFD0000
-#define VM_VADDR_MEMAP_SEG   ((uint8_t)(VM_VADDR_MEMAP_START >> 16))
-
 /******************************************************************************
  * TYPEDEFS
  ******************************************************************************/
@@ -1317,6 +1299,12 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, ustdint_t pc, int24_t *args,
       DISPATCH();
     }
 
+    case OP_CONSTFD: {
+      push_1_uint24(UINT24(R2.uint16 + 0xFD0000));
+      PC += INT16_INCREMENT;
+      DISPATCH();
+    }
+
     case OP_CONSTI3_I1: {
       push_1_int24(INT24(R2.int8));
       PC += INT8_INCREMENT;
@@ -1347,47 +1335,47 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, ustdint_t pc, int24_t *args,
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC1: {
+    case OP_CONSTP3_SC01: {
       push_1_int24(INT24(-1));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC2: {
+    case OP_CONSTP3_SC02: {
       push_1_int24(INT24(-2));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC3: {
+    case OP_CONSTP3_SC03: {
       push_1_int24(INT24(-3));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC4: {
+    case OP_CONSTP3_SC04: {
       push_1_int24(INT24(-4));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC5: {
+    case OP_CONSTP3_SC05: {
       push_1_int24(INT24(-5));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC6: {
+    case OP_CONSTP3_SC06: {
       push_1_int24(INT24(-6));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC7: {
+    case OP_CONSTP3_SC07: {
       push_1_int24(INT24(-7));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC8: {
+    case OP_CONSTP3_SC08: {
       push_1_int24(INT24(-8));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC9: {
+    case OP_CONSTP3_SC09: {
       push_1_int24(INT24(-9));
       DISPATCH();
     }
