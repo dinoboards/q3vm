@@ -33,6 +33,7 @@ Read the excellent introduction to the Q3VM by Fabien Sanglard:
 10. Removed "computed gotos" version as its not supported by Zilog's C89 compiler.
 11. Memory allocation process changed from a requested process to a tell process. (Removed VM_alloc callback functions).
 12. New command line option `q3asm -l` to produce a listing file.
+13. Change addressing from an 'instruction count offset' to the actual virtual address within the image.  No longer needs to 'adjust' jump/address at load time
 
 ## Memory Mapping changes
 
@@ -68,7 +69,7 @@ Updating the Q3VM implementation to avoid copying the code segment to RAM is str
 
 #### TODOs
 
-1. NOT DO: ~~change opstack from using fixed 4 byte wide values to variable values (1 byte for int, 3 for int24 etc)~~Minimal potential gain & increase code complexity
+1. NOT DO: ~~change opstack from using fixed 4 byte wide values to variable values (1 byte for int, 3 for int24 etc)~~ Minimal potential gain & increase code complexity
 2. DONE: complete migration of assembly lookup from opstrings.h to assembly.h
 3. DONE: complete refactor of all vm case statements to use pop/push pattern
 4. NOT DO: ~~change programCounter and programStack to be pointers not array indexes~~ - is less efficient in ZDS
