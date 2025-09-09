@@ -1335,6 +1335,11 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, ustdint_t pc, int24_t *args,
       DISPATCH();
     }
 
+    case OP_CONSTP3_SC00: {
+      push_1_uint24(UINT24(0));
+      DISPATCH();
+    }
+
     case OP_CONSTP3_SC01: {
       push_1_int24(INT24(-1));
       DISPATCH();

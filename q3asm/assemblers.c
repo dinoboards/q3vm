@@ -30,6 +30,12 @@ ASMMultipleFn(CODE_ADDRG) {
   Parse();
   const int v = ParseExpression();
 
+  if (v == 0) {
+    WriteCode(OP_CONSTP3_SC00);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_SC00);
+    return;
+  }
+
   if (v < 0) {
     if (v >= -15) {
       WriteCode(OP_CONSTP3_SC01 + abs(v) - 1);
@@ -81,6 +87,12 @@ ASMMultipleFn(CODE_ADDRG) {
 ASMMultipleFn(CODE_CONSTP3) {
   Parse();
   const int v = ParseExpression();
+
+  if (v == 0) {
+    WriteCode(OP_CONSTP3_SC00);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_SC00);
+    return;
+  }
 
   if (v < 0) {
     if (v >= -15) {

@@ -93,6 +93,7 @@ int sub_test_struct_passing(void);
 int sub_test_struct_return(void);
 int sub_test_io_access(void);
 int test_shared_memory_access(void);
+int test_null_constant(void);
 
 #define fabs(f) ((f) < 0 ? -(f) : (f))
 
@@ -334,6 +335,9 @@ int main(void) {
 
   if (test_shared_memory_access())
     return 68;
+
+  if (test_null_constant())
+    return 69;
 
   return 0;
 }
@@ -1519,6 +1523,17 @@ int test_shared_memory_access(void) {
     return 1;
 
   if (shared_data.counter2 != 11123)
+    return 1;
+
+  return 0;
+}
+
+#define NULL ((void *)0)
+
+int test_null_constant(void) {
+  const uint8_t *p = NULL;
+
+  if (p != NULL)
     return 1;
 
   return 0;
