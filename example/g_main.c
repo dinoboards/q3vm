@@ -99,6 +99,7 @@ int test_null_constant(void);
 
 #define VDP_IO_LEDS ((uint24_t)0xFFFF00)
 #define VDP_LEDS    (*((uint8_t *)VDP_IO_LEDS))
+// extern uint8_t VDP_LEDS;
 
 int main(void) {
 

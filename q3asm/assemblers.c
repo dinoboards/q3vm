@@ -28,24 +28,27 @@ ASMFn(CODE_24BIT) {
 
 ASMMultipleFn(CODE_ADDRG) {
   Parse();
-  const int v = ParseExpression();
+  int v = ParseExpression();
+
+  v = v & 0xFFFFFF;
+  v = INT(INT24(v));
 
   if (v == 0) {
-    WriteCode(OP_CONSTP3_SC00);
-    EmitByte(&segment[CODESEG], OP_CONSTP3_SC00);
+    WriteCode(OP_CONSTP3_NULL);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_NULL);
     return;
   }
 
-  if (v < 0) {
+  if (v < 0 && v >= -256) {
     if (v >= -15) {
-      WriteCode(OP_CONSTP3_SC01 + abs(v) - 1);
-      EmitByte(&segment[CODESEG], OP_CONSTP3_SC01 + abs(v) - 1);
+      WriteCode(OP_CONSTP3_FFFFFF + 1 + v);
+      EmitByte(&segment[CODESEG], OP_CONSTP3_FFFFFF + 1 + v);
       return;
     }
 
-    WriteInt8Code(OP_CONSTP3_SCn, -v);
-    EmitByte(&segment[CODESEG], OP_CONSTP3_SCn);
-    EmitByte(&segment[CODESEG], -v);
+    WriteInt8Code(OP_CONSTP3_FFFFnn, v & 0xFF);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_FFFFnn);
+    EmitByte(&segment[CODESEG], v & 0xFF);
     return;
   }
 
@@ -86,24 +89,27 @@ ASMMultipleFn(CODE_ADDRG) {
 
 ASMMultipleFn(CODE_CONSTP3) {
   Parse();
-  const int v = ParseExpression();
+  int v = ParseExpression();
+
+  v = v & 0xFFFFFF;
+  v = INT(INT24(v));
 
   if (v == 0) {
-    WriteCode(OP_CONSTP3_SC00);
-    EmitByte(&segment[CODESEG], OP_CONSTP3_SC00);
+    WriteCode(OP_CONSTP3_NULL);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_NULL);
     return;
   }
 
-  if (v < 0) {
+  if (v < 0 && v >= -256) {
     if (v >= -15) {
-      WriteCode(OP_CONSTP3_SC01 + abs(v) - 1);
-      EmitByte(&segment[CODESEG], OP_CONSTP3_SC01 + abs(v) - 1);
+      WriteCode(OP_CONSTP3_FFFFFF + 1 + v);
+      EmitByte(&segment[CODESEG], OP_CONSTP3_FFFFFF + 1 + v);
       return;
     }
 
-    WriteInt8Code(OP_CONSTP3_SCn, -v);
-    EmitByte(&segment[CODESEG], OP_CONSTP3_SCn);
-    EmitByte(&segment[CODESEG], -v);
+    WriteInt8Code(OP_CONSTP3_FFFFnn, v & 0xFF);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_FFFFnn);
+    EmitByte(&segment[CODESEG], v & 0xFF);
     return;
   }
 

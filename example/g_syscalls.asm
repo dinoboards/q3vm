@@ -10,6 +10,7 @@ equ	putchar					-254
 
 data
 equ	shared_data	0xFD0000
+; equ	VDP_LEDS 0xFFFF00
 
 lit
 align 1

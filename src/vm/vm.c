@@ -1335,89 +1335,89 @@ static ustdint_t VM_CallInterpreted(const vm_t _vm, ustdint_t pc, int24_t *args,
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC00: {
+    case OP_CONSTP3_NULL: {
       push_1_uint24(UINT24(0));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC01: {
+    case OP_CONSTP3_FFFFFF: {
       push_1_int24(INT24(-1));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC02: {
+    case OP_CONSTP3_FFFFFE: {
       push_1_int24(INT24(-2));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC03: {
+    case OP_CONSTP3_FFFFFD: {
       push_1_int24(INT24(-3));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC04: {
+    case OP_CONSTP3_FFFFFC: {
       push_1_int24(INT24(-4));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC05: {
+    case OP_CONSTP3_FFFFFB: {
       push_1_int24(INT24(-5));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC06: {
+    case OP_CONSTP3_FFFFFA: {
       push_1_int24(INT24(-6));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC07: {
+    case OP_CONSTP3_FFFFF9: {
       push_1_int24(INT24(-7));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC08: {
+    case OP_CONSTP3_FFFFF8: {
       push_1_int24(INT24(-8));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC09: {
+    case OP_CONSTP3_FFFFF7: {
       push_1_int24(INT24(-9));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC10: {
+    case OP_CONSTP3_FFFFF6: {
       push_1_int24(INT24(-10));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC11: {
+    case OP_CONSTP3_FFFFF5: {
       push_1_int24(INT24(-11));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC12: {
+    case OP_CONSTP3_FFFFF4: {
       push_1_int24(INT24(-12));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC13: {
+    case OP_CONSTP3_FFFFF3: {
       push_1_int24(INT24(-13));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC14: {
+    case OP_CONSTP3_FFFFF2: {
       push_1_int24(INT24(-14));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SC15: {
+    case OP_CONSTP3_FFFFF1: {
       push_1_int24(INT24(-15));
       DISPATCH();
     }
 
-    case OP_CONSTP3_SCn: {
+    case OP_CONSTP3_FFFFnn: {
       log3_2(FMT_INT8 " POP uint8\n", R2.uint8 & 0xFF);
-      push_1_int24(INT24(0 - R2.uint8));
+      push_1_int24(INT24(0xFFFF00 + R2.uint8));
       PC += INT8_INCREMENT;
       DISPATCH();
     }
