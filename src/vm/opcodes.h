@@ -32,12 +32,12 @@ typedef enum {
   OP_CI3F4,        /*  24  Convert int24 to float */
   OP_CI3s4,        /*  25  Convert int24 to (u)int32 */
   OP_CI4F4,        /*  26  Convert int32 to float */
-  OP_CONSTFD,      /*  27  */
-  OP_CONSTI3_I1,   /*  28  */
-  OP_CONSTI3_I2,   /*  29  */
-  OP_CONSTP3,      /*  30  Push address pointer to stack */
-  OP_CONSTP3_1,    /*  31  */
-  OP_CONSTP3_2,    /*  32  */
+  OP_CONSTI3_I1,   /*  27  */
+  OP_CONSTI3_I2,   /*  28  */
+  OP_CONSTP3,      /*  29  Push address pointer to stack */
+  OP_CONSTP3_1,    /*  30  */
+  OP_CONSTP3_2,    /*  31  */
+  OP_CONSTP3_FD,   /*  32  */
   OP_CONSTP3_SC01, /*  33  */
   OP_CONSTP3_SC02, /*  34  */
   OP_CONSTP3_SC03, /*  35  */

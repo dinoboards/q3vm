@@ -64,7 +64,7 @@
 | OP_CI3s4          | CVII4 3, CVIU4 3                   | `*OS = (int32)R0`                                       | int24              |
 | OP_CI4F4          | CVIF4 4                            | `*OS = (float)R0`                                       | int32              |
 | OP_CONSTP3 v24    | CNSTP4, ADDRGP3                    | `OS++; *OS = v24`                                       |                    |
-| OP_CONSTFD v16    | ADDRGP3                            | `OS++; *OS = v16 \| 0xFD0000`                           | int24              |
+| OP_CONSTP3_FD v16    | ADDRGP3                            | `OS++; *OS = v16 \| 0xFD0000`                           | int24              |
 | OP_CONSTs1 v8     | CNSTU1, CNSTU1                     | `OS++; *OS = v8`                                        |                    |
 | OP_CONSTs2 v16    | CNSTU2, CNSTU2                     | `OS++; *OS = v16`                                       |                    |
 | OP_CONSTs3 v24    | CNSTU3, CNSTU3                     | `OS++; *OS = v24`                                       |                    |

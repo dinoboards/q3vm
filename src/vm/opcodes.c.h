@@ -28,12 +28,12 @@ const char *const opnames[OPCODE_TABLE_SIZE] = {
     "CI3F4",        /*  24  Convert int24 to float */
     "CI3s4",        /*  25  Convert int24 to (u)int32 */
     "CI4F4",        /*  26  Convert int32 to float */
-    "CONSTFD",      /*  27  */
-    "CONSTI3_I1",   /*  28  */
-    "CONSTI3_I2",   /*  29  */
-    "CONSTP3",      /*  30  Push address pointer to stack */
-    "CONSTP3_1",    /*  31  */
-    "CONSTP3_2",    /*  32  */
+    "CONSTI3_I1",   /*  27  */
+    "CONSTI3_I2",   /*  28  */
+    "CONSTP3",      /*  29  Push address pointer to stack */
+    "CONSTP3_1",    /*  30  */
+    "CONSTP3_2",    /*  31  */
+    "CONSTP3_FD",   /*  32  */
     "CONSTP3_SC01", /*  33  */
     "CONSTP3_SC02", /*  34  */
     "CONSTP3_SC03", /*  35  */

@@ -66,8 +66,8 @@ ASMMultipleFn(CODE_ADDRG) {
 
   if (passNumber >= 1 && (v & 0xFF0000) == 0xFD0000) {
     sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
-    WriteInt16Code(OP_CONSTFD, v & 0xFFFF);
-    EmitByte(&segment[CODESEG], OP_CONSTFD);
+    WriteInt16Code(OP_CONSTP3_FD, v & 0xFFFF);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_FD);
     EmitInt16(&segment[CODESEG], v & 0xFFFF);
     return;
   }
@@ -97,8 +97,8 @@ ASMMultipleFn(CODE_CONSTP3) {
 
   if (passNumber >= 1 && (v & 0xFF0000) == 0xFD0000) {
     sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
-    WriteInt16Code(OP_CONSTFD, v & 0xFFFF);
-    EmitByte(&segment[CODESEG], OP_CONSTFD);
+    WriteInt16Code(OP_CONSTP3_FD, v & 0xFFFF);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_FD);
     EmitInt16(&segment[CODESEG], v & 0xFFFF);
     return;
   }
