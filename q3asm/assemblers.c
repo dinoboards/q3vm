@@ -78,6 +78,37 @@ ASMMultipleFn(CODE_ADDRG) {
   EmitInt24(&segment[CODESEG], v);
 }
 
+ASMMultipleFn(CODE_CONSTP3) {
+  Parse();
+  const int v = ParseExpression();
+
+  if (v < 0) {
+    if (v >= -15) {
+      WriteCode(OP_CONSTP3_SC01 + abs(v) - 1);
+      EmitByte(&segment[CODESEG], OP_CONSTP3_SC01 + abs(v) - 1);
+      return;
+    }
+
+    WriteInt8Code(OP_CONSTP3_SCn, -v);
+    EmitByte(&segment[CODESEG], OP_CONSTP3_SCn);
+    EmitByte(&segment[CODESEG], -v);
+    return;
+  }
+
+  if (passNumber >= 1 && (v & 0xFF0000) == 0xFD0000) {
+    sprintf(lineBuffer + strlen(lineBuffer), " ($%06X)", v);
+    WriteInt16Code(OP_CONSTFD, v & 0xFFFF);
+    EmitByte(&segment[CODESEG], OP_CONSTFD);
+    EmitInt16(&segment[CODESEG], v & 0xFFFF);
+    return;
+  }
+
+  WriteInt24Code(OP_CONSTP3, v);
+
+  EmitByte(&segment[CODESEG], OP_CONSTP3);
+  EmitInt24(&segment[CODESEG], v);
+}
+
 ASMMultipleFn(CODE_BLOCK_COPY) {
   Parse();
   const unsigned int v = ParseExpression();

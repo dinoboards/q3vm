@@ -1499,6 +1499,9 @@ extern shared_data_t shared_data;
 
 shared_data_t mirror;
 
+#define SHARD_MEM_ADDR ((uint24_t)0xFD0000)
+#define SHARD_MEM      (*((shared_data_t *)SHARD_MEM_ADDR))
+
 int test_shared_memory_access(void) {
   // printf("%d\r\n", shared_data.counter2);
 
@@ -1507,11 +1510,12 @@ int test_shared_memory_access(void) {
   mirror.counter2 = 11122;
 
   shared_data = mirror;
+  SHARD_MEM.count1 += 2;
 
   shared_data.count1++;
   shared_data.counter2++;
 
-  if (shared_data.count1 != 46)
+  if (shared_data.count1 != 48)
     return 1;
 
   if (shared_data.counter2 != 11123)

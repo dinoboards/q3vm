@@ -60,7 +60,7 @@ assemblers_t assemblers[] = {
     {"CNSTI2",  OP_CONSTs2,  OP_UNDEF,  assfn(CODE_16BIT)       },
     {"CNSTI3",  OP_CONSTs3,  OP_UNDEF,  assfn(CODE_CONSTI_24BIT)},
     {"CNSTI4",  OP_CONSTs4,  OP_UNDEF,  assfn(CODE_32BIT)       },
-    {"CNSTP3",  OP_CONSTP3,  OP_UNDEF,  assfn(CODE_24BIT)       },
+    {"CNSTP3",  OP_CONSTP3,  OP_UNDEF,  assfn(CODE_CONSTP3)     },
     {"CNSTU1",  OP_CONSTs1,  OP_UNDEF,  assfn(CODE_8BIT)        },
     {"CNSTU2",  OP_CONSTs2,  OP_UNDEF,  assfn(CODE_16BIT)       },
     {"CNSTU3",  OP_MULTIPLE, OP_UNDEF,  assfn(CODE_CONSTU_24BIT)},
